@@ -1,3 +1,3 @@
 # content/data
 
-Your Sqlite databse file will be placed here.
+Your Sqlite database file will be placed here by the application.
