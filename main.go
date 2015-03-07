@@ -13,10 +13,10 @@ import (
 	"strings"
 )
 
-// Global httpsPort for use in the https redirect functions.
+// Global httpsPort for use in the https redirect function.
 var httpsPort = ""
 
-// Global url for use in the https redirect functions.
+// Global url for use in the https redirect function.
 var blogUrl = ""
 
 func httpsRedirect(w http.ResponseWriter, r *http.Request) {
