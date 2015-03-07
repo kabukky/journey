@@ -15,6 +15,7 @@ content/images/*
 # Themes
 content/themes/*
 !content/themes/README.md
+!content/themes/promenade
 
 # Https certs
 content/https/*
