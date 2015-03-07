@@ -20,10 +20,16 @@ func NewConfiguration() *Configuration {
 	var config Configuration
 	err := config.load()
 	if err != nil {
-		log.Println("Warning: couldn't load", filenames.ConfigFilename, "\n Creating new config file.")
+		log.Println("Warning: couldn't load " + filenames.ConfigFilename + ", creating new config file.")
 		err = config.create()
 		if err != nil {
 			log.Fatal("Fatal error: Couldn't create configuration.")
+			return nil
+		}
+		err = config.load()
+		if err != nil {
+			log.Fatal("Fatal error: Couldn't load configuration.")
+			return nil
 		}
 	}
 	return &config
@@ -64,11 +70,12 @@ func (c *Configuration) load() error {
 
 func (c *Configuration) create() error {
 	// TODO: Change default port
-	c = &Configuration{HttpHostAndPort: ":8081", HttpsHostAndPort: ":8082", HttpsUsage: "None", Url: "127.0.0.1"}
+	c = &Configuration{HttpHostAndPort: ":8081", HttpsHostAndPort: ":8082", HttpsUsage: "None", Url: "127.0.0.1:8081"}
 	err := c.save()
 	if err != nil {
 		log.Println("Error: couldn't create " + filenames.ConfigFilename)
 		return err
 	}
+
 	return nil
 }
