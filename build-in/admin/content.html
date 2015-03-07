@@ -1,0 +1,38 @@
+<nav class="navbar navbar-default navbar-fixed-top">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1">
+			<span class="sr-only">Toggle navigation</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="/">Blog</a>
+		</div> 
+		<div class="collapse navbar-collapse" id="navbar-collapse-1" ng-bind-html="navbarHtml">
+		</div>
+	</div>
+</nav>
+<div infinite-scroll="infiniteScrollFactory.nextPage()" infinite-scroll-disabled="infiniteScrollFactory.busy" infinite-scroll-distance="1">
+	<table class="table table-striped">
+		<tbody>
+			<tr ng-if="infiniteScrollFactory.items.length == 0">
+				<td>
+					<h4>No posts to show. Create some!</h4>
+				</td>
+			</tr>
+			<tr ng-repeat="post in infiniteScrollFactory.items" class="post-content-row">
+				<td class="post-number-cell" ng-click="openPost(post.Id)">
+					<h4>{{$index + 1}}.</h4>
+				</td>
+				<td class="post-cell" ng-click="openPost(post.Id)">
+				<h4>{{post.Title}} <small class="text-success" ng-if="post.IsPublished">Published</small><small class="text-warning" ng-if="!post.IsPublished">Draft</small></h4>
+				<p>{{post.Html | htmlToPlaintextPreview}}</p>
+				</td>
+				<td class="post-remove-cell">
+					<a class="text-danger" id="post-cover-delete" ng-controller="ModalCtrl" ng-click="deletePost(post.Id, post.Title)"><h5><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete</h5></a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

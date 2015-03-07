@@ -1,0 +1,140 @@
+<nav class="navbar navbar-default navbar-fixed-top">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1">
+			<span class="sr-only">Toggle navigation</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="/">Blog</a>
+		</div> 
+		<div class="collapse navbar-collapse" id="navbar-collapse-1" ng-bind-html="navbarHtml">
+		</div>
+	</div>
+</nav>
+<div class="container-fluid">
+	<div class="page-header">
+		<h1>Blog</h1>
+	</div>
+	<form class="form-horizontal">
+	    <div class="form-group">
+	        <label for="blog-title" class="col-sm-2 control-label">Title</label>
+	        <div class="col-sm-4">
+	            <input type="text" class="form-control" id="blog-title" ng-model="shared.blog.Title" value="{{shared.blog.Title}}">
+	        </div>
+	    </div>
+	    <div class="form-group">
+	        <label for="blog-description" class="col-sm-2 control-label">Description</label>
+	        <div class="col-sm-4">
+	            <input type="text" class="form-control" id="blog-description" ng-model="shared.blog.Description" value="{{shared.blog.Description}}">
+	        </div>
+	    </div>
+	    <div class="form-group">
+	        <label for="blog-logo" class="col-sm-2 control-label">Logo</label>
+	        <div class="col-sm-10">
+	            <a ng-controller="ModalCtrl" ng-click="open('lg', 'blog-logo')"><img class="img-settings img-thumbnail img-settings" id="blog-logo" src="{{shared.blog.Logo}}" alt="{{shared.blog.Logo}}" /></a>
+			</div>
+	    </div>
+	    <div class="form-group">
+	        <label for="blog-cover" class="col-sm-2 control-label">Cover</label>
+	        <div class="col-sm-10">
+	            <a ng-controller="ModalCtrl" ng-click="open('lg', 'blog-cover')"><img class="img-settings img-thumbnail img-settings" id="blog-cover" src="{{shared.blog.Cover}}" alt="{{shared.blog.Cover}}" /></a>
+			</div>
+	    </div>
+	    <div class="form-group">
+	        <label for="blog-postsperpage" class="col-sm-2 control-label">Posts per page</label>
+	        <div class="col-sm-2">
+	            <input type="number" class="form-control" id="blog-postsperpage" ng-model="shared.blog.PostsPerPage" value="{{shared.blog.PostsPerPage}}">
+	        </div>
+	    </div>
+	    <div class="form-group">
+	        <label for="blog-theme" class="col-sm-2 control-label">Theme</label>
+	        <div class="col-sm-2">
+	        	<select class="form-control" id="blog-theme" ng-model="shared.blog.ActiveTheme" ng-options="theme for theme in shared.blog.Themes"></select>
+	        </div>
+	    </div>
+	</form>
+	<div class="page-header">
+		<h1>User {{shared.user.Name}}</h1>
+	</div>
+	<form class="form-horizontal">
+	    <div class="form-group">
+	        <label for="user-image" class="col-sm-2 control-label">Avatar</label>
+	        <div class="col-sm-10">
+	            <a ng-controller="ModalCtrl" ng-click="open('lg', 'user-image')"><img class="img-settings img-thumbnail img-settings" id="user-image" src="{{shared.user.Image}}" alt="{{shared.user.Image}}" /></a>
+			</div>
+	    </div>
+	    <div class="form-group">
+	        <label for="user-cover" class="col-sm-2 control-label">Cover</label>
+	        <div class="col-sm-10">
+	            <a ng-controller="ModalCtrl" ng-click="open('lg', 'user-cover')"><img class="img-settings img-thumbnail img-settings" id="user-cover" src="{{shared.user.Cover}}" alt="{{shared.user.Cover}}" /></a>
+			</div>
+	    </div>
+	    <div class="form-group">
+	        <label for="user-email" class="col-sm-2 control-label">Email</label>
+	        <div class="col-sm-4">
+	            <input type="text" class="form-control" id="user-email" ng-model="shared.user.Email" value="{{shared.user.Email}}">
+	        </div>
+	    </div>
+	    <div class="form-group">
+	        <label for="user-location" class="col-sm-2 control-label">Location</label>
+	        <div class="col-sm-4">
+	            <input type="text" class="form-control" id="user-location" ng-model="shared.user.Location" value="{{shared.user.Location}}">
+	        </div>
+	    </div>
+	    <div class="form-group">
+	        <label for="user-website" class="col-sm-2 control-label">Website</label>
+	        <div class="col-sm-4">
+	            <input type="text" class="form-control" id="user-website" ng-model="shared.user.Website" value="{{shared.user.Website}}">
+	        </div>
+	    </div>
+	    <div class="form-group">
+	        <label for="user-bio" class="col-sm-2 control-label">Bio</label>
+	        <div class="col-sm-4">
+	            <textarea class="form-control" id="user-bio" ng-model="shared.user.Bio" rows="4">{{shared.user.Bio}}</textarea>
+	        </div>
+	    </div>
+	    <div class="form-group">
+	        <label for="new-password" class="col-sm-2 control-label">New Password</label>
+	        <div class="col-sm-4">
+	            <input type="password" class="form-control" id="new-password" ng-model="shared.user.Password">
+	        </div>
+	    </div>
+	    <div class="form-group">
+	    	<label for="new-password-repeated" class="col-sm-2 control-label">Repeat New Password</label>
+	        <div class="col-sm-4">
+	            <input type="password" class="form-control" id="new-password-repeated" ng-model="shared.user.PasswordRepeated">
+	            <p class="text-danger" id="password-match-status">&nbsp;</p>
+	        </div>
+	    </div>
+	</form>
+</div>
+<div class="navbar navbar-default navbar-fixed-bottom">
+	<div class="container-fluid">
+		<form class="navbar-form save-button-navbar" role="form">
+				<button type="button" class="btn btn-primary" id="settings-save-button" ng-click="save()">Save</button>
+		</form>
+	</div>
+</div>
+<script>
+	$(document).ready(function() {
+		$("#new-password").keyup(validate);
+  		$("#new-password-repeated").keyup(validate);
+	});
+	function validate() {
+		var password = $("#new-password").val();
+		var repeatedPassword = $("#new-password-repeated").val();
+	    if(password == repeatedPassword) {
+			document.getElementById("settings-save-button").disabled = false;
+	    	$("#password-match-status").html("&nbsp;");
+	    }
+	    else {
+			document.getElementById("settings-save-button").disabled = true;
+	        $("#password-match-status").html("Passwords do not match.");
+	    }
+	}
+	$("#settings-save-button").click(function() {
+		document.getElementById("settings-save-button").disabled = true;
+	});
+</script>

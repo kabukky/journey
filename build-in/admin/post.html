@@ -1,0 +1,79 @@
+<nav class="navbar navbar-default navbar-fixed-top">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1">
+			<span class="sr-only">Toggle navigation</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="/">Blog</a>
+		</div> 
+		<div class="collapse navbar-collapse" id="navbar-collapse-1" ng-bind-html="navbarHtml">
+		</div>
+	</div>
+</nav>
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-sm-6" id="markdown-div">
+			<div class="row">
+				<div class="col-sm-12" id="markdown-title-div">
+					<input class="form-control" id="markdown-title-input" type="text" ng-model="shared.post.Title" value="{{shared.post.Title}}" ng-change="change()"></input>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-12" id="markdown-text-div">
+					<a ng-controller="ModalCtrl" ng-click="open('lg', 'post-image')">
+			 			<span class="glyphicon glyphicon-picture markdown-modal-button" aria-hidden="true"></span>
+			 		</a>
+			 		<a ng-controller="ModalCtrl" ng-click="open('lg', 'post-help')">
+			 			<span class="glyphicon glyphicon-question-sign markdown-modal-button" aria-hidden="true"></span>
+					</a>
+					<textarea class="textarea-autosize" id="markdown-textarea" rows="15" ng-model="shared.post.Markdown" ng-change="change()">{shared.post.Markdown}</textarea>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-6 lead" id="html-div"></div>
+	</div>
+</div>
+<div class="navbar navbar-default navbar-fixed-bottom">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed bottom-collapsed-button" data-toggle="collapse" data-target="#navbar-collapse-2">
+			<span class="sr-only">Toggle navigation</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			</button>
+		</div>
+		<div class="collapse navbar-collapse" id="navbar-collapse-2">
+			<form class="navbar-form navbar-left" role="form">
+				<div class="navbar-label-text">Tags:&nbsp;
+					<div class="form-group">
+						<input type="text" class="form-control" id="tags-input" ng-model="shared.post.Tags" value="{{shared.post.Tags}}">
+					</div>
+				</div>
+			</form>
+			<form class="navbar-form navbar-left" role="form">
+				<input bs-switch ng-model="shared.post.IsPublished" type="checkbox" class="post-checkbox" data-label-text="Publish" data-off-text="NO" data-on-text="YES" data-on-color="success" data-off-color="danger" data-size="normal">
+			</form>
+			<form class="navbar-form navbar-left" role="form">
+				<button type="button" class="btn btn-default" ng-controller="ModalCtrl" ng-click="open('lg', 'post-options')">
+		 			<span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Options
+				</button>
+			</form>
+		</div>
+		<form class="navbar-form save-button-navbar" role="form">
+				<button type="button" class="btn btn-primary" id="post-save-button" ng-click="save()">Save</button>
+		</form>
+	</div>
+</div>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$(".post-checkbox").bootstrapSwitch();
+		$('.textarea-autosize').autosize();
+	});
+	$("#post-save-button").click(function() {
+		document.getElementById("post-save-button").disabled = true;
+	});
+</script>
