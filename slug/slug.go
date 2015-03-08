@@ -17,7 +17,6 @@ func Generate(input string, table string) string {
 		default:
 			return -1
 		}
-		return -1
 	}, strings.ToLower(strings.TrimSpace(input)))
 	// Maximum of 75 characters for slugs right now
 	maxLength := 75
