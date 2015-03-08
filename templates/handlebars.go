@@ -29,14 +29,14 @@ func paginationDotTotalFunc(helper *Helper, values *structure.RequestData) []byt
 	} else if values.CurrentTemplate == 3 { // author
 		count, err := database.RetrieveNumberOfPostsByAuthor(values.Posts[values.CurrentPostIndex].Author.Id)
 		if err != nil {
-			log.Printf("couldn't get number of posts", err.Error())
+			log.Println("couldn't get number of posts", err.Error())
 			return []byte{}
 		}
 		return []byte(strconv.FormatInt(count, 10))
 	} else if values.CurrentTemplate == 2 { // tag
 		count, err := database.RetrieveNumberOfPostsByTag(values.CurrentTag.Id)
 		if err != nil {
-			log.Printf("couldn't get number of posts", err.Error())
+			log.Println("couldn't get number of posts", err.Error())
 			return []byte{}
 		}
 		return []byte(strconv.FormatInt(count, 10))
@@ -83,13 +83,13 @@ func nextFunc(helper *Helper, values *structure.RequestData) []byte {
 	} else if values.CurrentTemplate == 2 { // tag
 		count, err = database.RetrieveNumberOfPostsByTag(values.CurrentTag.Id)
 		if err != nil {
-			log.Printf("couldn't get number of posts for tag", err.Error())
+			log.Println("couldn't get number of posts for tag", err.Error())
 			return []byte{}
 		}
 	} else if values.CurrentTemplate == 3 { // author
 		count, err = database.RetrieveNumberOfPostsByAuthor(values.Posts[values.CurrentPostIndex].Author.Id)
 		if err != nil {
-			log.Printf("couldn't get number of posts for author", err.Error())
+			log.Println("couldn't get number of posts for author", err.Error())
 			return []byte{}
 		}
 	}
@@ -108,17 +108,17 @@ func pagesFunc(helper *Helper, values *structure.RequestData) []byte {
 	var count int64
 	var err error
 	if values.CurrentTemplate == 0 { // index
-		count = values.Blog.PostCount
+		count = values.Blog.PostCount	
 	} else if values.CurrentTemplate == 2 { // tag
 		count, err = database.RetrieveNumberOfPostsByTag(values.CurrentTag.Id)
 		if err != nil {
-			log.Printf("couldn't get number of posts for tag", err.Error())
+			log.Println("couldn't get number of posts for tag", err.Error())
 			return []byte{}
 		}
 	} else if values.CurrentTemplate == 3 { // author
 		count, err = database.RetrieveNumberOfPostsByAuthor(values.Posts[values.CurrentPostIndex].Author.Id)
 		if err != nil {
-			log.Printf("couldn't get number of posts for author", err.Error())
+			log.Println("couldn't get number of posts for author", err.Error())
 			return []byte{}
 		}
 	}
@@ -166,13 +166,13 @@ func page_urlFunc(helper *Helper, values *structure.RequestData) []byte {
 			} else if values.CurrentTemplate == 2 { // tag
 				count, err = database.RetrieveNumberOfPostsByTag(values.CurrentTag.Id)
 				if err != nil {
-					log.Printf("couldn't get number of posts for tag", err.Error())
+					log.Println("couldn't get number of posts for tag", err.Error())
 					return []byte{}
 				}
 			} else if values.CurrentTemplate == 3 { // author
 				count, err = database.RetrieveNumberOfPostsByAuthor(values.Posts[values.CurrentPostIndex].Author.Id)
 				if err != nil {
-					log.Printf("couldn't get number of posts for author", err.Error())
+					log.Println("couldn't get number of posts for author", err.Error())
 					return []byte{}
 				}
 			}
@@ -678,13 +678,13 @@ func paginationFunc(helper *Helper, values *structure.RequestData) []byte {
 	} else if values.CurrentTemplate == 2 { // tag
 		count, err = database.RetrieveNumberOfPostsByTag(values.CurrentTag.Id)
 		if err != nil {
-			log.Printf("couldn't get number of posts for tag", err.Error())
+			log.Println("couldn't get number of posts for tag", err.Error())
 			return []byte{}
 		}
 	} else if values.CurrentTemplate == 3 { // author
 		count, err = database.RetrieveNumberOfPostsByAuthor(values.Posts[values.CurrentPostIndex].Author.Id)
 		if err != nil {
-			log.Printf("couldn't get number of posts for author", err.Error())
+			log.Println("couldn't get number of posts for author", err.Error())
 			return []byte{}
 		}
 	}
@@ -747,7 +747,6 @@ func paginationFunc(helper *Helper, values *structure.RequestData) []byte {
 	} else {
 		return []byte("<nav class=\"pagination\" role=\"navigation\">\n\t<span class=\"page-number\">Page 1 of 1</span>\n</nav>")
 	}
-	return []byte{}
 }
 
 func idFunc(helper *Helper, values *structure.RequestData) []byte {
