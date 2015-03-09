@@ -37,7 +37,7 @@ Open
 
 in your browser. Fill out the information to create your Journey admin account. In the next step, log in using the user name and password you just provided.
 
-The admin area let's you:
+In the admin area you can:
 - create, edit, and delete blog posts
 - edit your blog settings
 - edit your user settings
