@@ -9,7 +9,6 @@ Then extract that zip file anywhere you like. You may also rename the extracted 
 In the following section we will assume your Journey executable is located in /home/your-user/journey/
 
 ## Using Journey
-
 ### 1. First start
 In your Terminal, navigate to your Journey folder (e.g. /home/your-user/journey/) and start Journey by typing
 
@@ -43,7 +42,6 @@ In the admin area you can:
 - edit your user settings
 
 ### 2. Configuration
-
 By editing the "config.json" file you can change the following settings:
 
 **"HttpHostAndPort"**
@@ -77,7 +75,6 @@ This will change the url of your Journey blog. You have to change this to the ho
 The "Url" setting will be used to generate links to the blog (rss feeds and @blog.url helper) and to redirect incoming http connections to https.
 
 ### 3. Choose a theme
-
 The Promenade theme is included by default to make Journey work out of the box. However, it is only intended to be used on a one author, personal website.
 
 For a fully fledged, multiple author blog experience try the [Casper](https://github.com/TryGhost/Casper) theme from the makers of Ghost.
@@ -87,8 +84,13 @@ For a fully fledged, multiple author blog experience try the [Casper](https://gi
 Then try some other themes! There's a whole world of Ghost themes out there. Find the one you like best.
 
 ### 4. Write your own theme
-
 Finally, you can always write your own theme and use it with Journey. Start by visiting [http://themes.ghost.org]{http://themes.ghost.org) and by reading one of the many tutorials that show you how to create a Ghost theme!
+
+## Troubleshooting
+### 1. "/lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.14' not found (required by journey)" when trying to start Journey
+Your Linux distribution ships with an older version of libc6. Try updating libc6.
+
+This may be tricky or not possible on Debian Wheezy stable. You can always try to compile Journey from source to link against your own version of libc6 (see below).
 
 ## Building from source
 Prerequisites
