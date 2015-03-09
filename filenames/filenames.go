@@ -4,8 +4,8 @@ const ConfigFilename = "config.json"
 const DatabaseFilename = "content/data/journey.db"
 const ThemesFilepath = "content/themes"
 const ImagesFilepath = "content/images"
-const AdminFilepath = "build-in/admin"
-const PublicFilepath = "build-in/public"
+const AdminFilepath = "built-in/admin"
+const PublicFilepath = "built-in/public"
 const ContentFilepath = "content"
 
 // For https
@@ -18,7 +18,7 @@ const JqueryFilename = "/public/jquery/jquery.js"
 // For blog
 // TODO: This is not used at the moment because it is still hard-coded into the create database string
 const DefaultBlogLogoFilename = "/public/images/blog-logo.jpg"
-const DefaultBlogCoverFilename = "/public/imahes/blog-cover.jpg"
+const DefaultBlogCoverFilename = "/public/images/blog-cover.jpg"
 
 // For users
 const DefaultUserImageFilename = "/public/images/user-image.jpg"
