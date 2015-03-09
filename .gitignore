@@ -4,6 +4,9 @@ TODO.txt
 # Built binary
 journey
 
+# Releases
+releases/
+
 # Database
 content/data/*
 !content/data/README.md
