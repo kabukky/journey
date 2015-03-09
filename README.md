@@ -74,7 +74,7 @@ NOTE: For a minimum of security, "HttpsUsage" should always be set to at least "
 
 This will change the url of your Journey blog. You have to change this to the host name the blog is supposed to be reachable under.
 
-The "Url" setting will be used to generate links to the blog (rss feeds and @blog.url helper) and for redirecton of http connections to https.
+The "Url" setting will be used to generate links to the blog (rss feeds and @blog.url helper) and to redirect incoming http connections to https.
 
 ### 3. Choose a theme
 
