@@ -10,7 +10,7 @@ In the following section we will assume your Journey executable is located in /h
 
 ## Using Journey
 
-### First start
+### 1. First start
 In your Terminal, navigate to your Journey folder (e.g. /home/your-user/journey/) and start Journey by typing
 
     ./journey
@@ -42,7 +42,7 @@ In the admin area you can:
 - edit your blog settings
 - edit your user settings
 
-### Customizing Journey
+### 2. Configuration
 
 By editing the "config.json" file you can change the following settings:
 
@@ -70,7 +70,25 @@ This will change the https setting of your Journey blog. There are three possibl
 
 NOTE: For a minimum of security, "HttpsUsage" should always be set to at least "AdminOnly" to ensure your login credentials and cookies are being sent using an encrypted connection.
 
+**"Url"**
 
+This will change the url of your Journey blog. You have to change this to the host name the blog is supposed to be reachable under.
+
+The "Url" setting will be used to generate links to the blog (rss feeds and @blog.url helper) and for redirecton of http connections to https.
+
+### 3. Choose a theme
+
+The Promenade theme is included by default to make Journey work out of the box. However, it is only intended to be used on a one author, personal website.
+
+For a fully fledged, multiple author blog experience try the [Casper](https://github.com/TryGhost/Casper) theme from the makers of Ghost.
+
+[Download it](https://github.com/TryGhost/Casper/releases) and place the Casper directory in content/themes folder (e.g. /home/your-user/journey/content/themes). Then select Casper from your admin panel under Settings/Blog.
+
+Then try some other themes! There's a whole world of Ghost themes out there. Find the one you like best.
+
+### 3. Write your own theme
+
+Finally, you can always write your own theme and use it with Journey. Start by visiting [http://themes.ghost.org]{http://themes.ghost.org) and by reading one of the many tutorials that show you how to create a Ghost theme!
 
 ## Building from source
 Prerequisites
