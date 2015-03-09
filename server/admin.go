@@ -16,7 +16,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -71,7 +70,7 @@ var validAdminApiPath = regexp.MustCompile("^/admin/api/(posts|post|upload|image
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		http.ServeFile(w, r, path.Join(filenames.AdminFilepath, "login.html"))
+		http.ServeFile(w, r, filepath.Join(filenames.AdminFilepath, "login.html"))
 		return
 	case "POST":
 		name := r.FormValue("name")
@@ -90,7 +89,7 @@ func registrationHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		if database.RetrieveUsersCount() == 0 {
-			http.ServeFile(w, r, path.Join(filenames.AdminFilepath, "registration.html"))
+			http.ServeFile(w, r, filepath.Join(filenames.AdminFilepath, "registration.html"))
 			return
 		} else {
 			http.Redirect(w, r, "/admin/", 302)
@@ -146,10 +145,10 @@ func adminHandler(w http.ResponseWriter, r *http.Request) {
 				http.Redirect(w, r, "/admin/", http.StatusFound)
 				return
 			} else if m[1] == "" {
-				http.ServeFile(w, r, path.Join(filenames.AdminFilepath, "admin.html"))
+				http.ServeFile(w, r, filepath.Join(filenames.AdminFilepath, "admin.html"))
 				return
 			} else {
-				http.ServeFile(w, r, path.Join(filenames.AdminFilepath, m[1]))
+				http.ServeFile(w, r, filepath.Join(filenames.AdminFilepath, m[1]))
 				return
 			}
 		} else {
@@ -315,12 +314,12 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 						continue
 					}
 					// Folder structure: year/month/randomname
-					filePath := path.Join(filenames.ImagesFilepath, time.Now().Format("2006"), time.Now().Format("01"))
+					filePath := filepath.Join(filenames.ImagesFilepath, time.Now().Format("2006"), time.Now().Format("01"))
 					if os.MkdirAll(filePath, 0777) != nil {
 						http.Error(w, err.Error(), http.StatusInternalServerError)
 						return
 					}
-					dst, err := os.Create(path.Join(filePath, strconv.FormatInt(time.Now().Unix(), 10)+"_"+uuid.Formatter(uuid.NewV4(), uuid.Clean)+path.Ext(part.FileName())))
+					dst, err := os.Create(filepath.Join(filePath, strconv.FormatInt(time.Now().Unix(), 10)+"_"+uuid.Formatter(uuid.NewV4(), uuid.Clean)+filepath.Ext(part.FileName())))
 					defer dst.Close()
 					if err != nil {
 						http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -350,7 +349,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 				images := make([]string, 0)
 				// Walk all files in images folder
 				err = filepath.Walk(filenames.ImagesFilepath, func(filePath string, info os.FileInfo, err error) error {
-					if !info.IsDir() && (strings.EqualFold(path.Ext(filePath), ".jpg") || strings.EqualFold(path.Ext(filePath), ".jpeg") || strings.EqualFold(path.Ext(filePath), ".gif") || strings.EqualFold(path.Ext(filePath), ".png") || strings.EqualFold(path.Ext(filePath), ".svg")) {
+					if !info.IsDir() && (strings.EqualFold(filepath.Ext(filePath), ".jpg") || strings.EqualFold(filepath.Ext(filePath), ".jpeg") || strings.EqualFold(filepath.Ext(filePath), ".gif") || strings.EqualFold(filepath.Ext(filePath), ".png") || strings.EqualFold(filepath.Ext(filePath), ".svg")) {
 						// Rewrite to file path on server
 						filePath = strings.Replace(filePath, filenames.ImagesFilepath, "/images", 1)
 						// Prepend file to slice (thus reversing the order)

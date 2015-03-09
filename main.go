@@ -46,14 +46,14 @@ func main() {
 	// Database
 	err := database.Initialize()
 	if err != nil {
-		log.Fatal("Error: Couldn't initialize database:", err.Error())
+		log.Fatal("Error: Couldn't initialize database: " + err.Error())
 		return
 	}
 
 	// Templates
 	err = templates.Generate()
 	if err != nil {
-		log.Fatal("Error: Couldn't compile templates:", err.Error())
+		log.Fatal("Error: Couldn't compile templates: " + err.Error())
 		return
 	}
 

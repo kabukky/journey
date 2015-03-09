@@ -1,25 +1,29 @@
 package filenames
 
-const ConfigFilename = "config.json"
-const DatabaseFilename = "content/data/journey.db"
-const ThemesFilepath = "content/themes"
-const ImagesFilepath = "content/images"
-const AdminFilepath = "built-in/admin"
-const PublicFilepath = "built-in/public"
-const ContentFilepath = "content"
+import (
+	"path/filepath"
+)
+
+var ConfigFilename = "config.json"
+var DatabaseFilename = filepath.Join("content", "data", "journey.db")
+var ThemesFilepath = filepath.Join("content", "themes")
+var ImagesFilepath = filepath.Join("content", "images")
+var AdminFilepath = filepath.Join("built-in", "admin")
+var PublicFilepath = filepath.Join("built-in", "public")
+var ContentFilepath = "content"
 
 // For https
-const HttpsCertFilename = "content/https/cert.pem"
-const HttpsKeyFilename = "content/https/key.pem"
+var HttpsCertFilename = filepath.Join("content", "https", "cert.pem")
+var HttpsKeyFilename = filepath.Join("content", "https", "key.pem")
 
 // For handlebars
-const JqueryFilename = "/public/jquery/jquery.js"
+var JqueryFilename = "/public/jquery/jquery.js"
 
 // For blog
 // TODO: This is not used at the moment because it is still hard-coded into the create database string
-const DefaultBlogLogoFilename = "/public/images/blog-logo.jpg"
-const DefaultBlogCoverFilename = "/public/images/blog-cover.jpg"
+var DefaultBlogLogoFilename = "/public/images/blog-logo.jpg"
+var DefaultBlogCoverFilename = "/public/images/blog-cover.jpg"
 
 // For users
-const DefaultUserImageFilename = "/public/images/user-image.jpg"
-const DefaultUserCoverFilename = "/public/images/user-cover.jpg"
+var DefaultUserImageFilename = "/public/images/user-image.jpg"
+var DefaultUserCoverFilename = "/public/images/user-cover.jpg"

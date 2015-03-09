@@ -6,7 +6,7 @@ import (
 	"github.com/kabukky/journey/templates"
 	"github.com/kabukky/journey/timer"
 	"net/http"
-	"path"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"time"
@@ -153,7 +153,7 @@ func generateAssetHandler(mux *http.ServeMux) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		http.ServeFile(w, r, path.Join(filenames.ThemesFilepath, *activeTheme, r.URL.Path))
+		http.ServeFile(w, r, filepath.Join(filenames.ThemesFilepath, *activeTheme, r.URL.Path))
 		return
 	}))
 }

@@ -8,7 +8,6 @@ import (
 	"github.com/kabukky/journey/structure"
 	"io/ioutil"
 	"os"
-	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -172,12 +171,12 @@ func createTemplateFromFile(filename string) (*Helper, error) {
 	if err != nil {
 		return nil, err
 	}
-	helper := compileTemplate(data, path.Base(filename)[0:len(path.Base(filename))-len(path.Ext(filename))]) //second argument: get filename without extension
+	helper := compileTemplate(data, filepath.Base(filename)[0:len(filepath.Base(filename))-len(filepath.Ext(filename))]) //second argument: get filename without extension
 	return helper, nil
 }
 
 func inspectTemplateFile(filePath string, info os.FileInfo, err error) error {
-	if !info.IsDir() && path.Ext(filePath) == ".hbs" {
+	if !info.IsDir() && filepath.Ext(filePath) == ".hbs" {
 		helper, err := createTemplateFromFile(filePath)
 		if err != nil {
 			return err
@@ -196,7 +195,7 @@ func Generate() error {
 	}
 	// Compile all template files
 	// First clear compiledTemplates map (theme could have been changed) TODO: Should this be implemented?
-	currentThemePath := path.Join(filenames.ThemesFilepath, *activeTheme)
+	currentThemePath := filepath.Join(filenames.ThemesFilepath, *activeTheme)
 	err = filepath.Walk(currentThemePath, inspectTemplateFile)
 	if err != nil {
 		return err
