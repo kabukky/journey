@@ -86,7 +86,7 @@ For a fully fledged, multiple author blog experience try the [Casper](https://gi
 
 Then try some other themes! There's a whole world of Ghost themes out there. Find the one you like best.
 
-### 3. Write your own theme
+### 4. Write your own theme
 
 Finally, you can always write your own theme and use it with Journey. Start by visiting [http://themes.ghost.org]{http://themes.ghost.org) and by reading one of the many tutorials that show you how to create a Ghost theme!
 
