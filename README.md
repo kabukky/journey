@@ -42,7 +42,7 @@ In the admin area you can:
 - edit your user settings
 
 ### 2. Configuration
-By editing the "config.json" file you can change the following settings:
+By editing the "config.json" file you should change the following settings:
 
 **"HttpHostAndPort"**
 
@@ -68,11 +68,19 @@ This will change the https setting of your Journey blog. There are three possibl
 
 NOTE: For a minimum of security, "HttpsUsage" should always be set to at least "AdminOnly" to ensure your login credentials and cookies are being sent using an encrypted connection.
 
+When https is enabled ("HttpsUsage" is not set to "None"), you have to provide files containing a certificate and matching private key for the server.
+
+Those files have to be placed in the content/https folder (e.g. /home/your-user/journey/content/https) as cert.pem and key.pem.
+
+If Https is enabled and the cert.pem and cert.key files are not present in this directory, the application will generate new cert.pem and cert.key files upon startup.
+
+Replace those files with your own as soon as possible and don't use them in production.
+
 **"Url"**
 
 This will change the url of your Journey blog. You have to change this to the host name the blog is supposed to be reachable under.
 
-The "Url" setting will be used to generate links to the blog (rss feeds and @blog.url helper) and to redirect incoming http connections to https.
+The "Url" setting is used to generate links to the blog (rss feeds and @blog.url helper) and to redirect incoming http connections to https.
 
 ### 3. Choose a theme
 The Promenade theme is included by default to make Journey work out of the box. However, it is only intended to be used on a one author, personal website.
@@ -84,7 +92,7 @@ For a fully fledged, multiple author blog experience try the [Casper](https://gi
 Then try some other themes! There's a whole world of Ghost themes out there. Find the one you like best.
 
 ### 4. Write your own theme
-Finally, you can always write your own theme and use it with Journey. Start by visiting [http://themes.ghost.org]{http://themes.ghost.org) and by reading one of the many tutorials that show you how to create a Ghost theme!
+Finally, you can always write your own theme and use it with Journey. Start by visiting [http://themes.ghost.org](http://themes.ghost.org) and by reading one of the many tutorials that show you how to create a Ghost theme!
 
 ## Troubleshooting
 ### 1. "/lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.14' not found (required by journey)" when trying to start Journey
