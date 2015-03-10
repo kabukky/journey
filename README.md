@@ -20,7 +20,7 @@ Other blog engines require you to install Nginx or Apache just to enable Https. 
 Don't worry about installing the correct version of Node.js, Python, or anything else. Just download the [latest release](https://www.github.com/kabukky/journey/releases) for your operating system and cpu architecture, then place the folder anywhere you like and run the Journey executable. Done!
 
 ### Lightweight and fast
-Journey is still in an early stage of its development. However, initial tests indicate that it is about 10 times faster at generating pages than Ghost running on Node.js. It eats very little of your precious memory. For example: Testing it on a MacBook, it takes about 3.5 MB of it and then happily carries on doing its job.
+Journey is still in an early stage of development. However, initial tests indicate that it is about 10 times faster at generating pages than Ghost running on Node.js. It eats very little of your precious memory. For example: Testing it on a MacBook, it takes about 3.5 MB of it and then happily carries on doing its job.
 
 This slimness makes Journey an ideal candidate for setting up micro blogs or hosting it on low-end vps machines or micro computers such as the Raspberry Pi.
 
