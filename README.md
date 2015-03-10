@@ -20,7 +20,7 @@ or
 
     journey.exe
 
-when using Windows.
+when using Windows. Alternatively, you can just double-click on journey.exe
 
 Journey is now running.
 
