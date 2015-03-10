@@ -89,7 +89,7 @@ For a fully fledged, multiple author blog experience try the [Casper](https://gi
 
 [Download it](https://github.com/TryGhost/Casper/releases) and place the Casper directory in content/themes folder (e.g. /home/your-user/journey/content/themes). Then select Casper from your admin panel under Settings/Blog.
 
-Then try some other themes! There's a whole world of Ghost themes out there. Find the one you like best.
+After that, try some other themes! There's a whole world of Ghost themes out there. Find the one you like best.
 
 ### 4. Write your own theme
 Finally, you can always write your own theme and use it with Journey. Start by visiting [http://themes.ghost.org](http://themes.ghost.org) and by reading one of the many tutorials that show you how to create a Ghost theme!
