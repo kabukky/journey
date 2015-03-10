@@ -30,17 +30,17 @@ This slimness makes Journey an ideal candidate for setting up micro blogs or hos
 ## Installing Journey
 Go to the the [Releases Page](https://github.com/kabukky/journey/releases) and download the zip file corresponding to your operating system and cpu architecture.
 
-Then extract that zip file anywhere you like. You may also rename the extracted folder into "journey" if you like.
+Then extract that zip file anywhere you like. You may also rename the extracted folder into "journey" if you so desire.
 
 In the following section we will assume your Journey executable is located in /home/your-user/journey/
 
 ## Using Journey
-### 1. First start
+### 1. Start Journey
 In your Terminal, navigate to your Journey folder (e.g. /home/your-user/journey/) and start Journey by typing
 
     ./journey
 
-when using Linux, Mac OS X or another Unix
+when using Linux, Mac OS X, or another Unix
 
 or
 
@@ -62,13 +62,13 @@ Open
 
 in your browser. Fill out the information to create your Journey admin account. In the next step, log in using the user name and password you just provided.
 
-In the admin area you can:
+From the admin area you can:
 - create, edit, and delete blog posts
 - edit your blog settings
 - edit your user settings
 
-### 2. Configuration
-By editing the "config.json" file you should change the following settings:
+### 2. Configure Journey
+By editing the "config.json" file in your Journey root directory, you'll change the following settings:
 
 **"HttpHostAndPort"**
 
