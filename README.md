@@ -74,13 +74,13 @@ By editing the "config.json" file in your Journey root directory, you'll change 
 
 This will change the port the Journey *http* server is listening on. If you don't want to bind to a particular ip address, writing just ":port number" as the value is fine (e.g. ":8081")
 
-NOTE: If you change the port to 80 (HTTP default) you will probably have to set your firewall to redirect from port 80 to your Journey port or run Journey as root.
+NOTE: If you want to change the port to 80 (HTTP default) you will probably have to set your firewall to redirect from port 80 to your Journey port or run Journey as root.
 
 **"HttpsHostAndPort"**
 
 This will change the port the Journey *https* server is listening on. If you don't want to bind to a particular ip address, writing just ":port number" as the value is fine (e.g. ":8082")
 
-NOTE: If you want change the port to 443 (HTTPS default) you will probably have to set your firewall to redirect from port 443 to your Journey port or run Journey as root.
+NOTE: If you want to change the port to 443 (HTTPS default) you will probably have to set your firewall to redirect from port 443 to your Journey port or run Journey as root.
 
 **"HttpsUsage"**
 
