@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->
+<!--[if !IE]><!-->
+<html lang="en">
+<!--<![endif]-->
+	<head>
+		<meta charset="utf-8">
+		<title>Journey - A minimal blog engine written in Go, compatible with Ghost themes</title>
+		<meta name="description" content="Worthy a Bootstrap-based, Responsive HTML5 Template">
+		<meta name="author" content="htmlcoder.me">
+
+		<!-- Mobile Meta -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<!-- Favicon -->
+		<link rel="shortcut icon" href="images/favicon.ico">
+
+		<!-- Web Fonts -->
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700,300&amp;subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+		<link href='http://fonts.googleapis.com/css?family=Raleway:700,400,300' rel='stylesheet' type='text/css'>
+
+		<!-- Bootstrap core CSS -->
+		<link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+
+		<!-- Font Awesome CSS -->
+		<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+
+		<!-- Plugins -->
+		<link href="css/animations.css" rel="stylesheet">
+
+		<!-- Worthy core CSS file -->
+		<link href="css/style.css" rel="stylesheet">
+
+		<!-- Custom css --> 
+		<link href="css/custom.css" rel="stylesheet">
+
+		<!-- Google Analytics --> 
+		<script>
+		  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+		  ga('create', 'UA-41134252-2', 'auto');
+		  ga('send', 'pageview');
+
+		</script>
+	</head>
+
+	<body class="no-trans">
+		<!-- scrollToTop -->
+		<!-- ================ -->
+		<div class="scrollToTop"><i class="icon-up-open-big"></i></div>
+
+		<!-- header start -->
+		<!-- ================ --> 
+		<header class="header fixed clearfix navbar navbar-fixed-top">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-4">
+
+					</div>
+					<div class="col-md-8">
+
+						<!-- header-right start -->
+						<!-- ================ -->
+						<div class="header-right clearfix">
+
+							<!-- main-navigation start -->
+							<!-- ================ -->
+							<div class="main-navigation animated">
+
+								<!-- navbar start -->
+								<!-- ================ -->
+								<nav class="navbar navbar-default" role="navigation">
+									<div class="container-fluid">
+
+										<!-- Toggle get grouped for better mobile display -->
+										<div class="navbar-header">
+											<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-1">
+												<span class="sr-only">Toggle navigation</span>
+												<span class="icon-bar"></span>
+												<span class="icon-bar"></span>
+												<span class="icon-bar"></span>
+											</button>
+										</div>
+
+										<!-- Collect the nav links, forms, and other content for toggling -->
+										<div class="collapse navbar-collapse scrollspy smooth-scroll" id="navbar-collapse-1">
+											<ul class="nav navbar-nav navbar-right">
+												<li class="active"><a href="#banner">Home</a></li>
+												<li><a href="#why">Why?</a></li>
+												<li><a href="#download">Download</a></li>
+												<li><a href="#install">Install</a></li>
+												<li><a href="#use">Use</a></li>
+												<li><a href="#github">Github</a></li>
+											</ul>
+										</div>
+
+									</div>
+								</nav>
+								<!-- navbar end -->
+
+							</div>
+							<!-- main-navigation end -->
+
+						</div>
+						<!-- header-right end -->
+
+					</div>
+				</div>
+			</div>
+		</header>
+		<!-- header end -->
+
+		<!-- banner start -->
+		<!-- ================ -->
+		<div id="banner" class="banner">
+			<div class="banner-image"></div>
+			<div class="banner-caption">
+				<div class="container">
+					<div class="row">
+						<div class="col-md-8 col-md-offset-2 object-non-visible" data-animation-effect="fadeIn">
+							<h1 class="text-center"><span>Journey</span><small>alpha</small></h1>
+							<p class="lead text-center">A minimal blog engine written in Go, compatible with Ghost themes.</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- banner end -->
+
+		<!-- section start -->
+		<!-- ================ -->
+		<div class="section clearfix object-non-visible grey" data-animation-effect="fadeIn">
+			<div class="container">
+				<h1 id="why"  class="text-center title">Why?</h1>
+				<div class="space"></div>
+				<div class="row">
+					<div class="col-sm-6">
+						<div class="media">
+							<div class="media-left">
+								<i class="fa fa-child"></i>
+							</div>
+							<div class="media-body">
+								<h4 class="media-heading">Easy to work with</h4>
+								<p>Create or update your posts from any place and any device. Simply point your browser to yourblogurl/admin, log in and start typing away!</p>
+							</div>
+						</div>
+						<div class="media">
+							<div class="media-left">
+								<i class="fa fa-paint-brush"></i>
+							</div>
+							<div class="media-body">
+								<h4 class="media-heading">Good stuff to use right away</h4>
+								<p>Use Ghost themes to design your blog. There's a great community of designers working on themes already. Check out the <a href="http://marketplace.ghost.org">Ghost Marketplace</a> to get an idea.</p>
+							</div>
+						</div>
+						<div class="media">
+							<div class="media-left">
+								<i class="fa fa-cloud"></i>
+							</div>
+							<div class="media-body">
+								<h4 class="media-heading">Good stuff to come</h4>
+								<p>Hopefully. Planning the future of Journey, high priority goals are: Plug-in support, MySQL and PostgreSQL support, and Google App Engine support.</p>
+							</div>
+						</div>
+						<div class="media">
+							<div class="media-left">
+								<i class="fa fa-lock"></i>
+							</div>
+							<div class="media-body">
+								<h4 class="media-heading">Easily secure</h4>
+								<p>Other blog engines require you to install Nginx or Apache just to enable Https. With Journey, simply enable Https in the configuration and start using it for development purposes. For production, simply replace the generated certificates with your own and you are ready to go.</p>
+							</div>
+						</div>
+					</div>
+					<div class="space visible-xs"></div>
+					<div class="col-sm-6">
+						<div class="media">
+							<div class="media-left">
+								<i class="fa fa-code"></i>
+							</div>
+							<div class="media-body">
+								<h4 class="media-heading">No dependencies</h4>
+								<p>Don't worry about installing the correct version of Node.js, Python, or anything else. Just download the <a href="https://www.github.com/kabukky/journey/releases">latest release</a> for your operating system and cpu architecture, then place the folder anywhere you like and run the Journey executable. Done!</p>
+							</div>
+						</div>
+						<div class="media">
+							<div class="media-left">
+								<i class="fa fa-leaf"></i>
+							</div>
+							<div class="media-body">
+								<h4 class="media-heading">Lightweight</h4>
+								<p>Journey eats very little of your precious memory. For example: Testing it on a MacBook, it takes about 3.5 MB of it and then happily carries on doing its job.</p>
+							</div>
+						</div>
+						<div class="media">
+							<div class="media-left">
+								<i class="fa fa-rocket"></i>
+							</div>
+							<div class="media-body">
+								<h4 class="media-heading">Fast</h4>
+								<p>Journey is still in an early stage of development. However, initial tests indicate that it is about 10 times faster at generating pages than Ghost running on Node.js.</p>
+							</div>
+						</div>
+						<div class="media">
+							<div class="media-left">
+								<i class="fa fa-server"></i>
+							</div>
+							<div class="media-body">
+								<h4 class="media-heading">Deployable anywhere</h4>
+								<p><a href="https://www.github.com/kabukky/journey/releases">Download the release package</a> for Linux (AMD64, i386, ARM), Mac OS X (AMD64, i386), or Windows (AMD64, i386) and start using Journey right away. Build Journey from <a href="https://www.github.com/kabukky/journey">source</a> to make it work on a multitude of other operating systems!</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- section end -->
+
+		<!-- section start -->
+		<!-- ================ -->
+		<div class="section clearfix object-non-visible" data-animation-effect="fadeIn">
+			<div class="container">
+				<h1 class="text-center title" id="download">Download</h1>
+				<div class="separator"></div>
+				<div class="row">
+					<div class="col-md-6 col-md-offset-3">
+						<p class="lead text-center">Head over to the the <a href="https://www.github.com/kabukky/journey/releases">releases page</a> and download the latest zip file corresponding to your operating system and cpu architecture.</p>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6 col-md-offset-3">
+						<p class="lead text-center">At the moment, Linux (AMD64, i386, ARM), Mac OS X (AMD64, i386), and Windows (AMD64, i386) packages are available. Others will follow. In the meantime, you can always <a href="https://www.github.com/kabukky/journey">compile from source</a>.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- section end -->
+
+		<!-- section start -->
+		<!-- ================ -->
+		<div class="section clearfix object-non-visible grey" data-animation-effect="fadeIn">
+			<div class="container">
+				<h1 class="text-center title" id="install">Install</h1>
+				<div class="separator"></div>
+				<div class="row">
+					<div class="col-md-6 col-md-offset-3">
+						<p class="lead text-center">It's simple, really: Extract the downloaded zip file anywhere you like. You may rename the extracted folder into "journey" if you so desire.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- section end -->
+
+		<!-- section start -->
+		<!-- ================ -->
+		<div class="section clearfix object-non-visible" data-animation-effect="fadeIn">
+			<div class="container">
+				<h1 class="text-center title" id="use">Use</h1>
+				<div class="separator"></div>
+				<div class="row">
+					<div class="col-md-6 use-box">
+						<h2 class="title text-center">1. Start Journey</h2>
+						<p class="lead text-center">Just start the executable from your terminal or double-click journey.exe when using Windows.<br> After that, open</p>
+						<p class="lead text-center"><code>http://127.0.0.1:8081</code></p>
+						<p class="lead text-center">in your browser to visit your Journey blog!</p>
+					</div>
+					<div class="col-md-6 use-box">
+						<h2 class="title text-center">2. Configure Journey</h2>
+						<p class="lead text-center">By editing the "config.json" file in your Journey root directory you'll change all the important settings.</p>
+						<p class="lead text-center">Here you can specify the http and https ports Journey should be listening on, turn https support on and off, and set the url your Journey blog should work with.</p>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6 use-box">
+						<h2 class="title text-center">3. Choose a theme</h2>
+						<p class="lead text-center">The Promenade theme comes with Journey to make it work out of the box, but it may very well not be your cup of tea.</p>
+						<p class="lead text-center">No problem! Just use another Ghost theme. Head over to the <a href="http://marketplace.ghost.org">Ghost Marketplace</a> to get an idea of what's out there.</p>
+					</div>
+					<div class="col-md-6 use-box">
+						<h2 class="title text-center">4. Write your own theme</h2>
+						<p class="lead text-center">Finally, you can always write your own theme or edit an exisiting one!</p>
+						<p class="lead text-center">Start by visiting <a href="http://themes.ghost.org">http://themes.ghost.org</a> and by reading one of the many tutorials that show you how to create a Ghost theme!</p>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-6 col-md-offset-3 use-detailed-box">
+						<p class="lead text-center">For detailed instuctions, read the <a href="https://github.com/kabukky/journey/wiki/Setting-up-Journey">Setting up Journey</a> Wiki page!</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- section end -->
+
+		<!-- section start -->
+		<!-- ================ -->
+		<div class="section clearfix object-non-visible grey" data-animation-effect="fadeIn">
+			<div class="container">
+				<h1 class="text-center title" id="github">GitHub</h1>
+				<div class="separator"></div>
+				<div class="row">
+					<div class="col-md-6 col-md-offset-3">
+						<p class="lead text-center">Journey is fully open source under the MIT license.</p>
+						<p class="lead text-center">Please fork and contribute on <a href="https://www.github.com/kabukky/journey">GitHub</a> :)</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<footer>
+			<div class="section clearfix">
+				<div class="container">
+					<div class="row">
+						<div class="col-md-6 col-md-offset-3">
+							<div class="text-center">
+								<ul class="social-links">
+									<li class="twitter"><a target="_blank" href="https://www.twitter.com/kabukky"><i class="fa fa-twitter"></i></a></li>
+									<li class="github"><a target="_blank" href="https://www.github.com/kabukky/journey"><i class="fa fa-github"></i></a></li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- .subfooter start -->
+			<!-- ================ -->
+			<div class="subfooter">
+				<div class="container">
+					<div class="row">
+						<div class="col-md-12">
+							<p class="text-center">Copyright © 2015 by <a target="_blank" href="http://www.github.com/kabukky">kabukky</a>. Based on <a href="http://www.htmlcoder.me/worthy-free-bootstrap-template">Worthy</a>.</p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- .subfooter end -->
+		</footer>
+		<!-- footer end -->
+
+		<!-- JavaScript files placed at the end of the document so the pages load faster
+		================================================== -->
+		<!-- Jquery and Bootstap core js files -->
+		<script type="text/javascript" src="plugins/jquery.min.js"></script>
+		<script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+
+		<!-- Modernizr javascript -->
+		<script type="text/javascript" src="plugins/modernizr.js"></script>
+
+		<!-- Isotope javascript -->
+		<script type="text/javascript" src="plugins/isotope/isotope.pkgd.min.js"></script>
+		
+		<!-- Backstretch javascript -->
+		<script type="text/javascript" src="plugins/jquery.backstretch.min.js"></script>
+
+		<!-- Appear javascript -->
+		<script type="text/javascript" src="plugins/jquery.appear.js"></script>
+
+		<!-- Initialization of Plugins -->
+		<script type="text/javascript" src="js/template.js"></script>
+
+		<!-- Custom Scripts -->
+		<script type="text/javascript" src="js/custom.js"></script>
+
+	</body>
+</html>
