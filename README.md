@@ -35,35 +35,12 @@ Then extract that zip file anywhere you like. You may also rename the extracted 
 Why not place it in your home folder? E.g. /home/your-user/journey/.
 
 ## Using Journey
-Please refer to the [Setting up Journey](https://github.com/kabukky/journey/wiki/Setting-up-Journey)Wiki page for detailed instructions on how to set up and use Journey.
+Please refer to the [Setting up Journey](https://github.com/kabukky/journey/wiki/Setting-up-Journey) Wiki page for detailed instructions on how to set up and use Journey.
 
 ## Troubleshooting
-### 1. "/lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.14' not found (required by journey)" when trying to start Journey
-Your Linux distribution ships with an older version of libc6. Try updating libc6.
+Please refer to the [FAQ](https://github.com/kabukky/journey/wiki/FAQ) Wiki page if exeperience any trouble running Journey.
 
-This may be tricky or not possible on Debian Wheezy stable. You can always try to compile Journey from source to link against your own version of libc6 (see below).
+If your issue isn't discussed there, please create a [New Issue](https://github.com/kabukky/journey/issues).
 
 ## Building from source
-Prerequisites
-- Install Go if it's not on your system already and set the correct GOPATH.
-- Install Git if it's not on your system already.
-
-Then run
-
-    go get github.com/kabukky/journey
-  
-This will download the source into $GOPATH/src/github.com/kabukky/journey.
-
-In your terminal, change into that journey folder and run
-
-    git submodule update --init --recursive
-
-This will download the default theme into $GOPATH/src/github.com/kabukky/journey/content/themes.
-
-Still in that journey folder run
-
-    go build
-
-This will build the Journey binary.
-
-You may copy the "journey" binary file, the "content" folder, the "built-in" folder and the "config.json" file to a new location (e. g. /home/your-user/journey/). Then run the Journey binary from that new location to start the server.
+Please refer to the [Building Journey from source](https://github.com/kabukky/journey/wiki/Building-Journey-from-source) Wiki page for instructions on how to build Journey from source.
