@@ -37,13 +37,13 @@
 	$("#file-input").fileinput();
 	$('#file-input').on('fileuploaded', function(event, data, previewId, index) {
 		$('#file-input').fileinput('reset');
-		angular.element($("[ng-controller='ModalCtrl']")).scope().$apply(function () {
-			var infiniteScrollFactory = angular.element($("[ng-controller='ModalCtrl']")).scope().shared.infiniteScrollFactory;
+		angular.element($("[ng-controller='ImageModalCtrl']")).scope().$apply(function () {
+			var infiniteScrollFactory = angular.element($("[ng-controller='ImageModalCtrl']")).scope().shared.infiniteScrollFactory;
 			infiniteScrollFactory.after = 1;
 			infiniteScrollFactory.busy = false;
 			infiniteScrollFactory.items = [];
 			infiniteScrollFactory.nextPage();
-			angular.element($("[ng-controller='ModalCtrl']")).scope().shared.selected = data.response[0];
+			angular.element($("[ng-controller='ImageModalCtrl']")).scope().shared.selected = data.response[0];
 		});
 	});
 </script>

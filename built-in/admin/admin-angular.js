@@ -174,10 +174,9 @@ adminApp.controller('EditCtrl', function ($scope, $routeParams, $http, $sce, $lo
   };
 });
 
-//modal for upload
-adminApp.controller('ModalCtrl', function ($scope, $modal, $http, sharingService, infiniteScrollFactory) {
-	$scope.shared = sharingService.shared;
-  $scope.shared.infiniteScrollFactory = new infiniteScrollFactory('/admin/api/images/');
+//modal for post options and help
+adminApp.controller('EmptyModalCtrl', function ($scope, $modal, $http, sharingService) {
+  $scope.shared = sharingService.shared;
   $scope.deleteCover = function() {
     $scope.shared.post.Image = '';
   };
@@ -185,64 +184,75 @@ adminApp.controller('ModalCtrl', function ($scope, $modal, $http, sharingService
     if (callingFrom == 'post-options') {
       var modalInstance = $modal.open({
         templateUrl: 'post-options-modal.tpl',
-        controller: 'ModalInstanceCtrl',
-        size: size,
-        resolve: {
-          images: function () {
-            return $scope.shared.infiniteScrollFactory.items;
-          }
-        }
+        controller: 'EmptyModalInstanceCtrl',
+        size: size
       });
     } else if (callingFrom == 'post-help') {
       var modalInstance = $modal.open({
         templateUrl: 'post-help-modal.tpl',
-        controller: 'ModalInstanceCtrl',
-        size: size,
-        resolve: {
-          images: function () {
-            return $scope.shared.infiniteScrollFactory.items;
-          }
-        }
-      });
-    } else { 
-      var modalInstance = $modal.open({
-        templateUrl: 'image-modal.tpl',
-        controller: 'ModalInstanceCtrl',
-        size: size,
-        resolve: {
-          images: function () {
-            return $scope.shared.infiniteScrollFactory.items;
-          }
-        }
-      });
-      modalInstance.result.then(function (selectedItem) {
-        if (callingFrom == 'post-image') {
-          $scope.selected = selectedItem;
-          $scope.shared.post.Markdown = $scope.shared.post.Markdown + '\n\n![](' + $scope.selected + ')\n\n';
-          $scope.change(); //we invoke the change function of CreateCtrl or EditCtrl to update the html view.
-        } else if (callingFrom == 'post-cover') {
-          $scope.selected = selectedItem;
-          $scope.shared.post.Image = $scope.selected;
-        } else if (callingFrom == 'blog-logo') {
-          $scope.selected = selectedItem;
-          $scope.shared.blog.Logo = $scope.selected;
-        } else if (callingFrom == 'blog-cover') {
-          $scope.selected = selectedItem;
-          $scope.shared.blog.Cover = $scope.selected;
-        } else if (callingFrom == 'user-image') {
-          $scope.selected = selectedItem;
-          $scope.shared.user.Image = $scope.selected;
-        } else if (callingFrom == 'user-cover') {
-          $scope.selected = selectedItem;
-          $scope.shared.user.Cover = $scope.selected;
-        }
+        controller: 'EmptyModalInstanceCtrl',
+        size: size
       });
     }
+    modalInstance.result.then(function (selectedItem) {
+      if (callingFrom == 'post-cover') {
+        $scope.selected = selectedItem;
+        $scope.shared.post.Image = $scope.selected;
+      }
+    });
   };
 });
 
-//modal windows instance
-adminApp.controller('ModalInstanceCtrl', function ($scope, $http, $modalInstance, images, sharingService) {
+//modal for image selection and upload
+adminApp.controller('ImageModalCtrl', function ($scope, $modal, $http, sharingService, infiniteScrollFactory) {
+	$scope.shared = sharingService.shared;
+  $scope.shared.infiniteScrollFactory = new infiniteScrollFactory('/admin/api/images/');
+  $scope.shared.infiniteScrollFactory.nextPage();
+  $scope.open = function (size, callingFrom) {
+    //image modal
+    var modalInstance = $modal.open({
+      templateUrl: 'image-modal.tpl',
+      controller: 'ImageModalInstanceCtrl',
+      size: size
+    });
+    modalInstance.result.then(function (selectedItem) {
+      if (callingFrom == 'post-image') {
+        $scope.selected = selectedItem;
+        $scope.shared.post.Markdown = $scope.shared.post.Markdown + '\n\n![](' + $scope.selected + ')\n\n';
+        $scope.change(); //we invoke the change function of CreateCtrl or EditCtrl to update the html view.
+      } else if (callingFrom == 'post-cover') {
+        $scope.selected = selectedItem;
+        $scope.shared.post.Image = $scope.selected;
+      } else if (callingFrom == 'blog-logo') {
+        $scope.selected = selectedItem;
+        $scope.shared.blog.Logo = $scope.selected;
+      } else if (callingFrom == 'blog-cover') {
+        $scope.selected = selectedItem;
+        $scope.shared.blog.Cover = $scope.selected;
+      } else if (callingFrom == 'user-image') {
+        $scope.selected = selectedItem;
+        $scope.shared.user.Image = $scope.selected;
+      } else if (callingFrom == 'user-cover') {
+        $scope.selected = selectedItem;
+        $scope.shared.user.Cover = $scope.selected;
+      }
+    });
+  };
+});
+
+//empty modal window instance
+adminApp.controller('EmptyModalInstanceCtrl', function ($scope, $http, $modalInstance, sharingService) {
+  $scope.shared = sharingService.shared;
+  $scope.ok = function () {
+    $modalInstance.close();
+  };
+  $scope.cancel = function () {
+    $modalInstance.dismiss('cancel');
+  };
+});
+
+//image modal window instance
+adminApp.controller('ImageModalInstanceCtrl', function ($scope, $http, $modalInstance, sharingService) {
   $scope.shared = sharingService.shared;
   $scope.shared.selected = $scope.shared.infiniteScrollFactory.items[0];
   $scope.ok = function () {

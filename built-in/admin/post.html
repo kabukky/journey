@@ -23,10 +23,10 @@
 			</div>
 			<div class="row">
 				<div class="col-sm-12" id="markdown-text-div">
-					<a ng-controller="ModalCtrl" ng-click="open('lg', 'post-image')">
+					<a ng-controller="ImageModalCtrl" ng-click="open('lg', 'post-image')">
 			 			<span class="glyphicon glyphicon-picture markdown-modal-button" aria-hidden="true"></span>
 			 		</a>
-			 		<a ng-controller="ModalCtrl" ng-click="open('lg', 'post-help')">
+			 		<a ng-controller="EmptyModalCtrl" ng-click="open('lg', 'post-help')">
 			 			<span class="glyphicon glyphicon-question-sign markdown-modal-button" aria-hidden="true"></span>
 					</a>
 					<textarea class="textarea-autosize" id="markdown-textarea" rows="15" ng-model="shared.post.Markdown" ng-change="change()">{shared.post.Markdown}</textarea>
@@ -58,7 +58,7 @@
 				<input bs-switch ng-model="shared.post.IsPublished" type="checkbox" class="post-checkbox" data-label-text="Publish" data-off-text="NO" data-on-text="YES" data-on-color="success" data-off-color="danger" data-size="normal">
 			</form>
 			<form class="navbar-form navbar-left" role="form">
-				<button type="button" class="btn btn-default" ng-controller="ModalCtrl" ng-click="open('lg', 'post-options')">
+				<button type="button" class="btn btn-default" ng-controller="EmptyModalCtrl" ng-click="open('lg', 'post-options')">
 		 			<span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Options
 				</button>
 			</form>

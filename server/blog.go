@@ -4,12 +4,10 @@ import (
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/filenames"
 	"github.com/kabukky/journey/templates"
-	"github.com/kabukky/journey/timer"
 	"net/http"
 	"path/filepath"
 	"regexp"
 	"strconv"
-	"time"
 )
 
 var validPostPath = regexp.MustCompile("^/([\\p{L}\\p{M}\\p{N}-]*)/?$")
@@ -18,7 +16,6 @@ var validAuthorPath = regexp.MustCompile("^/author/([\\p{L}\\p{M}\\p{N}-]*)(/pag
 var validTagPath = regexp.MustCompile("^/tag/([\\p{L}\\p{M}\\p{N}-]*)(/page|/rss)?/?(\\d+)?/?$")
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	defer timer.Track(time.Now(), "index generation")
 	m := validIndexPath.FindStringSubmatch(r.URL.Path)
 	if m == nil {
 		http.Redirect(w, r, "/", http.StatusFound)
@@ -42,7 +39,6 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func authorHandler(w http.ResponseWriter, r *http.Request) {
-	defer timer.Track(time.Now(), "author generation")
 	m := validAuthorPath.FindStringSubmatch(r.URL.Path)
 	if m == nil {
 		http.Redirect(w, r, "/", http.StatusFound)
@@ -78,7 +74,6 @@ func authorHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func tagHandler(w http.ResponseWriter, r *http.Request) {
-	defer timer.Track(time.Now(), "tag generation")
 	m := validTagPath.FindStringSubmatch(r.URL.Path)
 	if m == nil {
 		http.Redirect(w, r, "/", http.StatusFound)
@@ -114,7 +109,6 @@ func tagHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func postHandler(w http.ResponseWriter, r *http.Request) {
-	defer timer.Track(time.Now(), "post generation")
 	m := validPostPath.FindStringSubmatch(r.URL.Path)
 	if m == nil {
 		http.Redirect(w, r, "/", http.StatusFound)

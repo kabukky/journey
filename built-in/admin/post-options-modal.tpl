@@ -13,7 +13,7 @@
             <div class="form-group">
                 <label for="post-cover" class="col-sm-2 control-label">Cover</label>
                 <div class="col-sm-10">
-                    <a ng-controller="ModalCtrl" ng-click="open('lg', 'post-cover')"><img class="img-settings img-thumbnail img-settings" id="post-cover" src="{{shared.post.Image}}" alt="{{shared.post.Image}}" /></a> <a class="text-danger" id="post-cover-delete" ng-controller="ModalCtrl" ng-click="deleteCover()"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Remove</a>
+                    <a ng-controller="ImageModalCtrl" ng-click="open('lg', 'post-cover')"><img class="img-settings img-thumbnail img-settings" id="post-cover" src="{{shared.post.Image}}" alt="{{shared.post.Image}}" /></a> <a class="text-danger" id="post-cover-delete" ng-controller="EmptyModalCtrl" ng-click="deleteCover()"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Remove</a>
                 </div>
             </div>
             <div class="form-group">
