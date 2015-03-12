@@ -10,17 +10,10 @@ import (
 	"log"
 	"net/http"
 	"runtime"
-	"strings"
 )
 
-// Global httpsPort to use in the https redirect function.
-var httpsPort = ""
-
-// Global url to use in the https redirect function.
-var blogUrl = ""
-
 func httpsRedirect(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "https://"+blogUrl+httpsPort+r.RequestURI, http.StatusMovedPermanently)
+	http.Redirect(w, r, "https://"+configuration.Config.HttpsUrl+r.RequestURI, http.StatusMovedPermanently)
 	return
 }
 
@@ -29,7 +22,7 @@ func checkHttpsCertificates() {
 	err := certificates.Check(filenames.HttpsCertFilename, filenames.HttpsKeyFilename)
 	if err != nil {
 		log.Println("Warning: couldn't load https certs. Generating new ones. Replace " + filenames.HttpsCertFilename + " and " + filenames.HttpsKeyFilename + " with your own certificates as soon as possible!")
-		err := certificates.Generate(filenames.HttpsCertFilename, filenames.HttpsKeyFilename, configuration.Config.Url)
+		err := certificates.Generate(filenames.HttpsCertFilename, filenames.HttpsKeyFilename, configuration.Config.HttpsUrl)
 		if err != nil {
 			log.Fatal("Error: Couldn't create https certificates.")
 			return
@@ -55,22 +48,6 @@ func main() {
 	if err != nil {
 		log.Fatal("Error: Couldn't compile templates: " + err.Error())
 		return
-	}
-
-	// Variables for HTTPS Server
-	// Assign global blogUrl for httpsRedirect()
-	// Make sure there is no post in blogUrl (we only want the host)
-	hostAndPortComponents := strings.Split(configuration.Config.Url, ":")
-	blogUrl = hostAndPortComponents[0]
-	// Assign global httpsPort for httpsRedirect()
-	// Make sure there is no host in httpsPort (we only want the port)
-	hostAndPortComponents = strings.Split(configuration.Config.HttpsHostAndPort, ":")
-	httpsPort = hostAndPortComponents[len(hostAndPortComponents)-1]
-	// If port is default https port (443), leave httpsPort empty
-	if httpsPort == "443" {
-		httpsPort = ""
-	} else { // Else prepend ":" to httpsPort (will be used in httpsRedirect())
-		httpsPort = ":" + httpsPort
 	}
 
 	// HTTP(S) Server

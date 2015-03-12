@@ -2,9 +2,11 @@ package configuration
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/kabukky/journey/filenames"
 	"io/ioutil"
 	"log"
+	"reflect"
 	"strings"
 )
 
@@ -13,7 +15,8 @@ type Configuration struct {
 	HttpHostAndPort  string
 	HttpsHostAndPort string
 	HttpsUsage       string
-	Url              string
+	HttpUrl          string
+	HttpsUrl         string
 }
 
 func NewConfiguration() *Configuration {
@@ -56,21 +59,44 @@ func (c *Configuration) load() error {
 		return err
 	}
 	// Make sure the url is in the right format
-	if strings.HasPrefix(c.Url, "http://") {
-		c.Url = strings.Replace(c.Url, "http://", "", 1)
-	} else if strings.HasPrefix(c.Url, "https://") {
-		c.Url = strings.Replace(c.Url, "https://", "", 1)
+	if strings.HasPrefix(c.HttpsUrl, "http://") {
+		c.HttpsUrl = strings.Replace(c.HttpsUrl, "http://", "", 1)
+	} else if strings.HasPrefix(c.HttpsUrl, "https://") {
+		c.HttpsUrl = strings.Replace(c.HttpsUrl, "https://", "", 1)
 	}
 	// Make sure there is no trailing slash at the end of the url
-	if strings.HasSuffix(c.Url, "/") {
-		c.Url = c.Url[0 : len(c.Url)-1]
+	if strings.HasSuffix(c.HttpsUrl, "/") {
+		c.HttpsUrl = c.HttpsUrl[0 : len(c.HttpsUrl)-1]
 	}
+	// Make sure the https url is in the right format
+	if strings.HasPrefix(c.HttpsUrl, "http://") {
+		c.HttpsUrl = strings.Replace(c.HttpsUrl, "http://", "", 1)
+	} else if strings.HasPrefix(c.HttpsUrl, "https://") {
+		c.HttpsUrl = strings.Replace(c.HttpsUrl, "https://", "", 1)
+	}
+	// Make sure there is no trailing slash at the end of the url
+	if strings.HasSuffix(c.HttpsUrl, "/") {
+		c.HttpsUrl = c.HttpsUrl[0 : len(c.HttpsUrl)-1]
+	}
+	// Check if all fields are filled out
+	cReflected := reflect.ValueOf(*c)
+	for i := 0; i < cReflected.NumField(); i++ {
+		if cReflected.Field(i).Interface() == "" {
+			log.Println("Error: " + filenames.ConfigFilename + " corrupted. Did you fill out all of the fields?")
+			return errors.New("Error: Configuration corrupted.")
+		}
+	}
+	// Save the changed config - NOT doing that for now.
+	//err = c.save()
+	//if err != nil {
+	//	return err
+	//}
 	return nil
 }
 
 func (c *Configuration) create() error {
 	// TODO: Change default port
-	c = &Configuration{HttpHostAndPort: ":8084", HttpsHostAndPort: ":8085", HttpsUsage: "None", Url: "127.0.0.1:8084"}
+	c = &Configuration{HttpHostAndPort: ":8084", HttpsHostAndPort: ":8085", HttpsUsage: "None", HttpUrl: "127.0.0.1:8084", HttpsUrl: "127.0.0.1:8085"}
 	err := c.save()
 	if err != nil {
 		log.Println("Error: couldn't create " + filenames.ConfigFilename)
