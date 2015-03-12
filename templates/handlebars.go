@@ -108,7 +108,7 @@ func pagesFunc(helper *Helper, values *structure.RequestData) []byte {
 	var count int64
 	var err error
 	if values.CurrentTemplate == 0 { // index
-		count = values.Blog.PostCount	
+		count = values.Blog.PostCount
 	} else if values.CurrentTemplate == 2 { // tag
 		count, err = database.RetrieveNumberOfPostsByTag(values.CurrentTag.Id)
 		if err != nil {

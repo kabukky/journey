@@ -194,7 +194,8 @@ func Generate() error {
 		return err
 	}
 	// Compile all template files
-	// First clear compiledTemplates map (theme could have been changed) TODO: Should this be implemented?
+	// First clear compiledTemplates map (theme could have been changed)
+	compiledTemplates.m = make(map[string]*Helper)
 	currentThemePath := filepath.Join(filenames.ThemesFilepath, *activeTheme)
 	err = filepath.Walk(currentThemePath, inspectTemplateFile)
 	if err != nil {
