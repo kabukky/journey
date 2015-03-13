@@ -15,7 +15,7 @@ type Configuration struct {
 	HttpHostAndPort  string
 	HttpsHostAndPort string
 	HttpsUsage       string
-	HttpUrl          string
+	Url              string
 	HttpsUrl         string
 }
 
@@ -82,7 +82,7 @@ func (c *Configuration) load() error {
 	cReflected := reflect.ValueOf(*c)
 	for i := 0; i < cReflected.NumField(); i++ {
 		if cReflected.Field(i).Interface() == "" {
-			log.Println("Error: " + filenames.ConfigFilename + " corrupted. Did you fill out all of the fields?")
+			log.Println("Error: " + filenames.ConfigFilename + " is corrupted. Did you fill out all of the fields?")
 			return errors.New("Error: Configuration corrupted.")
 		}
 	}
@@ -96,7 +96,7 @@ func (c *Configuration) load() error {
 
 func (c *Configuration) create() error {
 	// TODO: Change default port
-	c = &Configuration{HttpHostAndPort: ":8084", HttpsHostAndPort: ":8085", HttpsUsage: "None", HttpUrl: "127.0.0.1:8084", HttpsUrl: "127.0.0.1:8085"}
+	c = &Configuration{HttpHostAndPort: ":8084", HttpsHostAndPort: ":8085", HttpsUsage: "None", Url: "127.0.0.1:8084", HttpsUrl: "127.0.0.1:8085"}
 	err := c.save()
 	if err != nil {
 		log.Println("Error: couldn't create " + filenames.ConfigFilename)

@@ -418,7 +418,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 						http.Error(w, err.Error(), http.StatusInternalServerError)
 						return
 					}
-					tempBlog := structure.Blog{Url: []byte(configuration.Config.HttpUrl), Title: []byte(json.Title), Description: []byte(json.Description), Logo: []byte(json.Logo), Cover: []byte(json.Cover), AssetPath: []byte("/assets/"), PostCount: blog.PostCount, PostsPerPage: json.PostsPerPage, ActiveTheme: json.ActiveTheme}
+					tempBlog := structure.Blog{Url: []byte(configuration.Config.Url), Title: []byte(json.Title), Description: []byte(json.Description), Logo: []byte(json.Logo), Cover: []byte(json.Cover), AssetPath: []byte("/assets/"), PostCount: blog.PostCount, PostsPerPage: json.PostsPerPage, ActiveTheme: json.ActiveTheme}
 					err = methods.UpdateBlog(&tempBlog)
 					// Check if active theme setting has been changed, if so, generate templates from new theme
 					if tempBlog.ActiveTheme != blog.ActiveTheme {

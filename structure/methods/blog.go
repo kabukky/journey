@@ -23,7 +23,7 @@ func GenerateBlog() (*structure.Blog, error) {
 		return nil, err
 	}
 	// Add parameters that are not saved in db
-	blog.Url = []byte(configuration.Config.HttpUrl)
+	blog.Url = []byte(configuration.Config.Url)
 	blog.AssetPath = assetPath
 	return blog, nil
 }
