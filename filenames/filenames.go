@@ -5,6 +5,7 @@ import (
 )
 
 var ConfigFilename = "config.json"
+var LogFilename = "log.txt"
 var DatabaseFilename = filepath.Join("content", "data", "journey.db")
 var ThemesFilepath = filepath.Join("content", "themes")
 var ImagesFilepath = filepath.Join("content", "images")

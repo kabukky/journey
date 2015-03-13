@@ -9,6 +9,7 @@ import (
 	"github.com/kabukky/journey/templates"
 	"log"
 	"net/http"
+	"os"
 	"runtime"
 )
 
@@ -33,11 +34,18 @@ func checkHttpsCertificates() {
 func main() {
 	// Setup
 	runtime.GOMAXPROCS(runtime.NumCPU()) // Maybe not needed
+	// Write log to file
+	f, err := os.OpenFile(filenames.LogFilename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatal("Error: Counldn't open log file: " + err.Error())
+	}
+	defer f.Close()
+	log.SetOutput(f)
 
 	// Configuration is read from config.json by loading the configuration package
 
 	// Database
-	err := database.Initialize()
+	err = database.Initialize()
 	if err != nil {
 		log.Fatal("Error: Couldn't initialize database: " + err.Error())
 		return
