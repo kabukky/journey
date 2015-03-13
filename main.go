@@ -33,14 +33,15 @@ func checkHttpsCertificates() {
 
 func main() {
 	// Setup
-	runtime.GOMAXPROCS(runtime.NumCPU()) // Maybe not needed
+	// GOMAXPROCS - Maybe not needed
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	// Write log to file
-	f, err := os.OpenFile(filenames.LogFilename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	logFile, err := os.OpenFile(filenames.LogFilename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatal("Error: Counldn't open log file: " + err.Error())
 	}
-	defer f.Close()
-	log.SetOutput(f)
+	defer logFile.Close()
+	log.SetOutput(logFile)
 
 	// Configuration is read from config.json by loading the configuration package
 
