@@ -57,11 +57,11 @@ func ShowAuthorTemplate(writer http.ResponseWriter, slug string, page int) error
 	if err != nil {
 		return err
 	}
-	author, err := database.RetrieveAuthorBySlug(slug)
+	author, err := database.RetrieveUserBySlug(slug)
 	if err != nil {
 		return err
 	}
-	posts, err := database.RetrievePostsByAuthor(author.Id, blog.PostsPerPage, (blog.PostsPerPage * postIndex))
+	posts, err := database.RetrievePostsByUser(author.Id, blog.PostsPerPage, (blog.PostsPerPage * postIndex))
 	if err != nil {
 		return err
 	}

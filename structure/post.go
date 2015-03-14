@@ -16,6 +16,6 @@ type Post struct {
 	IsPublished bool
 	Date        time.Time
 	Tags        []Tag
-	Author      *Author
+	Author      *User
 	Image       []byte
 }

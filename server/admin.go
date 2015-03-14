@@ -47,7 +47,7 @@ type JsonBlog struct {
 	PostsPerPage int64
 }
 
-type JsonAuthor struct {
+type JsonUser struct {
 	Id               int64
 	Name             string
 	Email            string
@@ -106,8 +106,8 @@ func registrationHandler(w http.ResponseWriter, r *http.Request) {
 					http.Redirect(w, r, "/admin/", 302)
 					return
 				}
-				author := structure.Author{Name: []byte(name), Slug: slug.Generate(name, "users"), Email: []byte(email), Image: []byte(filenames.DefaultUserImageFilename), Cover: []byte(filenames.DefaultUserCoverFilename)}
-				err = methods.SaveAuthor(&author, hashedPassword, 1)
+				user := structure.User{Name: []byte(name), Slug: slug.Generate(name, "users"), Email: []byte(email), Image: []byte(filenames.DefaultUserImageFilename), Cover: []byte(filenames.DefaultUserCoverFilename), Role: 4}
+				err = methods.SaveUser(&user, hashedPassword, 1)
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
@@ -165,7 +165,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		userName := authentication.GetUserName(r)
 		if userName != "" {
-			author, err := database.RetrieveAuthorByName([]byte(userName))
+			author, err := database.RetrieveUserByName([]byte(userName))
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -238,7 +238,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 					} else {
 						postSlug = slug.Generate(json.Title, "posts")
 					}
-					post := structure.Post{Title: []byte(json.Title), Slug: postSlug, Markdown: []byte(json.Markdown), Html: conversion.GenerateHtmlFromMarkdown([]byte(json.Markdown)), IsFeatured: json.IsFeatured, IsPage: json.IsPage, IsPublished: json.IsPublished, Image: []byte(json.Image), Date: time.Now(), Tags: methods.GenerateTagsFromCommaString(json.Tags), Author: &structure.Author{Id: userId}}
+					post := structure.Post{Title: []byte(json.Title), Slug: postSlug, Markdown: []byte(json.Markdown), Html: conversion.GenerateHtmlFromMarkdown([]byte(json.Markdown)), IsFeatured: json.IsFeatured, IsPage: json.IsPage, IsPublished: json.IsPublished, Image: []byte(json.Image), Date: time.Now(), Tags: methods.GenerateTagsFromCommaString(json.Tags), Author: &structure.User{Id: userId}}
 					err = methods.SavePost(&post)
 					if err != nil {
 						http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -268,7 +268,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 					} else {
 						postSlug = post.Slug
 					}
-					*post = structure.Post{Id: json.Id, Title: []byte(json.Title), Slug: postSlug, Markdown: []byte(json.Markdown), Html: conversion.GenerateHtmlFromMarkdown([]byte(json.Markdown)), IsFeatured: json.IsFeatured, IsPage: json.IsPage, IsPublished: json.IsPublished, Image: []byte(json.Image), Date: time.Now(), Tags: methods.GenerateTagsFromCommaString(json.Tags), Author: &structure.Author{Id: userId}}
+					*post = structure.Post{Id: json.Id, Title: []byte(json.Title), Slug: postSlug, Markdown: []byte(json.Markdown), Html: conversion.GenerateHtmlFromMarkdown([]byte(json.Markdown)), IsFeatured: json.IsFeatured, IsPage: json.IsPage, IsPublished: json.IsPublished, Image: []byte(json.Image), Date: time.Now(), Tags: methods.GenerateTagsFromCommaString(json.Tags), Author: &structure.User{Id: userId}}
 					err = methods.UpdatePost(post)
 					if err != nil {
 						http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -450,12 +450,12 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 						http.Error(w, "You don't have permission to access this data.", http.StatusForbidden)
 						return
 					}
-					author, err := database.RetrieveAuthor(id)
+					author, err := database.RetrieveUser(id)
 					if err != nil {
 						http.Error(w, err.Error(), http.StatusInternalServerError)
 						return
 					}
-					authorJson := JsonAuthor{Id: author.Id, Name: string(author.Name), Email: string(author.Email), Image: string(author.Image), Cover: string(author.Cover), Bio: string(author.Bio), Website: string(author.Website), Location: string(author.Location)}
+					authorJson := JsonUser{Id: author.Id, Name: string(author.Name), Email: string(author.Email), Image: string(author.Image), Cover: string(author.Cover), Bio: string(author.Bio), Website: string(author.Website), Location: string(author.Location)}
 					json, err := json.Marshal(authorJson)
 					if err != nil {
 						http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -465,7 +465,7 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 					w.Write(json)
 				case "PATCH":
 					decoder := json.NewDecoder(r.Body)
-					var json JsonAuthor
+					var json JsonUser
 					err := decoder.Decode(&json)
 					if err != nil {
 						http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -479,8 +479,8 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 						http.Error(w, "Email needs to be included.", http.StatusInternalServerError)
 						return
 					}
-					author := structure.Author{Id: json.Id, Email: []byte(json.Email), Image: []byte(json.Image), Cover: []byte(json.Cover), Bio: []byte(json.Bio), Website: []byte(json.Website), Location: []byte(json.Location)}
-					err = methods.UpdateAuthor(&author, userId)
+					author := structure.User{Id: json.Id, Email: []byte(json.Email), Image: []byte(json.Image), Cover: []byte(json.Cover), Bio: []byte(json.Bio), Website: []byte(json.Website), Location: []byte(json.Location)}
+					err = methods.UpdateUser(&author, userId)
 					if err != nil {
 						http.Error(w, err.Error(), http.StatusInternalServerError)
 						return

@@ -7,6 +7,7 @@ import (
 
 const stmtInsertPost = "INSERT INTO posts (id, uuid, title, slug, markdown, html, featured, page, status, image, author_id, created_at, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 const stmtInsertUser = "INSERT INTO users (id, uuid, name, slug, password, email, image, cover, created_at, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+const stmtInsertRoleUser = "INSERT INTO roles_users (id, role_id, user_id) VALUES (?, ?, ?)"
 const stmtInsertTag = "INSERT INTO tags (id, uuid, name, slug, created_at, created_by) VALUES (?, ?, ?, ?, ?, ?)"
 const stmtInsertPostTag = "INSERT INTO posts_tags (id, post_id, tag_id) VALUES (?, ?, ?)"
 
@@ -33,13 +34,32 @@ func InsertPost(title []byte, slug string, markdown []byte, html []byte, feature
 	return postId, writeDB.Commit()
 }
 
-func InsertUser(name []byte, slug string, password string, email []byte, image []byte, cover []byte, created_at time.Time, created_by int64) error {
+func InsertUser(name []byte, slug string, password string, email []byte, image []byte, cover []byte, created_at time.Time, created_by int64) (int64, error) {
+	writeDB, err := readDB.Begin()
+	if err != nil {
+		writeDB.Rollback()
+		return 0, err
+	}
+	result, err := writeDB.Exec(stmtInsertUser, nil, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), name, slug, password, email, image, cover, created_at, created_by)
+	if err != nil {
+		writeDB.Rollback()
+		return 0, err
+	}
+	userId, err := result.LastInsertId()
+	if err != nil {
+		writeDB.Rollback()
+		return 0, err
+	}
+	return userId, writeDB.Commit()
+}
+
+func InsertRoleUser(role_id int, user_id int64) error {
 	writeDB, err := readDB.Begin()
 	if err != nil {
 		writeDB.Rollback()
 		return err
 	}
-	_, err = writeDB.Exec(stmtInsertUser, nil, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), name, slug, password, email, image, cover, created_at, created_by)
+	_, err = writeDB.Exec(stmtInsertRoleUser, nil, role_id, user_id)
 	if err != nil {
 		writeDB.Rollback()
 		return err

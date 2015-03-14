@@ -1,6 +1,6 @@
 package structure
 
-type Author struct {
+type User struct {
 	Id       int64
 	Name     []byte
 	Slug     string
@@ -10,4 +10,5 @@ type Author struct {
 	Bio      []byte
 	Website  []byte
 	Location []byte
+	Role     int //1 = Administrator, 2 = Editor, 3 = Author, 4 = Owner
 }

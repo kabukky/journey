@@ -27,7 +27,7 @@ func paginationDotTotalFunc(helper *Helper, values *structure.RequestData) []byt
 	if values.CurrentTemplate == 0 { // index
 		return []byte(strconv.FormatInt(values.Blog.PostCount, 10))
 	} else if values.CurrentTemplate == 3 { // author
-		count, err := database.RetrieveNumberOfPostsByAuthor(values.Posts[values.CurrentPostIndex].Author.Id)
+		count, err := database.RetrieveNumberOfPostsByUser(values.Posts[values.CurrentPostIndex].Author.Id)
 		if err != nil {
 			log.Println("couldn't get number of posts", err.Error())
 			return []byte{}
@@ -87,7 +87,7 @@ func nextFunc(helper *Helper, values *structure.RequestData) []byte {
 			return []byte{}
 		}
 	} else if values.CurrentTemplate == 3 { // author
-		count, err = database.RetrieveNumberOfPostsByAuthor(values.Posts[values.CurrentPostIndex].Author.Id)
+		count, err = database.RetrieveNumberOfPostsByUser(values.Posts[values.CurrentPostIndex].Author.Id)
 		if err != nil {
 			log.Println("couldn't get number of posts for author", err.Error())
 			return []byte{}
@@ -116,7 +116,7 @@ func pagesFunc(helper *Helper, values *structure.RequestData) []byte {
 			return []byte{}
 		}
 	} else if values.CurrentTemplate == 3 { // author
-		count, err = database.RetrieveNumberOfPostsByAuthor(values.Posts[values.CurrentPostIndex].Author.Id)
+		count, err = database.RetrieveNumberOfPostsByUser(values.Posts[values.CurrentPostIndex].Author.Id)
 		if err != nil {
 			log.Println("couldn't get number of posts for author", err.Error())
 			return []byte{}
@@ -170,7 +170,7 @@ func page_urlFunc(helper *Helper, values *structure.RequestData) []byte {
 					return []byte{}
 				}
 			} else if values.CurrentTemplate == 3 { // author
-				count, err = database.RetrieveNumberOfPostsByAuthor(values.Posts[values.CurrentPostIndex].Author.Id)
+				count, err = database.RetrieveNumberOfPostsByUser(values.Posts[values.CurrentPostIndex].Author.Id)
 				if err != nil {
 					log.Println("couldn't get number of posts for author", err.Error())
 					return []byte{}
@@ -682,7 +682,7 @@ func paginationFunc(helper *Helper, values *structure.RequestData) []byte {
 			return []byte{}
 		}
 	} else if values.CurrentTemplate == 3 { // author
-		count, err = database.RetrieveNumberOfPostsByAuthor(values.Posts[values.CurrentPostIndex].Author.Id)
+		count, err = database.RetrieveNumberOfPostsByUser(values.Posts[values.CurrentPostIndex].Author.Id)
 		if err != nil {
 			log.Println("couldn't get number of posts for author", err.Error())
 			return []byte{}

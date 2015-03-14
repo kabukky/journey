@@ -6,11 +6,11 @@ import (
 )
 
 const stmtRetrievePostsCount = "SELECT count(*) FROM posts WHERE page = 0 AND status = 'published'"
-const stmtRetrievePostsCountByAuthor = "SELECT count(*) FROM posts WHERE page = 0 AND status = 'published' AND author_id = ?"
+const stmtRetrievePostsCountByUser = "SELECT count(*) FROM posts WHERE page = 0 AND status = 'published' AND author_id = ?"
 const stmtRetrievePostsCountByTag = "SELECT count(*) FROM posts, posts_tags WHERE posts_tags.post_id = posts.id AND posts_tags.tag_id = ? AND page = 0 AND status = 'published'"
 const stmtRetrievePostsForIndex = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, image, author_id, created_at FROM posts WHERE page = 0 AND status = 'published' ORDER BY id DESC LIMIT ? OFFSET ?"
 const stmtRetrievePostsForApi = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, image, author_id, created_at FROM posts ORDER BY id DESC LIMIT ? OFFSET ?"
-const stmtRetrievePostsByAuthor = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, image, author_id, created_at FROM posts WHERE page = 0 AND status = 'published' AND author_id = ? ORDER BY id DESC LIMIT ? OFFSET ?"
+const stmtRetrievePostsByUser = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, image, author_id, created_at FROM posts WHERE page = 0 AND status = 'published' AND author_id = ? ORDER BY id DESC LIMIT ? OFFSET ?"
 const stmtRetrievePostsByTag = "SELECT posts.id, posts.uuid, posts.title, posts.slug, posts.markdown, posts.html, posts.featured, posts.page, posts.status, posts.image, posts.author_id, posts.created_at FROM posts, posts_tags WHERE posts_tags.post_id = posts.id AND posts_tags.tag_id = ? AND page = 0 AND status = 'published' ORDER BY posts.id DESC LIMIT ? OFFSET ?"
 const stmtRetrievePostById = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, image, author_id, created_at FROM posts WHERE id = ?"
 const stmtRetrievePostBySlug = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, image, author_id, created_at FROM posts WHERE slug = ?"
@@ -37,9 +37,9 @@ func RetrievePostBySlug(slug string) (*structure.Post, error) {
 	return extractPost(row)
 }
 
-func RetrievePostsByAuthor(author_id int64, limit int64, offset int64) ([]structure.Post, error) {
+func RetrievePostsByUser(user_id int64, limit int64, offset int64) ([]structure.Post, error) {
 	// Retrieve posts
-	rows, err := readDB.Query(stmtRetrievePostsByAuthor, author_id, limit, offset)
+	rows, err := readDB.Query(stmtRetrievePostsByUser, user_id, limit, offset)
 	defer rows.Close()
 	if err != nil {
 		return nil, err
@@ -97,9 +97,9 @@ func extractPosts(rows *sql.Rows) (*[]structure.Post, error) {
 	posts := make([]structure.Post, 0)
 	for rows.Next() {
 		post := structure.Post{}
-		var authorId int64
+		var userId int64
 		var status string
-		err := rows.Scan(&post.Id, &post.Uuid, &post.Title, &post.Slug, &post.Markdown, &post.Html, &post.IsFeatured, &post.IsPage, &status, &post.Image, &authorId, &post.Date)
+		err := rows.Scan(&post.Id, &post.Uuid, &post.Title, &post.Slug, &post.Markdown, &post.Html, &post.IsFeatured, &post.IsPage, &status, &post.Image, &userId, &post.Date)
 		if err != nil {
 			return nil, err
 		}
@@ -109,8 +109,8 @@ func extractPosts(rows *sql.Rows) (*[]structure.Post, error) {
 		} else {
 			post.IsPublished = false
 		}
-		// Retrieve author
-		post.Author, err = RetrieveAuthor(authorId)
+		// Retrieve user
+		post.Author, err = RetrieveUser(userId)
 		if err != nil {
 			return nil, err
 		}
@@ -126,9 +126,9 @@ func extractPosts(rows *sql.Rows) (*[]structure.Post, error) {
 
 func extractPost(row *sql.Row) (*structure.Post, error) {
 	post := structure.Post{}
-	var authorId int64
+	var userId int64
 	var status string
-	err := row.Scan(&post.Id, &post.Uuid, &post.Title, &post.Slug, &post.Markdown, &post.Html, &post.IsFeatured, &post.IsPage, &status, &post.Image, &authorId, &post.Date)
+	err := row.Scan(&post.Id, &post.Uuid, &post.Title, &post.Slug, &post.Markdown, &post.Html, &post.IsFeatured, &post.IsPage, &status, &post.Image, &userId, &post.Date)
 	if err != nil {
 		return nil, err
 	}
@@ -138,8 +138,8 @@ func extractPost(row *sql.Row) (*structure.Post, error) {
 	} else {
 		post.IsPublished = false
 	}
-	// Retrieve author
-	post.Author, err = RetrieveAuthor(authorId)
+	// Retrieve user
+	post.Author, err = RetrieveUser(userId)
 	if err != nil {
 		return nil, err
 	}
@@ -162,10 +162,10 @@ func RetrieveNumberOfPosts() (int64, error) {
 	return count, nil
 }
 
-func RetrieveNumberOfPostsByAuthor(author_id int64) (int64, error) {
+func RetrieveNumberOfPostsByUser(user_id int64) (int64, error) {
 	var count int64
 	// Retrieve number of posts
-	row := readDB.QueryRow(stmtRetrievePostsCountByAuthor, author_id)
+	row := readDB.QueryRow(stmtRetrievePostsCountByUser, user_id)
 	err := row.Scan(&count)
 	if err != nil {
 		return 0, err
@@ -184,37 +184,37 @@ func RetrieveNumberOfPostsByTag(tag_id int64) (int64, error) {
 	return count, nil
 }
 
-func RetrieveAuthor(id int64) (*structure.Author, error) {
-	author := structure.Author{}
-	// Retrieve author
+func RetrieveUser(id int64) (*structure.User, error) {
+	user := structure.User{}
+	// Retrieve user
 	row := readDB.QueryRow(stmtRetrieveUserById, id)
-	err := row.Scan(&author.Id, &author.Name, &author.Slug, &author.Email, &author.Image, &author.Cover, &author.Bio, &author.Website, &author.Location)
+	err := row.Scan(&user.Id, &user.Name, &user.Slug, &user.Email, &user.Image, &user.Cover, &user.Bio, &user.Website, &user.Location)
 	if err != nil {
 		return nil, err
 	}
-	return &author, nil
+	return &user, nil
 }
 
-func RetrieveAuthorBySlug(slug string) (*structure.Author, error) {
-	author := structure.Author{}
-	// Retrieve author
+func RetrieveUserBySlug(slug string) (*structure.User, error) {
+	user := structure.User{}
+	// Retrieve user
 	row := readDB.QueryRow(stmtRetrieveUserBySlug, slug)
-	err := row.Scan(&author.Id, &author.Name, &author.Slug, &author.Email, &author.Image, &author.Cover, &author.Bio, &author.Website, &author.Location)
+	err := row.Scan(&user.Id, &user.Name, &user.Slug, &user.Email, &user.Image, &user.Cover, &user.Bio, &user.Website, &user.Location)
 	if err != nil {
 		return nil, err
 	}
-	return &author, nil
+	return &user, nil
 }
 
-func RetrieveAuthorByName(name []byte) (*structure.Author, error) {
-	author := structure.Author{}
-	// Retrieve author
+func RetrieveUserByName(name []byte) (*structure.User, error) {
+	user := structure.User{}
+	// Retrieve user
 	row := readDB.QueryRow(stmtRetrieveUserByName, name)
-	err := row.Scan(&author.Id, &author.Name, &author.Slug, &author.Email, &author.Image, &author.Cover, &author.Bio, &author.Website, &author.Location)
+	err := row.Scan(&user.Id, &user.Name, &user.Slug, &user.Email, &user.Image, &user.Cover, &user.Bio, &user.Website, &user.Location)
 	if err != nil {
 		return nil, err
 	}
-	return &author, nil
+	return &user, nil
 }
 
 func RetrieveTags(postId int64) ([]structure.Tag, error) {

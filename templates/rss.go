@@ -46,12 +46,12 @@ func ShowTagRss(writer http.ResponseWriter, slug string) error {
 }
 
 func ShowAuthorRss(writer http.ResponseWriter, slug string) error {
-	author, err := database.RetrieveAuthorBySlug(slug)
+	author, err := database.RetrieveUserBySlug(slug)
 	if err != nil {
 		return err
 	}
 	// 15 posts in rss for now
-	posts, err := database.RetrievePostsByAuthor(author.Id, 15, 0)
+	posts, err := database.RetrievePostsByUser(author.Id, 15, 0)
 	if err != nil {
 		return err
 	}

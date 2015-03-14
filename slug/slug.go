@@ -52,7 +52,7 @@ func generateUniqueSlug(slug string, table string, suffix int) string {
 	} else if table == "posts" {
 		_, err = database.RetrievePostBySlug(slugToCheck)
 	} else if table == "users" {
-		_, err = database.RetrieveAuthorBySlug(slugToCheck)
+		_, err = database.RetrieveUserBySlug(slugToCheck)
 	}
 	if err == nil {
 		return generateUniqueSlug(slug, table, suffix+1)
