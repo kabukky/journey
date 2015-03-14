@@ -14,7 +14,7 @@ Use Ghost themes to design your blog. There's already a great community of desig
 Hopefully. Planning the future of Journey, high priority goals are: Plug-in support, MySQL and PostgreSQL support, and Google App Engine support.
 
 #### Easily secure
-Other blog engines require you to install Nginx or Apache just to enable Https. With Journey, simply enable Https in the configuration and start using it for development purposes. For production, simply replace the generated certificates with your own and you are ready to go.
+Other blog engines require you to install Nginx or Apache just to enable HTTPS. With Journey, simply enable HTTPS in the configuration and start using it for development purposes. For production, simply replace the generated certificates with your own and you are ready to go.
 
 #### No dependencies
 Don't worry about installing the correct version of Node.js, Python, or anything else. Just download the [latest release](https://www.github.com/kabukky/journey/releases) for your operating system and cpu architecture, then place the folder anywhere you like and run the Journey executable. Done!
