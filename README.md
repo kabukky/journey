@@ -28,14 +28,9 @@ This slimness makes Journey an ideal candidate for setting up micro blogs or hos
 [Download the release package](https://www.github.com/kabukky/journey/releases) for Linux (AMD64, i386, ARM), Mac OS X (AMD64, i386) or Windows (AMD64, i386) and start using Journey right away. Build Journey from source to make it work on a multitude of other operating systems!
 
 ## Installing Journey
-Go to the the [Releases Page](https://github.com/kabukky/journey/releases) and download the zip file corresponding to your operating system and cpu architecture.
+To get started with Journey, go to the the [Releases Page](https://github.com/kabukky/journey/releases) and download the zip file corresponding to your operating system and cpu architecture. Then extract Journey anywhere you like. Why not place it in your home folder (e.g. /home/youruser/journey/)?
 
-Then extract that zip file anywhere you like. You may also rename the extracted folder into "journey" if you so desire.
-
-Why not place it in your home folder? E.g. /home/your-user/journey/.
-
-## Using Journey
-Please refer to the [Setting up Journey](https://github.com/kabukky/journey/wiki/Setting-up-Journey) Wiki page for detailed instructions on how to set up and use Journey.
+After that, head over to [Setting up Journey](https://github.com/kabukky/journey/wiki/Setting-up-Journey) to configure your Journey blog on your local machine. If you'd like to set up Journey on a linux server, head over to [Installing Journey on Ubuntu Server](https://github.com/kabukky/journey/wiki/Installing-Journey-on-Ubuntu-Server) for a step-by-step tutorial.
 
 ## Troubleshooting
 Please refer to the [FAQ](https://github.com/kabukky/journey/wiki/FAQ) Wiki page if exeperience any trouble running Journey.
