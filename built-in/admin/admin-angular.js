@@ -43,22 +43,6 @@ adminApp.directive('imgSelectionDirective', function() {
     }
 });
 
-//filter to convert html to plain text
-adminApp.filter('htmlToPlaintextPreview', function() {
-    return function(text) {
-      //remove html tags 
-      var output = String(text).replace(/<[^>]+>/gm, '');
-      //trim string (75 characters for now)
-      if (output.length > 300) {
-        output = output.substr(0, 300);
-        //re-trim if in the middle of a word
-        output = output.substr(0, Math.min(output.length, output.lastIndexOf(" ")));
-      }
-      return output;
-    }
-  }
-);
-
 //factory to load items in infinite-scroll
 adminApp.factory('infiniteScrollFactory', function($http) {
   var infiniteScrollFactory = function(url) {

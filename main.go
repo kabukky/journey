@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/kabukky/journey/certificates"
+	"github.com/kabukky/httpscerts"
 	"github.com/kabukky/journey/configuration"
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/filenames"
@@ -20,10 +20,10 @@ func httpsRedirect(w http.ResponseWriter, r *http.Request) {
 
 func checkHttpsCertificates() {
 	// Check https certificates. If they are not available generate temporary ones for testing.
-	err := certificates.Check(filenames.HttpsCertFilename, filenames.HttpsKeyFilename)
+	err := httpscerts.Check(filenames.HttpsCertFilename, filenames.HttpsKeyFilename)
 	if err != nil {
 		log.Println("Warning: couldn't load https certs. Generating new ones. Replace " + filenames.HttpsCertFilename + " and " + filenames.HttpsKeyFilename + " with your own certificates as soon as possible!")
-		err := certificates.Generate(filenames.HttpsCertFilename, filenames.HttpsKeyFilename, configuration.Config.HttpsUrl)
+		err := httpscerts.Generate(filenames.HttpsCertFilename, filenames.HttpsKeyFilename, configuration.Config.HttpsUrl)
 		if err != nil {
 			log.Fatal("Error: Couldn't create https certificates.")
 			return

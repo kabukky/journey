@@ -78,6 +78,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		if name != "" && password != "" {
 			if authentication.LoginIsCorrect(name, password) {
 				authentication.SetSession(name, w)
+			} else {
+				log.Println("Failed login attempt for user " + name)
 			}
 		}
 		http.Redirect(w, r, "/admin/", 302)
