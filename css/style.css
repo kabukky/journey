@@ -711,3 +711,11 @@ textarea {
 .grey {
 	background-color: #FAFAFA;
 }
+.img-showcase {
+	border: 1px solid #CCC;
+}
+@media (max-width:991px) {
+	#download {
+		margin-top: 1em;
+	}
+}
