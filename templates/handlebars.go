@@ -466,14 +466,24 @@ func post_classFunc(helper *Helper, values *structure.RequestData) []byte {
 }
 
 func urlFunc(helper *Helper, values *structure.RequestData) []byte {
+	var buffer bytes.Buffer
+	if len(helper.Arguments) != 0 {
+		for _, argument := range helper.Arguments {
+			// If the "absolute argument was used, prepend the blog url
+			if strings.HasPrefix(argument.Name, "absolute") {
+				if argument.Name[len("absolute"):] == "true" {
+					buffer.Write(values.Blog.Url)
+				}
+
+			}
+		}
+	}
 	if values.CurrentHelperContext == 1 { // post
-		var buffer bytes.Buffer
 		buffer.WriteString("/")
 		buffer.WriteString(values.Posts[values.CurrentPostIndex].Slug)
 		buffer.WriteString("/")
 		return evaluateEscape(buffer.Bytes(), helper.Unescaped)
 	} else if values.CurrentHelperContext == 3 { // author
-		var buffer bytes.Buffer
 		buffer.WriteString("/author/")
 		// TODO: Error handling if there is no Posts[values.CurrentPostIndex]
 		buffer.WriteString(values.Posts[values.CurrentPostIndex].Author.Slug)

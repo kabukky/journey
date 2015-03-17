@@ -14,7 +14,7 @@ import (
 )
 
 func httpsRedirect(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "https://"+configuration.Config.HttpsUrl+r.RequestURI, http.StatusMovedPermanently)
+	http.Redirect(w, r, configuration.Config.HttpsUrl+r.RequestURI, http.StatusMovedPermanently)
 	return
 }
 

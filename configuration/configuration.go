@@ -50,6 +50,7 @@ func (c *Configuration) save() error {
 }
 
 func (c *Configuration) load() error {
+	configWasChanged := false
 	data, err := ioutil.ReadFile(filenames.ConfigFilename)
 	if err != nil {
 		return err
@@ -59,24 +60,32 @@ func (c *Configuration) load() error {
 		return err
 	}
 	// Make sure the url is in the right format
-	if strings.HasPrefix(c.HttpsUrl, "http://") {
-		c.HttpsUrl = strings.Replace(c.HttpsUrl, "http://", "", 1)
-	} else if strings.HasPrefix(c.HttpsUrl, "https://") {
-		c.HttpsUrl = strings.Replace(c.HttpsUrl, "https://", "", 1)
-	}
 	// Make sure there is no trailing slash at the end of the url
-	if strings.HasSuffix(c.HttpsUrl, "/") {
-		c.HttpsUrl = c.HttpsUrl[0 : len(c.HttpsUrl)-1]
+	if strings.HasSuffix(c.Url, "/") {
+		c.Url = c.Url[0 : len(c.Url)-1]
+		configWasChanged = true
+	}
+	if !strings.HasPrefix(c.Url, "http://") && !strings.HasPrefix(c.Url, "https://") {
+		c.Url = "http://" + c.Url
+		configWasChanged = true
 	}
 	// Make sure the https url is in the right format
+	// Make sure there is no trailing slash at the end of the https url
+	if strings.HasSuffix(c.HttpsUrl, "/") {
+		c.HttpsUrl = c.HttpsUrl[0 : len(c.HttpsUrl)-1]
+		configWasChanged = true
+	}
 	if strings.HasPrefix(c.HttpsUrl, "http://") {
-		c.HttpsUrl = strings.Replace(c.HttpsUrl, "http://", "", 1)
-	} else if strings.HasPrefix(c.HttpsUrl, "https://") {
-		c.HttpsUrl = strings.Replace(c.HttpsUrl, "https://", "", 1)
+		c.HttpsUrl = strings.Replace(c.HttpsUrl, "http://", "https://", 1)
+		configWasChanged = true
+	} else if !strings.HasPrefix(c.HttpsUrl, "https://") {
+		c.HttpsUrl = "https://" + c.HttpsUrl
+		configWasChanged = true
 	}
 	// Make sure there is no trailing slash at the end of the url
 	if strings.HasSuffix(c.HttpsUrl, "/") {
 		c.HttpsUrl = c.HttpsUrl[0 : len(c.HttpsUrl)-1]
+		configWasChanged = true
 	}
 	// Check if all fields are filled out
 	cReflected := reflect.ValueOf(*c)
@@ -86,11 +95,13 @@ func (c *Configuration) load() error {
 			return errors.New("Error: Configuration corrupted.")
 		}
 	}
-	// Save the changed config - NOT doing that for now.
-	//err = c.save()
-	//if err != nil {
-	//	return err
-	//}
+	// Save the changed config
+	if configWasChanged {
+		err = c.save()
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
