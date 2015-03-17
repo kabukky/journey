@@ -33,7 +33,7 @@ To get started with Journey, go to the the [Releases Page](https://github.com/ka
 After that, head over to [Setting up Journey](https://github.com/kabukky/journey/wiki/Setting-up-Journey) to configure your Journey blog on your local machine. If you'd like to set up Journey on a linux server, head over to [Installing Journey on Ubuntu Server](https://github.com/kabukky/journey/wiki/Installing-Journey-on-Ubuntu-Server) for a step-by-step tutorial.
 
 ## Troubleshooting
-Please refer to the [FAQ](https://github.com/kabukky/journey/wiki/FAQ) Wiki page if exeperience any trouble running Journey.
+Please refer to the [FAQ](https://github.com/kabukky/journey/wiki/FAQ) Wiki page if you experience any trouble running Journey.
 
 If your issue isn't discussed there, please create a [New Issue](https://github.com/kabukky/journey/issues).
 
