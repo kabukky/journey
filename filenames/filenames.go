@@ -40,13 +40,30 @@ var (
 	// For users (this is a url string)
 	DefaultUserImageFilename = "/public/images/user-image.jpg"
 	DefaultUserCoverFilename = "/public/images/user-cover.jpg"
+
+	// Create content directories if they are not created already
+	_ = createDirectories()
 )
+
+func createDirectories() error {
+	paths := []string{filepath.Join(customPath, "content", "data"), filepath.Join(customPath, "content", "themes"), filepath.Join(customPath, "content", "images"), filepath.Join(customPath, "content", "https")}
+	for _, path := range paths {
+		if _, err := os.Stat(path); os.IsNotExist(err) {
+			log.Println("Creating " + path)
+			err := os.MkdirAll(path, 0776)
+			if err != nil {
+				log.Fatal("Error: Couldn't create directory " + path + ": " + err.Error())
+				return err
+			}
+		}
+	}
+	return nil
+}
 
 func initializeWorkingDirectory() error {
 	// Check if a custom content path has been provided by the user
 	flag.StringVar(&customPath, "custom-path", "", "Specify a custom path to store content files. Note: Journey needs read and write access to that path.")
 	flag.Parse()
-	log.Println(customPath)
 
 	// Set working directory to the path this executable is in
 	executablePath, err := osext.ExecutableFolder()

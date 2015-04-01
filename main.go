@@ -33,8 +33,10 @@ func checkHttpsCertificates() {
 
 func main() {
 	// Setup
+
 	// GOMAXPROCS - Maybe not needed
 	runtime.GOMAXPROCS(runtime.NumCPU())
+
 	// Write log to file
 	logFile, err := os.OpenFile(filenames.LogFilename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {

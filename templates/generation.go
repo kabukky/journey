@@ -7,6 +7,7 @@ import (
 	"github.com/kabukky/journey/filenames"
 	"github.com/kabukky/journey/structure"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -197,6 +198,11 @@ func Generate() error {
 	// First clear compiledTemplates map (theme could have been changed)
 	compiledTemplates.m = make(map[string]*Helper)
 	currentThemePath := filepath.Join(filenames.ThemesFilepath, *activeTheme)
+	// Check if the theme folder exists
+	if _, err := os.Stat(currentThemePath); os.IsNotExist(err) {
+		log.Fatal("Error: Couldn't find theme files in " + currentThemePath + ": " + err.Error())
+		return err
+	}
 	err = filepath.Walk(currentThemePath, inspectTemplateFile)
 	if err != nil {
 		return err
