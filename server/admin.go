@@ -105,7 +105,7 @@ func registrationHandler(w http.ResponseWriter, r *http.Request) {
 			if name != "" && password != "" {
 				hashedPassword, err := authentication.EncryptPassword(password)
 				if err != nil {
-					http.Redirect(w, r, "/admin/", 302)
+					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
 				}
 				user := structure.User{Name: []byte(name), Slug: slug.Generate(name, "users"), Email: []byte(email), Image: []byte(filenames.DefaultUserImageFilename), Cover: []byte(filenames.DefaultUserCoverFilename), Role: 4}

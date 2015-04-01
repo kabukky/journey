@@ -1,6 +1,7 @@
 package filenames
 
 import (
+	"flag"
 	"github.com/kardianos/osext"
 	"log"
 	"os"
@@ -8,37 +9,45 @@ import (
 )
 
 var (
+	customPath = ""
 	// Initialization of the working directory - needed to load relative assets
 	_ = initializeWorkingDirectory()
 
-	// For assets
-	ConfigFilename   = "config.json"
-	LogFilename      = "log.txt"
-	DatabaseFilename = filepath.Join("content", "data", "journey.db")
-	ThemesFilepath   = filepath.Join("content", "themes")
-	ImagesFilepath   = filepath.Join("content", "images")
-	AdminFilepath    = filepath.Join("built-in", "admin")
-	PublicFilepath   = filepath.Join("built-in", "public")
-	ContentFilepath  = "content"
+	// For assets that are created or changed while running journey
+	ConfigFilename   = filepath.Join(customPath, "config.json")
+	LogFilename      = filepath.Join(customPath, "log.txt")
+	DatabaseFilename = filepath.Join(customPath, "content", "data", "journey.db")
+	ThemesFilepath   = filepath.Join(customPath, "content", "themes")
+	ImagesFilepath   = filepath.Join(customPath, "content", "images")
+	ContentFilepath  = filepath.Join(customPath, "content")
 
 	// For https
-	HttpsCertFilename = filepath.Join("content", "https", "cert.pem")
-	HttpsKeyFilename  = filepath.Join("content", "https", "key.pem")
+	HttpsCertFilename = filepath.Join(customPath, "content", "https", "cert.pem")
+	HttpsKeyFilename  = filepath.Join(customPath, "content", "https", "key.pem")
 
-	// For handlebars
+	//For built-in files (e.g. the admin interface)
+	AdminFilepath  = filepath.Join("built-in", "admin")
+	PublicFilepath = filepath.Join("built-in", "public")
+
+	// For handlebars (this is a url string)
 	JqueryFilename = "/public/jquery/jquery.js"
 
-	// For blog
+	// For blog  (this is a url string)
 	// TODO: This is not used at the moment because it is still hard-coded into the create database string
 	DefaultBlogLogoFilename  = "/public/images/blog-logo.jpg"
 	DefaultBlogCoverFilename = "/public/images/blog-cover.jpg"
 
-	// For users
+	// For users (this is a url string)
 	DefaultUserImageFilename = "/public/images/user-image.jpg"
 	DefaultUserCoverFilename = "/public/images/user-cover.jpg"
 )
 
 func initializeWorkingDirectory() error {
+	// Check if a custom content path has been provided by the user
+	flag.StringVar(&customPath, "custom-path", "", "Specify a custom path to store content files. Note: Journey needs read and write access to that path.")
+	flag.Parse()
+	log.Println(customPath)
+
 	// Set working directory to the path this executable is in
 	executablePath, err := osext.ExecutableFolder()
 	if err != nil {
