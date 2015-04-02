@@ -5,7 +5,7 @@ A blog engine written in Go, compatible with Ghost themes.
 Please note that Journey is still in alpha and has not been tested in production.
 
 #### Easy to work with
-Create or update your posts from any place and any device. Simply point your browser to yourblogurl/admin, log in and start typing away!
+Create or update your posts from any place and any device. Simply point your browser to yourblogurl/admin, log in, and start typing away!
 
 #### Good stuff available right away
 Use Ghost themes to design your blog. There's already a great community of designers working on Ghost compatible themes. Check out the [Ghost Marketplace](http://marketplace.ghost.org) to get an idea.
