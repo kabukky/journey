@@ -44,7 +44,7 @@ func main() {
 		log.Fatal("Error: Couldn't open log file: " + err.Error())
 	}
 	defer logFile.Close()
-	//log.SetOutput(logFile)
+	log.SetOutput(logFile)
 
 	// Configuration is read from config.json by loading the configuration package
 
