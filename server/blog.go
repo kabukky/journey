@@ -1,31 +1,27 @@
 package server
 
 import (
+	"github.com/dimfeld/httptreemux"
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/filenames"
 	"github.com/kabukky/journey/templates"
 	"net/http"
 	"path/filepath"
-	"regexp"
 	"strconv"
 )
 
-var validPostPath = regexp.MustCompile("^/([\\p{L}\\p{M}\\p{N}-]*)/?$")
-var validIndexPath = regexp.MustCompile("^/(page/)?([\\p{L}\\p{M}\\p{N}-]*)/?$")
-var validAuthorPath = regexp.MustCompile("^/author/([\\p{L}\\p{M}\\p{N}-]*)(/page|/rss)?/?(\\d+)?/?$")
-var validTagPath = regexp.MustCompile("^/tag/([\\p{L}\\p{M}\\p{N}-]*)(/page|/rss)?/?(\\d+)?/?$")
-
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	m := validIndexPath.FindStringSubmatch(r.URL.Path)
-	if m == nil {
-		http.Redirect(w, r, "/", http.StatusFound)
+func indexHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	number := params["number"]
+	if number == "" {
+		// Render index template (first page)
+		err := templates.ShowIndexTemplate(w, 1)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		return
 	}
-	if m[2] == "" {
-		http.Redirect(w, r, "/", http.StatusFound)
-		return
-	}
-	page, err := strconv.Atoi(m[2])
+	page, err := strconv.Atoi(number)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
@@ -34,94 +30,87 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	err = templates.ShowIndexTemplate(w, page)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	return
 }
 
-func authorHandler(w http.ResponseWriter, r *http.Request) {
-	m := validAuthorPath.FindStringSubmatch(r.URL.Path)
-	if m == nil {
-		http.Redirect(w, r, "/", http.StatusFound)
-		return
-	}
-	if m[2] == "" {
+func authorHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	slug := params["slug"]
+	function := params["function"]
+	number := params["number"]
+	if function == "" {
 		// Render author template (first page)
-		err := templates.ShowAuthorTemplate(w, m[1], 1)
+		err := templates.ShowAuthorTemplate(w, slug, 1)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
 		return
-	} else if m[2] == "/rss" {
+	} else if function == "rss" {
 		// Render author rss feed
-		err := templates.ShowAuthorRss(w, m[1])
+		err := templates.ShowAuthorRss(w, slug)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		return
 	}
-	page, err := strconv.Atoi(m[3])
+	page, err := strconv.Atoi(number)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
 	// Render author template
-	err = templates.ShowAuthorTemplate(w, m[1], page)
+	err = templates.ShowAuthorTemplate(w, slug, page)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	return
 }
 
-func tagHandler(w http.ResponseWriter, r *http.Request) {
-	m := validTagPath.FindStringSubmatch(r.URL.Path)
-	if m == nil {
-		http.Redirect(w, r, "/", http.StatusFound)
-		return
-	}
-	if m[2] == "" {
+func tagHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	slug := params["slug"]
+	function := params["function"]
+	number := params["number"]
+	if function == "" {
 		// Render tag template (first page)
-		err := templates.ShowTagTemplate(w, m[1], 1)
+		err := templates.ShowTagTemplate(w, slug, 1)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
 		return
-	} else if m[2] == "/rss" {
+	} else if function == "rss" {
 		// Render tag rss feed
-		err := templates.ShowTagRss(w, m[1])
+		err := templates.ShowTagRss(w, slug)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		return
 	}
-	page, err := strconv.Atoi(m[3])
+	page, err := strconv.Atoi(number)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
 	// Render tag template
-	err = templates.ShowTagTemplate(w, m[1], page)
+	err = templates.ShowTagTemplate(w, slug, page)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	return
 }
 
-func postHandler(w http.ResponseWriter, r *http.Request) {
-	m := validPostPath.FindStringSubmatch(r.URL.Path)
-	if m == nil {
+func postHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	slug := params["slug"]
+	if slug == "" {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
-	}
-	if m[1] == "" {
-		// Render index template (first page)
-		err := templates.ShowIndexTemplate(w, 1)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		return
-	} else if m[1] == "rss" {
+	} else if slug == "rss" {
 		// Render index rss feed
 		err := templates.ShowIndexRss(w)
 		if err != nil {
@@ -131,34 +120,50 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Render post template
-	err := templates.ShowPostTemplate(w, m[1])
+	err := templates.ShowPostTemplate(w, slug)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	return
 }
 
-func generateAssetHandler(mux *http.ServeMux) {
-	// Function to be able to change the asset path at runtime (e.g. when the theme changes)
-	mux.Handle("/assets/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// TODO: It might be possible to do this more efficently. Getting the theme from the database at every request? Seems like too much.
-		activeTheme, err := database.RetrieveActiveTheme()
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		http.ServeFile(w, r, filepath.Join(filenames.ThemesFilepath, *activeTheme, r.URL.Path))
+func assetsHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	// TODO: It might be possible to do this more efficently. Getting the theme from the database at every request seems like too much.
+	activeTheme, err := database.RetrieveActiveTheme()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
-	}))
+	}
+	http.ServeFile(w, r, filepath.Join(filenames.ThemesFilepath, *activeTheme, "assets", params["filepath"]))
+	return
 }
 
-func InitializeBlog(mux *http.ServeMux) {
-	mux.Handle("/", http.HandlerFunc(postHandler))
-	mux.Handle("/page/", http.HandlerFunc(indexHandler))
-	mux.Handle("/author/", http.HandlerFunc(authorHandler))
-	mux.Handle("/tag/", http.HandlerFunc(tagHandler))
-	// Handle for serving asset files
-	generateAssetHandler(mux)
-	mux.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir(filenames.ImagesFilepath))))
-	mux.Handle("/public/", http.StripPrefix("/public/", http.FileServer(http.Dir(filenames.PublicFilepath))))
+func imagesHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	http.ServeFile(w, r, filepath.Join(filenames.ImagesFilepath, params["filepath"]))
+	return
+}
+
+func publicHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	http.ServeFile(w, r, filepath.Join(filenames.PublicFilepath, params["filepath"]))
+	return
+}
+
+func InitializeBlog(router *httptreemux.TreeMux) {
+	// For index
+	router.GET("/", indexHandler)
+	router.GET("/:slug/", postHandler)
+	router.GET("/page/:number/", indexHandler)
+	// For author
+	router.GET("/author/:slug/", authorHandler)
+	router.GET("/author/:slug/:function/", authorHandler)
+	router.GET("/author/:slug/:function/:number/", authorHandler)
+	// For tag
+	router.GET("/tag/:slug/", tagHandler)
+	router.GET("/tag/:slug/:function/", tagHandler)
+	router.GET("/tag/:slug/:function/:number/", tagHandler)
+	// For serving asset files
+	router.GET("/assets/*filepath", assetsHandler)
+	router.GET("/images/*filepath", imagesHandler)
+	router.GET("/public/*filepath", publicHandler)
 }

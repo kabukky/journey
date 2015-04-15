@@ -3,7 +3,7 @@
 </div>
 <div class="modal-body">
 	<div class="container-fluid">
-		<input id="file-input" name="multiplefiles" type="file" multiple=true class="file-loading" data-upload-url="/admin/api/upload/" data-max-file-count="10">
+		<input id="file-input" name="multiplefiles" type="file" multiple=true class="file-loading" data-upload-url="/admin/api/upload" data-max-file-count="10">
 		<div class="modal-footer modal-divider">
 			<button class="btn btn-primary" ng-click="ok()">OK</button>
 			<button class="btn btn-warning" ng-click="cancel()">Cancel</button>

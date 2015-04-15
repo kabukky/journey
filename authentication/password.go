@@ -7,7 +7,7 @@ import (
 
 func LoginIsCorrect(name string, password string) bool {
 	hashedPassword, err := database.RetrieveHashedPasswordForUser([]byte(name))
-	if len(hashedPassword) == 0 || err != nil { //len(hashedPassword) == 0 probably not needed.
+	if len(hashedPassword) == 0 || err != nil { // len(hashedPassword) == 0 probably not needed.
 		// User name likely doesn't exist
 		return false
 	}

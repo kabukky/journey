@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/dimfeld/httptreemux"
 	"github.com/kabukky/httpscerts"
 	"github.com/kabukky/journey/configuration"
 	"github.com/kabukky/journey/database"
@@ -13,7 +14,7 @@ import (
 	"runtime"
 )
 
-func httpsRedirect(w http.ResponseWriter, r *http.Request) {
+func httpsRedirect(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	http.Redirect(w, r, configuration.Config.HttpsUrl+r.RequestURI, http.StatusMovedPermanently)
 	return
 }
@@ -40,10 +41,10 @@ func main() {
 	// Write log to file
 	logFile, err := os.OpenFile(filenames.LogFilename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
-		log.Fatal("Error: Counldn't open log file: " + err.Error())
+		log.Fatal("Error: Couldn't open log file: " + err.Error())
 	}
 	defer logFile.Close()
-	log.SetOutput(logFile)
+	//log.SetOutput(logFile)
 
 	// Configuration is read from config.json by loading the configuration package
 
@@ -66,45 +67,48 @@ func main() {
 	switch configuration.Config.HttpsUsage {
 	case "AdminOnly":
 		checkHttpsCertificates()
-		httpMux := http.NewServeMux()
-		httpsMux := http.NewServeMux()
+		httpRouter := httptreemux.New()
+		httpsRouter := httptreemux.New()
 		// Blog as http
-		server.InitializeBlog(httpMux)
+		server.InitializeBlog(httpRouter)
 		// Blog as https
-		server.InitializeBlog(httpsMux)
+		server.InitializeBlog(httpsRouter)
 		// Admin as https and http redirect
-		// Add redirection to http mux
-		httpMux.Handle("/admin/", http.HandlerFunc(httpsRedirect))
-		// Add routes to https mux
-		server.InitializeAdmin(httpsMux)
+		// Add redirection to http router
+		httpRouter.GET("/admin", httpsRedirect)
+		// Add routes to https router
+		server.InitializeAdmin(httpsRouter)
 		// Start https server
 		log.Println("Starting https server on port " + configuration.Config.HttpsHostAndPort + "...")
-		go http.ListenAndServeTLS(configuration.Config.HttpsHostAndPort, filenames.HttpsCertFilename, filenames.HttpsKeyFilename, httpsMux)
+		go http.ListenAndServeTLS(configuration.Config.HttpsHostAndPort, filenames.HttpsCertFilename, filenames.HttpsKeyFilename, httpsRouter)
 		// Start http server
 		log.Println("Starting http server on port " + configuration.Config.HttpHostAndPort + "...")
-		http.ListenAndServe(configuration.Config.HttpHostAndPort, httpMux)
+		http.ListenAndServe(configuration.Config.HttpHostAndPort, httpRouter)
 	case "All":
 		checkHttpsCertificates()
-		httpsMux := http.NewServeMux()
+		httpsRouter := httptreemux.New()
+		httpRouter := httptreemux.New()
 		// Blog as https
-		server.InitializeBlog(httpsMux)
+		server.InitializeBlog(httpsRouter)
 		// Admin as https
-		server.InitializeAdmin(httpsMux)
+		server.InitializeAdmin(httpsRouter)
+		// Add redirection to http router
+		httpRouter.GET("/", httpsRedirect)
 		// Start https server
 		log.Println("Starting https server on port " + configuration.Config.HttpsHostAndPort + "...")
-		go http.ListenAndServeTLS(configuration.Config.HttpsHostAndPort, filenames.HttpsCertFilename, filenames.HttpsKeyFilename, httpsMux)
+		go http.ListenAndServeTLS(configuration.Config.HttpsHostAndPort, filenames.HttpsCertFilename, filenames.HttpsKeyFilename, httpsRouter)
 		// Start http server
 		log.Println("Starting http server on port " + configuration.Config.HttpHostAndPort + "...")
-		http.ListenAndServe(configuration.Config.HttpHostAndPort, http.HandlerFunc(httpsRedirect))
+		http.ListenAndServe(configuration.Config.HttpHostAndPort, httpRouter)
 	default: // This is configuration.HttpsUsage == "None"
-		httpMux := http.NewServeMux()
+		httpRouter := httptreemux.New()
 		// Blog as http
-		server.InitializeBlog(httpMux)
+		server.InitializeBlog(httpRouter)
 		// Admin as http
-		server.InitializeAdmin(httpMux)
+		server.InitializeAdmin(httpRouter)
 		// Start http server
 		log.Println("Starting server without HTTPS support. Please enable HTTPS in " + filenames.ConfigFilename + " to improve security.")
 		log.Println("Starting http server on port " + configuration.Config.HttpHostAndPort + "...")
-		http.ListenAndServe(configuration.Config.HttpHostAndPort, httpMux)
+		http.ListenAndServe(configuration.Config.HttpHostAndPort, httpRouter)
 	}
 }

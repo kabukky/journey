@@ -94,12 +94,12 @@ adminApp.controller('SettingsCtrl', function ($scope, $http, $timeout, $sce, $lo
   $scope.navbarHtml = $sce.trustAsHtml('<ul class="nav navbar-nav"><li><a href="#/">Content</a></li><li><a href="#/create/">New Post</a></li><li class="active"><a href="#/settings/">Settings<span class="sr-only">(current)</span></a></li></ul>');
   $scope.shared = sharingService.shared;
   $scope.loadData = function() {
-    $http.get('/admin/api/blog/').success(function(data) {
+    $http.get('/admin/api/blog').success(function(data) {
       $scope.shared.blog = data;
       var themeIndex = $scope.shared.blog.Themes.indexOf($scope.shared.blog.ActiveTheme);
       $scope.shared.blog.ActiveTheme = $scope.shared.blog.Themes[themeIndex];
     });
-    $http.get('/admin/api/userid/').success(function(data) {
+    $http.get('/admin/api/userid').success(function(data) {
       $scope.authenticatedUser = data;
       $http.get('/admin/api/user/' + $scope.authenticatedUser.Id).success(function(data) {
         $scope.shared.user = data;
@@ -108,8 +108,8 @@ adminApp.controller('SettingsCtrl', function ($scope, $http, $timeout, $sce, $lo
   };
   $scope.loadData();
   $scope.save = function() {
-    $http.patch('/admin/api/blog/', $scope.shared.blog);
-    $http.patch('/admin/api/user/', $scope.shared.user).success(function(data) {
+    $http.patch('/admin/api/blog', $scope.shared.blog);
+    $http.patch('/admin/api/user', $scope.shared.user).success(function(data) {
       $location.url('/');
     });
   };
@@ -129,7 +129,7 @@ adminApp.controller('CreateCtrl', function ($scope, $http, $sce, $location, shar
   };
   $scope.change();
   $scope.save = function() {
-    $http.post('/admin/api/post/', $scope.shared.post).success(function(data) {
+    $http.post('/admin/api/post', $scope.shared.post).success(function(data) {
       $location.url('/');
     });
   };
@@ -152,7 +152,7 @@ adminApp.controller('EditCtrl', function ($scope, $routeParams, $http, $sce, $lo
     $scope.change();
   });
   $scope.save = function() {
-  	$http.patch('/admin/api/post/', $scope.shared.post).success(function(data) {
+  	$http.patch('/admin/api/post', $scope.shared.post).success(function(data) {
       $location.url('/');
     });
   };
