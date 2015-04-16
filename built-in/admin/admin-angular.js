@@ -239,6 +239,22 @@ adminApp.controller('EmptyModalInstanceCtrl', function ($scope, $http, $modalIns
 adminApp.controller('ImageModalInstanceCtrl', function ($scope, $http, $modalInstance, sharingService) {
   $scope.shared = sharingService.shared;
   $scope.shared.selected = $scope.shared.infiniteScrollFactory.items[0];
+  $scope.deleteImage = function (fileName) {
+    if (confirm('Are you sure you want to delete this image?')) {
+      $http.delete('/admin/api/image', {data: {Filename:fileName}}).success(function(data) {
+        //delete image from array
+        for (var i = 0; i < $scope.shared.infiniteScrollFactory.items.length; i++) {
+          if($scope.shared.infiniteScrollFactory.items[i] == fileName) {
+            $scope.shared.infiniteScrollFactory.items.splice(i, 1);
+            //select first image again just to be save that there is an image selected that is available
+            $scope.shared.selected = $scope.shared.infiniteScrollFactory.items[0];
+            $('.imgselected').removeClass('imgselected');
+            $('.firstimg').addClass('imgselected');
+          }
+        }
+      });
+    }
+  };
   $scope.ok = function () {
     $modalInstance.close($scope.shared.selected);
   };

@@ -94,7 +94,6 @@ img {
 
 .img-modal {
     cursor: pointer;
-    margin-bottom: 15px;
 }
 
 .imgselected {
@@ -102,6 +101,12 @@ img {
     outline: none;
     border-color: #337AB7;
     box-shadow: 0 0 10px #337AB7;
+}
+
+#image-delete {
+    cursor: pointer;
+    text-align: right;
+    margin-bottom: 15px;
 }
 
 #markdown-title-input {

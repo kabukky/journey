@@ -64,6 +64,10 @@ type JsonUserId struct {
 	Id int64
 }
 
+type JsonImage struct {
+	Filename string
+}
+
 func getLoginHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	http.ServeFile(w, r, filepath.Join(filenames.AdminFilepath, "login.html"))
 	return
@@ -430,6 +434,39 @@ func apiImagesHandler(w http.ResponseWriter, r *http.Request, params map[string]
 	}
 }
 
+func deleteApiImageHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+	userName := authentication.GetUserName(r)
+	if userName != "" { // TODO: Check if the user has permissions to delete the image
+		// Delete image
+		decoder := json.NewDecoder(r.Body)
+		var json JsonImage
+		err := decoder.Decode(&json)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		err = filepath.Walk(filenames.ImagesFilepath, func(filePath string, info os.FileInfo, err error) error {
+			if !info.IsDir() && filepath.Base(filePath) == filepath.Base(json.Filename) {
+				err := os.Remove(filePath)
+				if err != nil {
+					return err
+				}
+			}
+			return nil
+		})
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("Image deleted!"))
+		return
+	} else {
+		http.Error(w, "Not logged in!", http.StatusInternalServerError)
+		return
+	}
+}
+
 func getApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	userName := authentication.GetUserName(r)
 	if userName != "" {
@@ -679,6 +716,7 @@ func InitializeAdmin(router *httptreemux.TreeMux) {
 	router.POST("/admin/api/upload", apiUploadHandler)
 	// Images
 	router.GET("/admin/api/images/:number", apiImagesHandler)
+	router.DELETE("/admin/api/image", deleteApiImageHandler)
 	// Blog
 	router.GET("/admin/api/blog", getApiBlogHandler)
 	router.PATCH("/admin/api/blog", patchApiBlogHandler)
