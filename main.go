@@ -75,7 +75,7 @@ func main() {
 		server.InitializeBlog(httpsRouter)
 		// Admin as https and http redirect
 		// Add redirection to http router
-		httpRouter.GET("/admin", httpsRedirect)
+		httpRouter.GET("/admin/*path", httpsRedirect)
 		// Add routes to https router
 		server.InitializeAdmin(httpsRouter)
 		// Start https server
@@ -94,6 +94,7 @@ func main() {
 		server.InitializeAdmin(httpsRouter)
 		// Add redirection to http router
 		httpRouter.GET("/", httpsRedirect)
+		httpRouter.GET("/*path", httpsRedirect)
 		// Start https server
 		log.Println("Starting https server on port " + configuration.Config.HttpsHostAndPort + "...")
 		go http.ListenAndServeTLS(configuration.Config.HttpsHostAndPort, filenames.HttpsCertFilename, filenames.HttpsKeyFilename, httpsRouter)
