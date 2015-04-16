@@ -14,7 +14,7 @@ type Post struct {
 	IsFeatured  bool
 	IsPage      bool
 	IsPublished bool
-	Date        time.Time
+	Date        *time.Time
 	Tags        []Tag
 	Author      *User
 	Image       []byte

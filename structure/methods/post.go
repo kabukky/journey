@@ -24,7 +24,7 @@ func SavePost(p *structure.Post) error {
 		}
 	}
 	// Insert post
-	postId, err := database.InsertPost(p.Title, p.Slug, p.Markdown, p.Html, p.IsFeatured, p.IsPage, p.IsPublished, p.Image, p.Date, p.Author.Id)
+	postId, err := database.InsertPost(p.Title, p.Slug, p.Markdown, p.Html, p.IsFeatured, p.IsPage, p.IsPublished, p.Image, *p.Date, p.Author.Id)
 	if err != nil {
 		return err
 	}
@@ -56,7 +56,7 @@ func UpdatePost(p *structure.Post) error {
 		}
 	}
 	// Update post
-	err := database.UpdatePost(p.Id, p.Title, p.Slug, p.Markdown, p.Html, p.IsFeatured, p.IsPage, p.IsPublished, p.Image, p.Date, p.Author.Id)
+	err := database.UpdatePost(p.Id, p.Title, p.Slug, p.Markdown, p.Html, p.IsFeatured, p.IsPage, p.IsPublished, p.Image, *p.Date, p.Author.Id)
 	if err != nil {
 		return err
 	}

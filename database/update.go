@@ -5,11 +5,16 @@ import (
 )
 
 const stmtUpdatePost = "UPDATE posts SET title = ?, slug = ?, markdown = ?, html = ?, featured = ?, page = ?, status = ?, image = ?, updated_at = ?, updated_by = ? WHERE id = ?"
-const stmtUpdateSettings = "UPDATE settings SET value = ? WHERE key = ?"
+const stmtUpdatePostPublished = "UPDATE posts SET title = ?, slug = ?, markdown = ?, html = ?, featured = ?, page = ?, status = ?, image = ?, updated_at = ?, updated_by = ?, published_at = ?, published_by = ? WHERE id = ?"
+const stmtUpdateSettings = "UPDATE settings SET value = ?, updated_at = ?, updated_by = ? WHERE key = ?"
 const stmtUpdateUser = "UPDATE users SET email = ?, image = ?, cover = ?, bio = ?, website = ?, location = ?, updated_at = ?, updated_by = ? WHERE id = ?"
 const stmtUpdateUserPassword = "UPDATE users SET password = ?, updated_at = ?, updated_by = ? WHERE id = ?"
 
 func UpdatePost(id int64, title []byte, slug string, markdown []byte, html []byte, featured bool, isPage bool, published bool, image []byte, updated_at time.Time, updated_by int64) error {
+	currentPost, err := RetrievePostById(id)
+	if err != nil {
+		return err
+	}
 	status := "draft"
 	if published {
 		status = "published"
@@ -19,7 +24,12 @@ func UpdatePost(id int64, title []byte, slug string, markdown []byte, html []byt
 		writeDB.Rollback()
 		return err
 	}
-	_, err = writeDB.Exec(stmtUpdatePost, title, slug, markdown, html, featured, isPage, status, image, updated_at, updated_by, id)
+	// If the updated post is published for the first time, add publication date and user
+	if published && !currentPost.IsPublished {
+		_, err = writeDB.Exec(stmtUpdatePostPublished, title, slug, markdown, html, featured, isPage, status, image, updated_at, updated_by, updated_at, updated_by, id)
+	} else {
+		_, err = writeDB.Exec(stmtUpdatePost, title, slug, markdown, html, featured, isPage, status, image, updated_at, updated_by, id)
+	}
 	if err != nil {
 		writeDB.Rollback()
 		return err
@@ -27,44 +37,44 @@ func UpdatePost(id int64, title []byte, slug string, markdown []byte, html []byt
 	return writeDB.Commit()
 }
 
-func UpdateSettings(title []byte, description []byte, logo []byte, cover []byte, postsPerPage int64, activeTheme string) error {
+func UpdateSettings(title []byte, description []byte, logo []byte, cover []byte, postsPerPage int64, activeTheme string, updated_at time.Time, updated_by int64) error {
 	writeDB, err := readDB.Begin()
 	if err != nil {
 		writeDB.Rollback()
 		return err
 	}
 	// Title
-	_, err = writeDB.Exec(stmtUpdateSettings, title, "title")
+	_, err = writeDB.Exec(stmtUpdateSettings, title, updated_at, updated_by, "title")
 	if err != nil {
 		writeDB.Rollback()
 		return err
 	}
 	// Description
-	_, err = writeDB.Exec(stmtUpdateSettings, description, "description")
+	_, err = writeDB.Exec(stmtUpdateSettings, description, updated_at, updated_by, "description")
 	if err != nil {
 		writeDB.Rollback()
 		return err
 	}
 	// Logo
-	_, err = writeDB.Exec(stmtUpdateSettings, logo, "logo")
+	_, err = writeDB.Exec(stmtUpdateSettings, logo, updated_at, updated_by, "logo")
 	if err != nil {
 		writeDB.Rollback()
 		return err
 	}
 	// Cover
-	_, err = writeDB.Exec(stmtUpdateSettings, cover, "cover")
+	_, err = writeDB.Exec(stmtUpdateSettings, cover, updated_at, updated_by, "cover")
 	if err != nil {
 		writeDB.Rollback()
 		return err
 	}
 	// PostsPerPage
-	_, err = writeDB.Exec(stmtUpdateSettings, postsPerPage, "postsPerPage")
+	_, err = writeDB.Exec(stmtUpdateSettings, postsPerPage, updated_at, updated_by, "postsPerPage")
 	if err != nil {
 		writeDB.Rollback()
 		return err
 	}
 	// ActiveTheme
-	_, err = writeDB.Exec(stmtUpdateSettings, activeTheme, "activeTheme")
+	_, err = writeDB.Exec(stmtUpdateSettings, activeTheme, updated_at, updated_by, "activeTheme")
 	if err != nil {
 		writeDB.Rollback()
 		return err

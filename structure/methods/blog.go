@@ -4,12 +4,13 @@ import (
 	"github.com/kabukky/journey/configuration"
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/structure"
+	"time"
 )
 
 var assetPath = []byte("/assets/")
 
-func UpdateBlog(b *structure.Blog) error {
-	err := database.UpdateSettings(b.Title, b.Description, b.Logo, b.Cover, b.PostsPerPage, b.ActiveTheme)
+func UpdateBlog(b *structure.Blog, userId int64) error {
+	err := database.UpdateSettings(b.Title, b.Description, b.Logo, b.Cover, b.PostsPerPage, b.ActiveTheme, time.Now(), userId)
 	if err != nil {
 		return err
 	}

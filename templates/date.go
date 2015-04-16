@@ -82,7 +82,9 @@ func formatDate(format string, date *time.Time) []byte {
 		format = strings.Replace(format, "Do", replaceDo(date), -1)
 	}
 	format = strings.Replace(format, "YYYY", strconv.Itoa(date.Year()), -1)
-	format = strings.Replace(format, "YY", strconv.Itoa(date.Year())[2:], -1)
+	if date.Year() > 99 {
+		format = strings.Replace(format, "YY", strconv.Itoa(date.Year())[2:], -1)
+	}
 	format = strings.Replace(format, "Q", strconv.Itoa(((int(date.Month())-1)/3)+1), -1)
 	if strings.Contains(format, "DDDD") {
 		format = strings.Replace(format, "DDDD", replaceDDDD(date), -1)
@@ -99,7 +101,9 @@ func formatDate(format string, date *time.Time) []byte {
 
 	// Locale formats. Not supported yet
 	format = strings.Replace(format, "gggg", strconv.Itoa(date.Year()), -1)
-	format = strings.Replace(format, "gg", strconv.Itoa(date.Year())[2:], -1)
+	if date.Year() > 99 {
+		format = strings.Replace(format, "gg", strconv.Itoa(date.Year())[2:], -1)
+	}
 	if strings.Contains(format, "ww") {
 		format = strings.Replace(format, "ww", replaceww(date), -1)
 	}
@@ -110,7 +114,9 @@ func formatDate(format string, date *time.Time) []byte {
 
 	// ISO week date formats. Not supported yet - https://en.wikipedia.org/wiki/ISO_week_date
 	format = strings.Replace(format, "GGGG", strconv.Itoa(date.Year()), -1)
-	format = strings.Replace(format, "GG", strconv.Itoa(date.Year())[2:], -1)
+	if date.Year() > 99 {
+		format = strings.Replace(format, "GG", strconv.Itoa(date.Year())[2:], -1)
+	}
 	if strings.Contains(format, "WW") {
 		format = strings.Replace(format, "WW", replaceww(date), -1)
 	}
@@ -157,7 +163,9 @@ func formatDate(format string, date *time.Time) []byte {
 
 	// This needs to be last so that month strings don't interfere with the other replace functions
 	format = strings.Replace(format, "MMMM", date.Month().String(), -1)
-	format = strings.Replace(format, "MMM", date.Month().String()[:3], -1)
+	if len(date.Month().String()) > 2 {
+		format = strings.Replace(format, "MMM", date.Month().String()[:3], -1)
+	}
 	if strings.Contains(format, "MM") {
 		format = strings.Replace(format, "MM", replaceMM(date), -1)
 	}

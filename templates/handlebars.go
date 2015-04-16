@@ -553,7 +553,7 @@ func dateFunc(helper *Helper, values *structure.RequestData) []byte {
 			} else if strings.HasPrefix(helper.Arguments[index].Name, "timeago") {
 				if helper.Arguments[index].Name[len("timeago"):] == "true" {
 					// Compute time ago
-					return evaluateEscape(generateTimeAgo(&values.Posts[values.CurrentPostIndex].Date), helper.Unescaped)
+					return evaluateEscape(generateTimeAgo(values.Posts[values.CurrentPostIndex].Date), helper.Unescaped)
 				}
 			} else if strings.HasPrefix(helper.Arguments[index].Name, "format") {
 				timeFormat = helper.Arguments[index].Name[len("format"):]
@@ -561,7 +561,7 @@ func dateFunc(helper *Helper, values *structure.RequestData) []byte {
 		}
 	}
 	if showPublicationDate {
-		return evaluateEscape(formatDate(timeFormat, &values.Posts[values.CurrentPostIndex].Date), helper.Unescaped)
+		return evaluateEscape(formatDate(timeFormat, values.Posts[values.CurrentPostIndex].Date), helper.Unescaped)
 	}
 	date := time.Now()
 	return evaluateEscape(formatDate(timeFormat, &date), helper.Unescaped)

@@ -3,17 +3,18 @@ package database
 import (
 	"database/sql"
 	"github.com/kabukky/journey/structure"
+	"time"
 )
 
 const stmtRetrievePostsCount = "SELECT count(*) FROM posts WHERE page = 0 AND status = 'published'"
 const stmtRetrievePostsCountByUser = "SELECT count(*) FROM posts WHERE page = 0 AND status = 'published' AND author_id = ?"
 const stmtRetrievePostsCountByTag = "SELECT count(*) FROM posts, posts_tags WHERE posts_tags.post_id = posts.id AND posts_tags.tag_id = ? AND page = 0 AND status = 'published'"
-const stmtRetrievePostsForIndex = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, image, author_id, created_at FROM posts WHERE page = 0 AND status = 'published' ORDER BY id DESC LIMIT ? OFFSET ?"
-const stmtRetrievePostsForApi = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, image, author_id, created_at FROM posts ORDER BY id DESC LIMIT ? OFFSET ?"
-const stmtRetrievePostsByUser = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, image, author_id, created_at FROM posts WHERE page = 0 AND status = 'published' AND author_id = ? ORDER BY id DESC LIMIT ? OFFSET ?"
-const stmtRetrievePostsByTag = "SELECT posts.id, posts.uuid, posts.title, posts.slug, posts.markdown, posts.html, posts.featured, posts.page, posts.status, posts.image, posts.author_id, posts.created_at FROM posts, posts_tags WHERE posts_tags.post_id = posts.id AND posts_tags.tag_id = ? AND page = 0 AND status = 'published' ORDER BY posts.id DESC LIMIT ? OFFSET ?"
-const stmtRetrievePostById = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, image, author_id, created_at FROM posts WHERE id = ?"
-const stmtRetrievePostBySlug = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, image, author_id, created_at FROM posts WHERE slug = ?"
+const stmtRetrievePostsForIndex = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, image, author_id, published_at FROM posts WHERE page = 0 AND status = 'published' ORDER BY published_at DESC LIMIT ? OFFSET ?"
+const stmtRetrievePostsForApi = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, image, author_id, published_at FROM posts ORDER BY id DESC LIMIT ? OFFSET ?"
+const stmtRetrievePostsByUser = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, image, author_id, published_at FROM posts WHERE page = 0 AND status = 'published' AND author_id = ? ORDER BY published_at DESC LIMIT ? OFFSET ?"
+const stmtRetrievePostsByTag = "SELECT posts.id, posts.uuid, posts.title, posts.slug, posts.markdown, posts.html, posts.featured, posts.page, posts.status, posts.image, posts.author_id, posts.published_at FROM posts, posts_tags WHERE posts_tags.post_id = posts.id AND posts_tags.tag_id = ? AND page = 0 AND status = 'published' ORDER BY posts.published_at DESC LIMIT ? OFFSET ?"
+const stmtRetrievePostById = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, image, author_id, published_at FROM posts WHERE id = ?"
+const stmtRetrievePostBySlug = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, image, author_id, published_at FROM posts WHERE slug = ?"
 const stmtRetrieveUserById = "SELECT id, name, slug, email, image, cover, bio, website, location FROM users WHERE id = ?"
 const stmtRetrieveUserBySlug = "SELECT id, name, slug, email, image, cover, bio, website, location FROM users WHERE slug = ?"
 const stmtRetrieveUserByName = "SELECT id, name, slug, email, image, cover, bio, website, location FROM users WHERE name = ?"
@@ -24,6 +25,7 @@ const stmtRetrieveTagIdBySlug = "SELECT id FROM tags WHERE slug = ?"
 const stmtRetrieveHashedPasswordByName = "SELECT password FROM users WHERE name = ?"
 const stmtRetrieveUsersCount = "SELECT count(*) FROM users"
 const stmtRetrieveBlog = "SELECT value FROM settings WHERE key = ?"
+const stmtRetrievePostCreationDateById = "SELECT created_at FROM posts WHERE id = ?"
 
 func RetrievePostById(id int64) (*structure.Post, error) {
 	// Retrieve post
@@ -103,6 +105,13 @@ func extractPosts(rows *sql.Rows) (*[]structure.Post, error) {
 		if err != nil {
 			return nil, err
 		}
+		// If there was no publication date attached to the post, make its creation date the date of the post
+		if post.Date == nil {
+			post.Date, err = retrievePostCreationDateById(post.Id)
+			if err != nil {
+				return nil, err
+			}
+		}
 		// Evaluate status
 		if status == "published" {
 			post.IsPublished = true
@@ -131,6 +140,13 @@ func extractPost(row *sql.Row) (*structure.Post, error) {
 	err := row.Scan(&post.Id, &post.Uuid, &post.Title, &post.Slug, &post.Markdown, &post.Html, &post.IsFeatured, &post.IsPage, &status, &post.Image, &userId, &post.Date)
 	if err != nil {
 		return nil, err
+	}
+	// If there was no publication date attached to the post, make its creation date the date of the post
+	if post.Date == nil {
+		post.Date, err = retrievePostCreationDateById(post.Id)
+		if err != nil {
+			return nil, err
+		}
 	}
 	// Evaluate status
 	if status == "published" {
@@ -182,6 +198,17 @@ func RetrieveNumberOfPostsByTag(tag_id int64) (int64, error) {
 		return 0, err
 	}
 	return count, nil
+}
+
+func retrievePostCreationDateById(post_id int64) (*time.Time, error) {
+	var date time.Time
+	// Retrieve number of posts
+	row := readDB.QueryRow(stmtRetrievePostCreationDateById, post_id)
+	err := row.Scan(&date)
+	if err != nil {
+		return &date, err
+	}
+	return &date, nil
 }
 
 func RetrieveUser(id int64) (*structure.User, error) {

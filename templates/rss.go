@@ -86,7 +86,7 @@ func createFeed(values *structure.RequestData) *feeds.Feed {
 				Link:        &feeds.Link{Href: buffer.String()},
 				Id:          string(values.Posts[i].Uuid),
 				Author:      &feeds.Author{Name: string(values.Posts[i].Author.Name), Email: ""},
-				Created:     values.Posts[i].Date,
+				Created:     *values.Posts[i].Date,
 			})
 		}
 	}

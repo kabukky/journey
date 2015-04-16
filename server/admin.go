@@ -33,7 +33,7 @@ type JsonPost struct {
 	IsPage      bool
 	IsPublished bool
 	Image       string
-	Date        time.Time
+	Date        *time.Time
 	Tags        string
 }
 
@@ -239,7 +239,8 @@ func postApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]str
 		} else {
 			postSlug = slug.Generate(json.Title, "posts")
 		}
-		post := structure.Post{Title: []byte(json.Title), Slug: postSlug, Markdown: []byte(json.Markdown), Html: conversion.GenerateHtmlFromMarkdown([]byte(json.Markdown)), IsFeatured: json.IsFeatured, IsPage: json.IsPage, IsPublished: json.IsPublished, Image: []byte(json.Image), Date: time.Now(), Tags: methods.GenerateTagsFromCommaString(json.Tags), Author: &structure.User{Id: userId}}
+		currentTime := time.Now()
+		post := structure.Post{Title: []byte(json.Title), Slug: postSlug, Markdown: []byte(json.Markdown), Html: conversion.GenerateHtmlFromMarkdown([]byte(json.Markdown)), IsFeatured: json.IsFeatured, IsPage: json.IsPage, IsPublished: json.IsPublished, Image: []byte(json.Image), Date: &currentTime, Tags: methods.GenerateTagsFromCommaString(json.Tags), Author: &structure.User{Id: userId}}
 		err = methods.SavePost(&post)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -282,7 +283,8 @@ func patchApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 		} else {
 			postSlug = post.Slug
 		}
-		*post = structure.Post{Id: json.Id, Title: []byte(json.Title), Slug: postSlug, Markdown: []byte(json.Markdown), Html: conversion.GenerateHtmlFromMarkdown([]byte(json.Markdown)), IsFeatured: json.IsFeatured, IsPage: json.IsPage, IsPublished: json.IsPublished, Image: []byte(json.Image), Date: time.Now(), Tags: methods.GenerateTagsFromCommaString(json.Tags), Author: &structure.User{Id: userId}}
+		currentTime := time.Now()
+		*post = structure.Post{Id: json.Id, Title: []byte(json.Title), Slug: postSlug, Markdown: []byte(json.Markdown), Html: conversion.GenerateHtmlFromMarkdown([]byte(json.Markdown)), IsFeatured: json.IsFeatured, IsPage: json.IsPage, IsPublished: json.IsPublished, Image: []byte(json.Image), Date: &currentTime, Tags: methods.GenerateTagsFromCommaString(json.Tags), Author: &structure.User{Id: userId}}
 		err = methods.UpdatePost(post)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -455,10 +457,15 @@ func getApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]stri
 func patchApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	userName := authentication.GetUserName(r)
 	if userName != "" {
+		userId, err := getUserId(userName)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		// API function to update blog settings
 		decoder := json.NewDecoder(r.Body)
 		var json JsonBlog
-		err := decoder.Decode(&json)
+		err = decoder.Decode(&json)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -474,7 +481,7 @@ func patchApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 			return
 		}
 		tempBlog := structure.Blog{Url: []byte(configuration.Config.Url), Title: []byte(json.Title), Description: []byte(json.Description), Logo: []byte(json.Logo), Cover: []byte(json.Cover), AssetPath: []byte("/assets/"), PostCount: blog.PostCount, PostsPerPage: json.PostsPerPage, ActiveTheme: json.ActiveTheme}
-		err = methods.UpdateBlog(&tempBlog)
+		err = methods.UpdateBlog(&tempBlog, userId)
 		// Check if active theme setting has been changed, if so, generate templates from new theme
 		if tempBlog.ActiveTheme != blog.ActiveTheme {
 			err = templates.Generate()
