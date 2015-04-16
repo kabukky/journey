@@ -16,6 +16,8 @@ import (
 
 var openTag = []byte("{{")
 var closeTag = []byte("}}")
+var twoPartArgumentChecker = regexp.MustCompile("(\\S+?)\\s*?=\\s*?['\"](.*?)['\"]")
+var quoteTagChecker = regexp.MustCompile("(.*?)[\"'](.+?)[\"']$")
 
 func getFunction(name string) func(*Helper, *structure.RequestData) []byte {
 	if helperFuctions[name] != nil {
@@ -28,12 +30,11 @@ func getFunction(name string) func(*Helper, *structure.RequestData) []byte {
 func createHelper(helperName []byte, unescaped bool, startPos int, block []byte, children []Helper, elseHelper *Helper) *Helper {
 	var helper *Helper
 	// Check for =arguments
-	twoPartArgumentChecker := regexp.MustCompile("(\\S+?)\\s*?=\\s*?['\"](.*?)['\"]")
 	twoPartArgumentResult := twoPartArgumentChecker.FindAllSubmatch(helperName, -1)
 	twoPartArguments := make([][]byte, 0)
 	for _, arg := range twoPartArgumentResult {
 		if len(arg) == 3 {
-			twoPartArguments = append(twoPartArguments, bytes.Join(arg[1:], []byte("")))
+			twoPartArguments = append(twoPartArguments, bytes.Join(arg[1:], []byte("=")))
 			//remove =argument from helper name
 			helperName = bytes.Replace(helperName, arg[0], []byte(""), 1)
 		}
@@ -42,12 +43,11 @@ func createHelper(helperName []byte, unescaped bool, startPos int, block []byte,
 	tags := bytes.Fields(helperName)
 	for index, tag := range tags {
 		//remove "" around tag if present
-		quoteTagChecker := regexp.MustCompile("^[\"'](.+?)[\"']$")
 		quoteTagResult := quoteTagChecker.FindSubmatch(tag)
 		if len(quoteTagResult) != 0 {
 			tag = quoteTagResult[1]
 		}
-		//TODO: This may have to change if the first argument is surrounded by ""
+		//TODO: This may have to change if the first argument is surrounded by quotes
 		if index == 0 {
 			helper = makeHelper(string(tag), unescaped, startPos, block, children)
 		} else {
@@ -57,6 +57,12 @@ func createHelper(helperName []byte, unescaped bool, startPos int, block []byte,
 	}
 	if len(twoPartArguments) != 0 {
 		for _, arg := range twoPartArguments {
+			// Check for quotes in the =argument (has beem omitted from the check above)
+			quoteTagResult := quoteTagChecker.FindSubmatch(arg)
+			if len(quoteTagResult) != 0 {
+				// Join poth parts, this time without the youtes
+				arg = bytes.Join([][]byte{quoteTagResult[1], quoteTagResult[2]}, []byte(""))
+			}
 			helper.Arguments = append(helper.Arguments, *makeHelper(string(arg), unescaped, 0, []byte{}, nil))
 		}
 	}
