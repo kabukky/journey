@@ -5,7 +5,9 @@ import (
 	"errors"
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/filenames"
+	"github.com/kabukky/journey/flags"
 	"github.com/kabukky/journey/structure"
+	"gopkg.in/fsnotify.v1"
 	"io/ioutil"
 	"log"
 	"os"
@@ -14,6 +16,11 @@ import (
 	"strings"
 )
 
+// For watching the theme directory for changes
+var themeFileWatcher *fsnotify.Watcher
+var watchedDirectories []string
+
+// For parsing of the theme files
 var openTag = []byte("{{")
 var closeTag = []byte("}}")
 var twoPartArgumentChecker = regexp.MustCompile("(\\S+?)\\s*?=\\s*?['\"](.*?)['\"]")
@@ -178,7 +185,12 @@ func createTemplateFromFile(filename string) (*Helper, error) {
 	if err != nil {
 		return nil, err
 	}
-	helper := compileTemplate(data, filepath.Base(filename)[0:len(filepath.Base(filename))-len(filepath.Ext(filename))]) //second argument: get filename without extension
+	fileNameWithoutExtension := filepath.Base(filename)[0 : len(filepath.Base(filename))-len(filepath.Ext(filename))]
+	// Check if a helper with the same name is already in the map
+	if compiledTemplates.m[fileNameWithoutExtension] != nil {
+		return nil, errors.New("Error: Conflicting .hbs name '" + fileNameWithoutExtension + "'. A theme file of the same name already exists.")
+	}
+	helper := compileTemplate(data, fileNameWithoutExtension)
 	return helper, nil
 }
 
@@ -220,18 +232,69 @@ func Generate() error {
 	if _, ok := compiledTemplates.m["post"]; !ok {
 		return errors.New("Couldn't compile template 'post'. Is post.hbs missing?")
 	}
+	// If the dev flag is set, watch the theme directory for changes
+	if flags.IsInDevMode {
+		err = watchThemeDirectory(currentThemePath)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
-func GetAllThemes() []string {
-	themes := make([]string, 0)
-	files, _ := filepath.Glob(filepath.Join(filenames.ThemesFilepath, "*"))
-	for _, file := range files {
-		if isDirectory(file) {
-			themes = append(themes, filepath.Base(file))
+func watchThemeDirectory(currentThemePath string) error {
+	// Prepare watcher to generate the theme on changes to the files
+	if themeFileWatcher == nil {
+		var err error
+		themeFileWatcher, err = createThemeFileWatcher()
+		if err != nil {
+			return err
+		}
+	} else {
+		// Remove all current directories from watcher
+		for _, dir := range watchedDirectories {
+			err := themeFileWatcher.Remove(dir)
+			if err != nil {
+				return err
+			}
 		}
 	}
-	return themes
+	watchedDirectories = make([]string, 0)
+	// Watch all subdirectories in theme directory
+	err := filepath.Walk(currentThemePath, func(filePath string, info os.FileInfo, err error) error {
+		if info.IsDir() {
+			err := themeFileWatcher.Add(filePath)
+			if err != nil {
+				return err
+			}
+			watchedDirectories = append(watchedDirectories, filePath)
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func createThemeFileWatcher() (*fsnotify.Watcher, error) {
+	watcher, err := fsnotify.NewWatcher()
+	if err != nil {
+		return nil, err
+	}
+	go func() {
+		for {
+			select {
+			case event := <-watcher.Events:
+				if event.Op&fsnotify.Write == fsnotify.Write && filepath.Ext(event.Name) == ".hbs" {
+					go Generate()
+				}
+			case err := <-watcher.Errors:
+				log.Println("Error while watching theme directory.", err)
+			}
+		}
+	}()
+	return watcher, nil
 }
 
 func isDirectory(path string) bool {

@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"errors"
 	"github.com/kabukky/journey/database"
+	"github.com/kabukky/journey/filenames"
 	"github.com/kabukky/journey/structure"
 	"github.com/kabukky/journey/structure/methods"
 	"net/http"
+	"path/filepath"
 	"sync"
 )
 
@@ -120,6 +122,17 @@ func ShowIndexTemplate(writer http.ResponseWriter, page int) error {
 	requestData := structure.RequestData{Posts: posts, Blog: blog, CurrentIndexPage: page, CurrentTemplate: 0} // CurrentTemplate = index
 	_, err = writer.Write(executeHelper(compiledTemplates.m["index"], &requestData, 0))                        // context = index
 	return err
+}
+
+func GetAllThemes() []string {
+	themes := make([]string, 0)
+	files, _ := filepath.Glob(filepath.Join(filenames.ThemesFilepath, "*"))
+	for _, file := range files {
+		if isDirectory(file) {
+			themes = append(themes, filepath.Base(file))
+		}
+	}
+	return themes
 }
 
 func executeHelper(helper *Helper, values *structure.RequestData, context int) []byte {

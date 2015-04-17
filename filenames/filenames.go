@@ -1,7 +1,7 @@
 package filenames
 
 import (
-	"flag"
+	"github.com/kabukky/journey/flags"
 	"github.com/kardianos/osext"
 	"log"
 	"os"
@@ -9,21 +9,20 @@ import (
 )
 
 var (
-	customPath = ""
 	// Initialization of the working directory - needed to load relative assets
 	_ = initializeWorkingDirectory()
 
 	// For assets that are created or changed while running journey
-	ConfigFilename   = filepath.Join(customPath, "config.json")
-	LogFilename      = filepath.Join(customPath, "log.txt")
-	DatabaseFilename = filepath.Join(customPath, "content", "data", "journey.db")
-	ThemesFilepath   = filepath.Join(customPath, "content", "themes")
-	ImagesFilepath   = filepath.Join(customPath, "content", "images")
-	ContentFilepath  = filepath.Join(customPath, "content")
+	ConfigFilename   = filepath.Join(flags.CustomPath, "config.json")
+	LogFilename      = filepath.Join(flags.CustomPath, "log.txt")
+	DatabaseFilename = filepath.Join(flags.CustomPath, "content", "data", "journey.db")
+	ThemesFilepath   = filepath.Join(flags.CustomPath, "content", "themes")
+	ImagesFilepath   = filepath.Join(flags.CustomPath, "content", "images")
+	ContentFilepath  = filepath.Join(flags.CustomPath, "content")
 
 	// For https
-	HttpsCertFilename = filepath.Join(customPath, "content", "https", "cert.pem")
-	HttpsKeyFilename  = filepath.Join(customPath, "content", "https", "key.pem")
+	HttpsCertFilename = filepath.Join(flags.CustomPath, "content", "https", "cert.pem")
+	HttpsKeyFilename  = filepath.Join(flags.CustomPath, "content", "https", "key.pem")
 
 	//For built-in files (e.g. the admin interface)
 	AdminFilepath  = filepath.Join("built-in", "admin")
@@ -40,19 +39,24 @@ var (
 	// For users (this is a url string)
 	DefaultUserImageFilename = "/public/images/user-image.jpg"
 	DefaultUserCoverFilename = "/public/images/user-cover.jpg"
-
-	// Create content directories if they are not created already
-	_ = createDirectories()
 )
 
+func init() {
+	// Create content directories if they are not created already
+	err := createDirectories()
+	if err != nil {
+		log.Fatalln("Error: Couldn't create directories: " + err.Error())
+	}
+
+}
+
 func createDirectories() error {
-	paths := []string{filepath.Join(customPath, "content", "data"), filepath.Join(customPath, "content", "themes"), filepath.Join(customPath, "content", "images"), filepath.Join(customPath, "content", "https")}
+	paths := []string{filepath.Join(flags.CustomPath, "content", "data"), filepath.Join(flags.CustomPath, "content", "themes"), filepath.Join(flags.CustomPath, "content", "images"), filepath.Join(flags.CustomPath, "content", "https")}
 	for _, path := range paths {
 		if _, err := os.Stat(path); os.IsNotExist(err) {
 			log.Println("Creating " + path)
 			err := os.MkdirAll(path, 0776)
 			if err != nil {
-				log.Fatal("Error: Couldn't create directory " + path + ": " + err.Error())
 				return err
 			}
 		}
@@ -61,10 +65,6 @@ func createDirectories() error {
 }
 
 func initializeWorkingDirectory() error {
-	// Check if a custom content path has been provided by the user
-	flag.StringVar(&customPath, "custom-path", "", "Specify a custom path to store content files. Note: Journey needs read and write access to that path.")
-	flag.Parse()
-
 	// Set working directory to the path this executable is in
 	executablePath, err := osext.ExecutableFolder()
 	if err != nil {
