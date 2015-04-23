@@ -22,7 +22,7 @@ var jqueryCodeForFooter = []byte("<script src=\"" + filenames.JqueryFilename + "
 func nullFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	// Check if the helper was defined in a plugin
 	if plugins.LuaPool != nil {
-		// Get a state map to exeute and put it back at the end.
+		// Get a state map to execute.
 		stateMap := plugins.LuaPool.Get()
 		if stateMap[helper.Name] != nil {
 			pluginResult, err := plugins.Execute(stateMap, helper.Name, values)

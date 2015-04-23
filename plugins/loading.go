@@ -27,7 +27,6 @@ func Load() error {
 			// Check if the lua file is a plugin entry point by executing it
 			helperNames, vm := getHelperNames(filePath)
 			for _, helperName := range helperNames {
-				log.Println("Helper name:", helperName)
 				stateMap[helperName] = vm
 			}
 		}

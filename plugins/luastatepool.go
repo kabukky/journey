@@ -2,7 +2,6 @@ package plugins
 
 import (
 	"github.com/yuin/gopher-lua"
-	"log"
 	"sync"
 )
 
@@ -46,11 +45,11 @@ func (pl *lStatePool) New() map[string]*lua.LState {
 				if value2 == value {
 					// Check if key2 was already assigned. If so, use that pointer
 					if stateMap[key2] != nil {
-						log.Println("Duplicate pointer:", key, key2)
 						stateMap[key] = stateMap[key2]
 						wasAlreadyAssigned = true
 						break
 					}
+					break
 				}
 			}
 			// Assign a copy of the lua.LState struct by dereferencing it.
@@ -58,6 +57,7 @@ func (pl *lStatePool) New() map[string]*lua.LState {
 				vm := *value
 				stateMap[key] = &vm
 			}
+			wasAlreadyAssigned = false
 		}
 	}
 	return stateMap
