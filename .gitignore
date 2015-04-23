@@ -27,6 +27,10 @@ content/themes/*
 content/https/*
 !content/https/README.md
 
+# Plugins
+content/plugins/*
+!content/plugins/README.md
+
 # Go
 # Compiled Object files, Static and Dynamic libs (Shared Objects)
 *.o
