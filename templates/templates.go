@@ -6,6 +6,7 @@ import (
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/filenames"
 	"github.com/kabukky/journey/helpers"
+	"github.com/kabukky/journey/plugins"
 	"github.com/kabukky/journey/structure"
 	"github.com/kabukky/journey/structure/methods"
 	"net/http"
@@ -46,6 +47,10 @@ func ShowPostTemplate(writer http.ResponseWriter, slug string) error {
 		}
 	}
 	_, err = writer.Write(executeHelper(compiledTemplates.m["post"], &requestData, 1)) // context = post
+	if requestData.PluginVMs != nil {
+		// Put the lua state map back into the pool
+		plugins.LuaPool.Put(requestData.PluginVMs)
+	}
 	return err
 }
 
@@ -73,6 +78,10 @@ func ShowAuthorTemplate(writer http.ResponseWriter, slug string, page int) error
 		_, err = writer.Write(executeHelper(template, &requestData, 0)) // context = index
 	} else {
 		_, err = writer.Write(executeHelper(compiledTemplates.m["index"], &requestData, 0)) // context = index
+	}
+	if requestData.PluginVMs != nil {
+		// Put the lua state map back into the pool
+		plugins.LuaPool.Put(requestData.PluginVMs)
 	}
 	return err
 }
@@ -102,6 +111,10 @@ func ShowTagTemplate(writer http.ResponseWriter, slug string, page int) error {
 	} else {
 		_, err = writer.Write(executeHelper(compiledTemplates.m["index"], &requestData, 0)) // context = index
 	}
+	if requestData.PluginVMs != nil {
+		// Put the lua state map back into the pool
+		plugins.LuaPool.Put(requestData.PluginVMs)
+	}
 	return err
 }
 
@@ -122,6 +135,10 @@ func ShowIndexTemplate(writer http.ResponseWriter, page int) error {
 	}
 	requestData := structure.RequestData{Posts: posts, Blog: blog, CurrentIndexPage: page, CurrentTemplate: 0} // CurrentTemplate = index
 	_, err = writer.Write(executeHelper(compiledTemplates.m["index"], &requestData, 0))                        // context = index
+	if requestData.PluginVMs != nil {
+		// Put the lua state map back into the pool
+		plugins.LuaPool.Put(requestData.PluginVMs)
+	}
 	return err
 }
 

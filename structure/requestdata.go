@@ -1,7 +1,12 @@
 package structure
 
+import (
+	"github.com/yuin/gopher-lua"
+)
+
 // RequestData: used for template/helper execution. Contains data specific to the incoming request.
 type RequestData struct {
+	PluginVMs            map[string]*lua.LState
 	Posts                []Post
 	Blog                 *Blog
 	CurrentTag           *Tag
