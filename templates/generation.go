@@ -6,6 +6,7 @@ import (
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/filenames"
 	"github.com/kabukky/journey/flags"
+	"github.com/kabukky/journey/helpers"
 	"github.com/kabukky/journey/structure"
 	"gopkg.in/fsnotify.v1"
 	"io/ioutil"
@@ -26,7 +27,7 @@ var closeTag = []byte("}}")
 var twoPartArgumentChecker = regexp.MustCompile("(\\S+?)\\s*?=\\s*?['\"](.*?)['\"]")
 var quoteTagChecker = regexp.MustCompile("(.*?)[\"'](.+?)[\"']$")
 
-func getFunction(name string) func(*Helper, *structure.RequestData) []byte {
+func getFunction(name string) func(*structure.Helper, *structure.RequestData) []byte {
 	if helperFuctions[name] != nil {
 		return helperFuctions[name]
 	} else {
@@ -34,8 +35,8 @@ func getFunction(name string) func(*Helper, *structure.RequestData) []byte {
 	}
 }
 
-func createHelper(helperName []byte, unescaped bool, startPos int, block []byte, children []Helper, elseHelper *Helper) *Helper {
-	var helper *Helper
+func createHelper(helperName []byte, unescaped bool, startPos int, block []byte, children []structure.Helper, elseHelper *structure.Helper) *structure.Helper {
+	var helper *structure.Helper
 	// Check for =arguments
 	twoPartArgumentResult := twoPartArgumentChecker.FindAllSubmatch(helperName, -1)
 	twoPartArguments := make([][]byte, 0)
@@ -79,11 +80,11 @@ func createHelper(helperName []byte, unescaped bool, startPos int, block []byte,
 	return helper
 }
 
-func makeHelper(tag string, unescaped bool, startPos int, block []byte, children []Helper) *Helper {
-	return &Helper{Name: tag, Arguments: nil, Unescaped: unescaped, Position: startPos, Block: block, Children: children, Function: getFunction(tag)}
+func makeHelper(tag string, unescaped bool, startPos int, block []byte, children []structure.Helper) *structure.Helper {
+	return &structure.Helper{Name: tag, Arguments: nil, Unescaped: unescaped, Position: startPos, Block: block, Children: children, Function: getFunction(tag)}
 }
 
-func findHelper(data []byte, allHelpers []Helper) ([]byte, []Helper) {
+func findHelper(data []byte, allHelpers []structure.Helper) ([]byte, []structure.Helper) {
 	startPos := bytes.Index(data, openTag)
 	endPos := bytes.Index(data, closeTag)
 	if startPos != -1 && endPos != -1 {
@@ -109,7 +110,7 @@ func findHelper(data []byte, allHelpers []Helper) ([]byte, []Helper) {
 		// Check if block
 		if bytes.HasPrefix(helperName, []byte("#")) {
 			helperName = helperName[len([]byte("#")):] //remove '#' from helperName
-			var helper Helper
+			var helper structure.Helper
 			data, helper = findBlock(data, helperName, unescaped, startPos) //only use the data string after the opening tag
 			allHelpers = append(allHelpers, helper)
 			return findHelper(data, allHelpers)
@@ -121,7 +122,7 @@ func findHelper(data []byte, allHelpers []Helper) ([]byte, []Helper) {
 	}
 }
 
-func findBlock(data []byte, helperName []byte, unescaped bool, startPos int) ([]byte, Helper) {
+func findBlock(data []byte, helperName []byte, unescaped bool, startPos int) ([]byte, structure.Helper) {
 	arguments := bytes.Fields(helperName)
 	tag := arguments[0] // Get only the first tag (e.g. 'if' in 'if @blog.cover')
 	arguments = arguments[1:]
@@ -141,7 +142,7 @@ func findBlock(data []byte, helperName []byte, unescaped bool, startPos int) ([]
 	block := data[startPos:closePositions[positionIndex][0]]
 	parts := [][]byte{data[:startPos], data[closePositions[positionIndex][1]:]}
 	data = bytes.Join(parts, []byte(""))
-	children := make([]Helper, 0)
+	children := make([]structure.Helper, 0)
 	block, children = findHelper(block, children)
 	// Handle else (search children for else helper)
 	for index, child := range children {
@@ -165,9 +166,9 @@ func findBlock(data []byte, helperName []byte, unescaped bool, startPos int) ([]
 	return data, *helper
 }
 
-func compileTemplate(data []byte, name string) *Helper {
-	baseHelper := Helper{Name: name, Arguments: nil, Unescaped: false, Position: 0, Block: []byte{}, Children: nil, Function: getFunction(name)}
-	allHelpers := make([]Helper, 0)
+func compileTemplate(data []byte, name string) *structure.Helper {
+	baseHelper := structure.Helper{Name: name, Arguments: nil, Unescaped: false, Position: 0, Block: []byte{}, Children: nil, Function: getFunction(name)}
+	allHelpers := make([]structure.Helper, 0)
 	data, allHelpers = findHelper(data, allHelpers)
 	baseHelper.Block = data
 	baseHelper.Children = allHelpers
@@ -180,12 +181,12 @@ func compileTemplate(data []byte, name string) *Helper {
 	return &baseHelper
 }
 
-func createTemplateFromFile(filename string) (*Helper, error) {
+func createTemplateFromFile(filename string) (*structure.Helper, error) {
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
-	fileNameWithoutExtension := filepath.Base(filename)[0 : len(filepath.Base(filename))-len(filepath.Ext(filename))]
+	fileNameWithoutExtension := helpers.GetFilenameWithoutExtension(filename)
 	// Check if a helper with the same name is already in the map
 	if compiledTemplates.m[fileNameWithoutExtension] != nil {
 		return nil, errors.New("Error: Conflicting .hbs name '" + fileNameWithoutExtension + "'. A theme file of the same name already exists.")
@@ -214,7 +215,7 @@ func Generate() error {
 	}
 	// Compile all template files
 	// First clear compiledTemplates map (theme could have been changed)
-	compiledTemplates.m = make(map[string]*Helper)
+	compiledTemplates.m = make(map[string]*structure.Helper)
 	currentThemePath := filepath.Join(filenames.ThemesFilepath, *activeTheme)
 	// Check if the theme folder exists
 	if _, err := os.Stat(currentThemePath); os.IsNotExist(err) {
@@ -295,12 +296,4 @@ func createThemeFileWatcher() (*fsnotify.Watcher, error) {
 		}
 	}()
 	return watcher, nil
-}
-
-func isDirectory(path string) bool {
-	fileInfo, err := os.Stat(path)
-	if err != nil {
-		return false
-	}
-	return fileInfo.IsDir()
 }
