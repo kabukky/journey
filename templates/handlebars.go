@@ -24,7 +24,7 @@ func nullFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	if plugins.LuaPool != nil {
 		// Get a state map to execute and attach it to the requestdata
 		if values.PluginVMs == nil {
-			values.PluginVMs = plugins.LuaPool.Get()
+			values.PluginVMs = plugins.LuaPool.Get(values)
 		}
 		if values.PluginVMs[helper.Name] != nil {
 			pluginResult, err := plugins.Execute(helper.Name, values)

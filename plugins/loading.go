@@ -11,23 +11,24 @@ import (
 )
 
 func Load() error {
-	// Clear LuaPool
-	LuaPool = nil
 	// Make map
-	stateMap := make(map[string]*lua.LState, 0)
+	nameMap := make(map[string]string, 0)
 	err := filepath.Walk(filenames.PluginsFilepath, func(filePath string, info os.FileInfo, err error) error {
 		if !info.IsDir() && filepath.Ext(filePath) == ".lua" {
-			// Initialize the LuaPool if it is not alread initialized
-			if LuaPool == nil {
-				makeLuaPool()
-			}
-			// Lock LuaPool
-			LuaPool.Lock()
-			defer LuaPool.Unlock()
 			// Check if the lua file is a plugin entry point by executing it
-			helperNames, vm := getHelperNames(filePath)
+			helperNames, err := getHelperNames(filePath)
+			if err != nil {
+				return err
+			}
+			// Add all file names of helpers to the name map
 			for _, helperName := range helperNames {
-				stateMap[helperName] = vm
+				log.Println("Helper name:", helperName)
+				absPath, err := filepath.Abs(filePath)
+				if err != nil {
+					log.Println("Error while determining absolute path to lua file:", err)
+					return err
+				}
+				nameMap[helperName] = absPath
 			}
 		}
 		return nil
@@ -35,36 +36,44 @@ func Load() error {
 	if err != nil {
 		return err
 	}
-	if len(stateMap) == 0 {
-		LuaPool = nil
+	if len(nameMap) == 0 {
 		return errors.New("No plugins were loaded.")
 	}
-	// If plugins were loaded, assign state map to the first element of the array in LuaPool
-	LuaPool.Lock()
-	defer LuaPool.Unlock()
-	LuaPool.template = stateMap
+	// If plugins were loaded, create LuaPool and assign name map to LuaPool
+	LuaPool = newLuaPool()
+	LuaPool.m.Lock()
+	defer LuaPool.m.Unlock()
+	LuaPool.files = nameMap
 	return nil
 }
 
-func getHelperNames(fileName string) ([]string, *lua.LState) {
+func getHelperNames(fileName string) ([]string, error) {
 	// Make a slice to hold all helper names
 	helperList := make([]string, 0)
 	// Create a new lua state
 	vm := lua.NewState()
-	// Set up vm (make sure to append the absolute path to the Lua script to LUA_PATH)
+	defer vm.Close()
+	// Set up vm functions
 	values := &structure.RequestData{}
 	absDir, err := filepath.Abs(fileName)
-	setUpVm(vm, values, filepath.Dir(absDir))
-	// Execute plugin
-	err = vm.DoFile(fileName)
 	if err != nil {
+		log.Println("Error while determining absolute path to lua file:", err)
+		return helperList, err
+	}
+	setUpVm(vm, values, absDir)
+	// Execute plugin
+	// TODO: Is there a better way to just load the file? We only need to execute the register function (see below)
+	err = vm.DoFile(absDir)
+	if err != nil {
+		// TODO: We are not returning upon error here. Keep it like this?
 		log.Println("Error while loading plugin:", err)
 	}
 	err = vm.CallByParam(lua.P{Fn: vm.GetGlobal("register"), NRet: 1, Protect: true})
 	if err != nil {
-		vm.Close()
+		// Fail silently since this is probably just a lua file without a register function
 		return helperList, nil
 	}
+	// Get return value
 	table := vm.ToTable(-1)
 	// Check if return value is a table
 	if table != nil {
@@ -76,18 +85,16 @@ func getHelperNames(fileName string) ([]string, *lua.LState) {
 				}
 			}
 		})
-	} else { // Else return nil
-		vm.Close()
-		return []string{}, nil
 	}
-	return helperList, vm
+	return helperList, nil
 }
 
-// Creates all methods that can be used by lua. The isTesting argument indicates if it should be set up just for testing (e. g. loading and initial testing of the lua file).
-func setUpVm(vm *lua.LState, values *structure.RequestData, filePath string) {
-	// Function to get the dir of the current file (to add to LUA_PATH in Lua)
+// Creates all methods that can be used from Lua.
+func setUpVm(vm *lua.LState, values *structure.RequestData, absPathToLuaFile string) {
+	luaPath := filepath.Dir(absPathToLuaFile)
+	// Function to get the directory of the current file (to add to LUA_PATH in Lua)
 	vm.SetGlobal("getCurrentDir", vm.NewFunction(func(vm *lua.LState) int {
-		vm.Push(lua.LString(filePath))
+		vm.Push(lua.LString(luaPath))
 		return 1 // Number of results
 	}))
 	// Function to print to the log
