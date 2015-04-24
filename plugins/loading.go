@@ -22,7 +22,6 @@ func Load() error {
 			}
 			// Add all file names of helpers to the name map
 			for _, helperName := range helperNames {
-				log.Println("Helper name:", helperName)
 				absPath, err := filepath.Abs(filePath)
 				if err != nil {
 					log.Println("Error while determining absolute path to lua file:", err)
