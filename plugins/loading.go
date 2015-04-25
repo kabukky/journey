@@ -56,12 +56,13 @@ func getHelperNames(fileName string) ([]string, error) {
 	defer vm.Close()
 	// Set up vm functions
 	values := &structure.RequestData{}
+	helper := &structure.Helper{}
 	absDir, err := filepath.Abs(fileName)
 	if err != nil {
 		log.Println("Error while determining absolute path to lua file:", err)
 		return helperList, err
 	}
-	setUpVm(vm, values, absDir)
+	setUpVm(vm, helper, values, absDir)
 	// Execute plugin
 	// TODO: Is there a better way to just load the file? We only need to execute the register function (see below)
 	err = vm.DoFile(absDir)
@@ -91,7 +92,7 @@ func getHelperNames(fileName string) ([]string, error) {
 }
 
 // Creates all methods that can be used from Lua.
-func setUpVm(vm *lua.LState, values *structure.RequestData, absPathToLuaFile string) {
+func setUpVm(vm *lua.LState, helper *structure.Helper, values *structure.RequestData, absPathToLuaFile string) {
 	luaPath := filepath.Dir(absPathToLuaFile)
 	// Function to get the directory of the current file (to add to LUA_PATH in Lua)
 	vm.SetGlobal("getCurrentDir", vm.NewFunction(func(vm *lua.LState) int {
@@ -102,6 +103,11 @@ func setUpVm(vm *lua.LState, values *structure.RequestData, absPathToLuaFile str
 	vm.SetGlobal("print", vm.NewFunction(func(vm *lua.LState) int {
 		log.Println(vm.Get(-1).String())
 		return 0 // Number of results
+	}))
+	// Function to get helper arguments
+	vm.SetGlobal("getArguments", vm.NewFunction(func(vm *lua.LState) int {
+		vm.Push(convertArguments(vm, helper.Arguments))
+		return 1 // Number of results
 	}))
 	// Function to get number of posts in values
 	vm.SetGlobal("getNumberOfPosts", vm.NewFunction(func(vm *lua.LState) int {

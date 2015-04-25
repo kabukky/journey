@@ -4,7 +4,7 @@ A blog engine written in Go, compatible with Ghost themes.
 ![Editor](https://raw.githubusercontent.com/kabukky/journey/gh-pages/images/journey.png)
 
 ## About
-Please note that Journey is still in alpha and has not been tested in production.
+Please note that Journey is still in alpha and has not been tested in production. Not all Ghost theme helpers have been implemented yet so there is bound to be trouble with some Ghost themes. Please open a [New Issue](https://github.com/kabukky/journey/issues) if you encounter a theme that doesn't work.
 
 #### Easy to work with
 Create or update your posts from any place and any device. Simply point your browser to yourblog.url/admin/, log in, and start typing away!

@@ -2,8 +2,18 @@ package plugins
 
 import (
 	"github.com/kabukky/journey/structure"
+	"github.com/kabukky/journey/structure/methods"
 	"github.com/yuin/gopher-lua"
 )
+
+func convertArguments(vm *lua.LState, structureArguments []structure.Helper) *lua.LTable {
+	table := vm.NewTable()
+	arguments := methods.ProcessHelperArguments(structureArguments)
+	for key, value := range arguments {
+		table.RawSet(lua.LString(key), lua.LString(value))
+	}
+	return table
+}
 
 func convertPost(vm *lua.LState, structurePost *structure.Post) *lua.LTable {
 	post := vm.NewTable()

@@ -7,6 +7,7 @@ import (
 	"github.com/kabukky/journey/filenames"
 	"github.com/kabukky/journey/plugins"
 	"github.com/kabukky/journey/structure"
+	"github.com/kabukky/journey/structure/methods"
 	"html"
 	"log"
 	"net/url"
@@ -22,16 +23,20 @@ var jqueryCodeForFooter = []byte("<script src=\"" + filenames.JqueryFilename + "
 func nullFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	// Check if the helper was defined in a plugin
 	if plugins.LuaPool != nil {
-		// Get a state map to execute and attach it to the requestdata
+		// Get a state map to execute and attach it to the request data
 		if values.PluginVMs == nil {
-			values.PluginVMs = plugins.LuaPool.Get(values)
+			values.PluginVMs = plugins.LuaPool.Get(helper, values)
 		}
 		if values.PluginVMs[helper.Name] != nil {
-			pluginResult, err := plugins.Execute(helper.Name, values)
+			pluginResult, err := plugins.Execute(helper, values)
 			if err != nil {
 				return []byte{}
 			}
 			return evaluateEscape(pluginResult, helper.Unescaped)
+		} else {
+			// This helper is not implemented in a plugin. Get rid of the Lua VMs
+			plugins.LuaPool.Put(values.PluginVMs)
+			values.PluginVMs = nil
 		}
 	}
 	//log.Println("Warning: This helper is not implemented:", helper.Name)
@@ -60,24 +65,28 @@ func paginationDotTotalFunc(helper *structure.Helper, values *structure.RequestD
 }
 
 func pluralFunc(helper *structure.Helper, values *structure.RequestData) []byte {
-	countString := string(helper.Arguments[0].Function(helper, values))
-	if countString == "" {
-		log.Println("Couldn't get count in plural helper")
-		return []byte{}
-	}
-	for _, argument := range helper.Arguments[1:] {
-		if countString == "0" && strings.HasPrefix(argument.Name, "empty") {
-			output := argument.Name[len("empty"):]
-			output = strings.Replace(output, "%", countString, -1)
-			return []byte(output)
-		} else if countString == "1" && strings.HasPrefix(argument.Name, "singular") {
-			output := argument.Name[len("singular"):]
-			output = strings.Replace(output, "%", countString, -1)
-			return []byte(output)
-		} else if countString != "0" && countString != "1" && strings.HasPrefix(argument.Name, "plural") {
-			output := argument.Name[len("plural"):]
-			output = strings.Replace(output, "%", countString, -1)
-			return []byte(output)
+	if len(helper.Arguments) != 0 {
+		// Get the number calculated by executing the first argument
+		countString := string(helper.Arguments[0].Function(helper, values))
+		if countString == "" {
+			log.Println("Couldn't get count in plural helper")
+			return []byte{}
+		}
+		arguments := methods.ProcessHelperArguments(helper.Arguments)
+		for key, value := range arguments {
+			if countString == "0" && key == "empty" {
+				output := value
+				output = strings.Replace(output, "%", countString, -1)
+				return []byte(output)
+			} else if countString == "1" && key == "singular" {
+				output := value
+				output = strings.Replace(output, "%", countString, -1)
+				return []byte(output)
+			} else if countString != "0" && countString != "1" && key == "plural" {
+				output := value
+				output = strings.Replace(output, "%", countString, -1)
+				return []byte(output)
+			}
 		}
 	}
 	return []byte{}
@@ -420,7 +429,7 @@ func tagsFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 		prefix := ""
 		makeLink := true
 		if len(helper.Arguments) != 0 {
-			arguments := processArguments(helper.Arguments)
+			arguments := methods.ProcessHelperArguments(helper.Arguments)
 			for key, value := range arguments {
 				if key == "separator" {
 					separator = value
@@ -483,7 +492,7 @@ func post_classFunc(helper *structure.Helper, values *structure.RequestData) []b
 func urlFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	var buffer bytes.Buffer
 	if len(helper.Arguments) != 0 {
-		arguments := processArguments(helper.Arguments)
+		arguments := methods.ProcessHelperArguments(helper.Arguments)
 		for key, value := range arguments {
 			if key == "absolute" {
 				if value == "true" {
@@ -519,7 +528,7 @@ func contentFunc(helper *structure.Helper, values *structure.RequestData) []byte
 func excerptFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	if values.CurrentHelperContext == 1 { // post
 		if len(helper.Arguments) != 0 {
-			arguments := processArguments(helper.Arguments)
+			arguments := methods.ProcessHelperArguments(helper.Arguments)
 			for key, value := range arguments {
 				if key == "words" {
 					number, err := strconv.Atoi(value)
@@ -564,7 +573,7 @@ func dateFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	}
 	// Get the date
 	if len(helper.Arguments) != 0 {
-		arguments := processArguments(helper.Arguments)
+		arguments := methods.ProcessHelperArguments(helper.Arguments)
 		for key, value := range arguments {
 			if key == "published_at" {
 				showPublicationDate = true
@@ -852,7 +861,6 @@ func atBlogDotTitleFunc(helper *structure.Helper, values *structure.RequestData)
 
 func atBlogDotUrlFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	var buffer bytes.Buffer
-	log.Println(string(values.Blog.Url))
 	buffer.Write(values.Blog.Url)
 	return evaluateEscape(buffer.Bytes(), helper.Unescaped)
 }
@@ -874,18 +882,4 @@ func evaluateEscape(value []byte, unescaped bool) []byte {
 		return value
 	}
 	return []byte(html.EscapeString(string(value)))
-}
-
-func processArguments(arguments []structure.Helper) map[string]string {
-	argumentsMap := make(map[string]string)
-	for index, _ := range arguments {
-		// Separate = arguments and put them in map
-		argumentParts := strings.SplitN(arguments[index].Name, "=", 2)
-		if len(argumentParts) > 1 {
-			argumentsMap[argumentParts[0]] = argumentParts[1]
-		} else {
-			argumentsMap[arguments[index].Name] = ""
-		}
-	}
-	return argumentsMap
 }
