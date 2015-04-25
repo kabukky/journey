@@ -852,8 +852,7 @@ func atBlogDotTitleFunc(helper *structure.Helper, values *structure.RequestData)
 
 func atBlogDotUrlFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	var buffer bytes.Buffer
-	// Write // in front of url to be protocol agnostic
-	buffer.WriteString("//")
+	log.Println(string(values.Blog.Url))
 	buffer.Write(values.Blog.Url)
 	return evaluateEscape(buffer.Bytes(), helper.Unescaped)
 }
