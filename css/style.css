@@ -508,6 +508,7 @@ textarea {
 }
 @media (max-width:767px) {
 	.header.navbar-fixed-top {
+		background-color: rgba(0,0,0,0.8);
 		position: absolute;
 	}
 }
