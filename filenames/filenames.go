@@ -52,7 +52,7 @@ func init() {
 }
 
 func createDirectories() error {
-	paths := []string{filepath.Join(flags.CustomPath, "content", "data"), filepath.Join(flags.CustomPath, "content", "themes"), filepath.Join(flags.CustomPath, "content", "images"), filepath.Join(flags.CustomPath, "content", "https")}
+	paths := []string{filepath.Join(flags.CustomPath, "content", "data"), filepath.Join(flags.CustomPath, "content", "themes"), filepath.Join(flags.CustomPath, "content", "images"), filepath.Join(flags.CustomPath, "content", "https"), filepath.Join(flags.CustomPath, "content", "plugins")}
 	for _, path := range paths {
 		if _, err := os.Stat(path); os.IsNotExist(err) {
 			log.Println("Creating " + path)
