@@ -50,7 +50,8 @@ func createHelper(helperName []byte, unescaped bool, startPos int, block []byte,
 		//remove "" around tag if present
 		quoteTagResult := quoteTagChecker.FindSubmatch(tag)
 		if len(quoteTagResult) != 0 {
-			tag = quoteTagResult[1]
+			// Get the string inside the quotes (3rd element in array)
+			tag = quoteTagResult[2]
 		}
 		//TODO: This may have to change if the first argument is surrounded by quotes
 		if index == 0 {
@@ -65,7 +66,7 @@ func createHelper(helperName []byte, unescaped bool, startPos int, block []byte,
 			// Check for quotes in the =argument (has beem omitted from the check above)
 			quoteTagResult := quoteTagChecker.FindSubmatch(arg)
 			if len(quoteTagResult) != 0 {
-				// Join poth parts, this time without the youtes
+				// Join poth parts, this time without the quotes
 				arg = bytes.Join([][]byte{quoteTagResult[1], quoteTagResult[2]}, []byte(""))
 			}
 			helper.Arguments = append(helper.Arguments, *makeHelper(string(arg), unescaped, 0, []byte{}, nil))
