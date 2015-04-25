@@ -10,7 +10,7 @@ Please note that Journey is still in alpha and has not been tested in production
 Create or update your posts from any place and any device. Simply point your browser to yourblog.url/admin/, log in, and start typing away!
 
 #### Extensible
-Write plugins in Lua to implement custom behavior when generating pages. Learn how on the [Wiki](https://github.com/kabukky/journey/wiki/Creating-a-Journey-Plugin)!
+Write plugins in Lua to implement custom behavior when generating pages. Learn how to on the [Wiki](https://github.com/kabukky/journey/wiki/Creating-a-Journey-Plugin)!
 
 #### Good stuff available right away
 Use Ghost themes to design your blog. There's already a great community of designers working on Ghost compatible themes. Check out the [Ghost Marketplace](http://marketplace.ghost.org) to get an idea.
@@ -36,6 +36,9 @@ This slimness makes Journey an ideal candidate for setting up micro blogs or hos
 To get started with Journey, go to the the [Releases Page](https://github.com/kabukky/journey/releases) and download the zip file corresponding to your operating system and cpu architecture. Then extract Journey anywhere you like. Why not place it in your home folder (e.g. /home/youruser/journey/)?
 
 After that, head over to [Setting up Journey](https://github.com/kabukky/journey/wiki/Setting-up-Journey) to configure your Journey blog on your local machine. If you'd like to set up Journey on a linux server, head over to [Installing Journey on Ubuntu Server](https://github.com/kabukky/journey/wiki/Installing-Journey-on-Ubuntu-Server) for a step-by-step tutorial.
+
+## Questions?
+Please read the [FAQ](https://github.com/kabukky/journey/wiki/FAQ) Wiki page or write to me@kaihag.com.
 
 ## Troubleshooting
 Please refer to the [FAQ](https://github.com/kabukky/journey/wiki/FAQ) Wiki page if you experience any trouble running Journey.
