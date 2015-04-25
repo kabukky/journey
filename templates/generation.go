@@ -7,8 +7,9 @@ import (
 	"github.com/kabukky/journey/filenames"
 	"github.com/kabukky/journey/flags"
 	"github.com/kabukky/journey/helpers"
+	"github.com/kabukky/journey/plugins"
 	"github.com/kabukky/journey/structure"
-	"gopkg.in/fsnotify.v1"
+	"github.com/kabukky/journey/watcher"
 	"io/ioutil"
 	"log"
 	"os"
@@ -16,10 +17,6 @@ import (
 	"regexp"
 	"strings"
 )
-
-// For watching the theme directory for changes
-var themeFileWatcher *fsnotify.Watcher
-var watchedDirectories []string
 
 // For parsing of the theme files
 var openTag = []byte("{{")
@@ -233,67 +230,14 @@ func Generate() error {
 	if _, ok := compiledTemplates.m["post"]; !ok {
 		return errors.New("Couldn't compile template 'post'. Is post.hbs missing?")
 	}
-	// If the dev flag is set, watch the theme directory for changes
+	// If the dev flag is set, watch the theme directory and the plugin directoy for changes
+	// TODO: It seems unclean to do the watching of the plugins in the templates package. Move this somewhere else.
 	if flags.IsInDevMode {
-		err = watchThemeDirectory(currentThemePath)
+		// Create watcher
+		err = watcher.Watch([]string{currentThemePath, filenames.PluginsFilepath}, map[string]func() error{".hbs": Generate, ".lua": plugins.Load})
 		if err != nil {
 			return err
 		}
 	}
 	return nil
-}
-
-func watchThemeDirectory(currentThemePath string) error {
-	// Prepare watcher to generate the theme on changes to the files
-	if themeFileWatcher == nil {
-		var err error
-		themeFileWatcher, err = createThemeFileWatcher()
-		if err != nil {
-			return err
-		}
-	} else {
-		// Remove all current directories from watcher
-		for _, dir := range watchedDirectories {
-			err := themeFileWatcher.Remove(dir)
-			if err != nil {
-				return err
-			}
-		}
-	}
-	watchedDirectories = make([]string, 0)
-	// Watch all subdirectories in theme directory
-	err := filepath.Walk(currentThemePath, func(filePath string, info os.FileInfo, err error) error {
-		if info.IsDir() {
-			err := themeFileWatcher.Add(filePath)
-			if err != nil {
-				return err
-			}
-			watchedDirectories = append(watchedDirectories, filePath)
-		}
-		return nil
-	})
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func createThemeFileWatcher() (*fsnotify.Watcher, error) {
-	watcher, err := fsnotify.NewWatcher()
-	if err != nil {
-		return nil, err
-	}
-	go func() {
-		for {
-			select {
-			case event := <-watcher.Events:
-				if event.Op&fsnotify.Write == fsnotify.Write && filepath.Ext(event.Name) == ".hbs" {
-					go Generate()
-				}
-			case err := <-watcher.Errors:
-				log.Println("Error while watching theme directory.", err)
-			}
-		}
-	}()
-	return watcher, nil
 }

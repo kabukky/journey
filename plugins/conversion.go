@@ -37,15 +37,15 @@ func convertUser(vm *lua.LState, structureUser *structure.User) *lua.LTable {
 }
 
 func convertTags(vm *lua.LState, structureTags []structure.Tag) *lua.LTable {
-	array := make([]*lua.LTable, 0)
+	table := make([]*lua.LTable, 0)
 	for index, _ := range structureTags {
 		tag := vm.NewTable()
 		tag.RawSet(lua.LString("id"), lua.LNumber(structureTags[index].Id))
 		tag.RawSet(lua.LString("name"), lua.LString(structureTags[index].Name))
 		tag.RawSet(lua.LString("slug"), lua.LString(structureTags[index].Slug))
-		array = append(array, tag)
+		table = append(table, tag)
 	}
-	return makeArray(vm, array)
+	return makeTable(vm, table)
 }
 
 func convertBlog(vm *lua.LState, structureBlog *structure.Blog) *lua.LTable {
@@ -62,10 +62,10 @@ func convertBlog(vm *lua.LState, structureBlog *structure.Blog) *lua.LTable {
 	return blog
 }
 
-func makeArray(vm *lua.LState, tables []*lua.LTable) *lua.LTable {
-	array := vm.NewTable()
+func makeTable(vm *lua.LState, tables []*lua.LTable) *lua.LTable {
+	table := vm.NewTable()
 	for index, _ := range tables {
-		array.Append(tables[index])
+		table.Append(tables[index])
 	}
-	return array
+	return table
 }
