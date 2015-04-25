@@ -5,6 +5,8 @@ import (
 	"errors"
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/filenames"
+	"github.com/kabukky/journey/helpers"
+	"github.com/kabukky/journey/plugins"
 	"github.com/kabukky/journey/structure"
 	"github.com/kabukky/journey/structure/methods"
 	"net/http"
@@ -14,10 +16,10 @@ import (
 
 type Templates struct {
 	sync.RWMutex
-	m map[string]*Helper
+	m map[string]*structure.Helper
 }
 
-func newTemplates() *Templates { return &Templates{m: make(map[string]*Helper)} }
+func newTemplates() *Templates { return &Templates{m: make(map[string]*structure.Helper)} }
 
 // Global compiled templates - thread safe and accessible from all packages
 var compiledTemplates = newTemplates()
@@ -45,6 +47,10 @@ func ShowPostTemplate(writer http.ResponseWriter, slug string) error {
 		}
 	}
 	_, err = writer.Write(executeHelper(compiledTemplates.m["post"], &requestData, 1)) // context = post
+	if requestData.PluginVMs != nil {
+		// Put the lua state map back into the pool
+		plugins.LuaPool.Put(requestData.PluginVMs)
+	}
 	return err
 }
 
@@ -72,6 +78,10 @@ func ShowAuthorTemplate(writer http.ResponseWriter, slug string, page int) error
 		_, err = writer.Write(executeHelper(template, &requestData, 0)) // context = index
 	} else {
 		_, err = writer.Write(executeHelper(compiledTemplates.m["index"], &requestData, 0)) // context = index
+	}
+	if requestData.PluginVMs != nil {
+		// Put the lua state map back into the pool
+		plugins.LuaPool.Put(requestData.PluginVMs)
 	}
 	return err
 }
@@ -101,6 +111,10 @@ func ShowTagTemplate(writer http.ResponseWriter, slug string, page int) error {
 	} else {
 		_, err = writer.Write(executeHelper(compiledTemplates.m["index"], &requestData, 0)) // context = index
 	}
+	if requestData.PluginVMs != nil {
+		// Put the lua state map back into the pool
+		plugins.LuaPool.Put(requestData.PluginVMs)
+	}
 	return err
 }
 
@@ -121,6 +135,10 @@ func ShowIndexTemplate(writer http.ResponseWriter, page int) error {
 	}
 	requestData := structure.RequestData{Posts: posts, Blog: blog, CurrentIndexPage: page, CurrentTemplate: 0} // CurrentTemplate = index
 	_, err = writer.Write(executeHelper(compiledTemplates.m["index"], &requestData, 0))                        // context = index
+	if requestData.PluginVMs != nil {
+		// Put the lua state map back into the pool
+		plugins.LuaPool.Put(requestData.PluginVMs)
+	}
 	return err
 }
 
@@ -128,14 +146,14 @@ func GetAllThemes() []string {
 	themes := make([]string, 0)
 	files, _ := filepath.Glob(filepath.Join(filenames.ThemesFilepath, "*"))
 	for _, file := range files {
-		if isDirectory(file) {
+		if helpers.IsDirectory(file) {
 			themes = append(themes, filepath.Base(file))
 		}
 	}
 	return themes
 }
 
-func executeHelper(helper *Helper, values *structure.RequestData, context int) []byte {
+func executeHelper(helper *structure.Helper, values *structure.RequestData, context int) []byte {
 	// Set context and set it back to the old value once fuction returns
 	defer setCurrentHelperContext(values, values.CurrentHelperContext)
 	values.CurrentHelperContext = context
@@ -143,7 +161,7 @@ func executeHelper(helper *Helper, values *structure.RequestData, context int) [
 	block := helper.Block
 	indexTracker := 0
 	extended := false
-	var extendHelper *Helper
+	var extendHelper *structure.Helper
 	for index, child := range helper.Children {
 		// Handle extend helper
 		if index == 0 && child.Name == "!<" {

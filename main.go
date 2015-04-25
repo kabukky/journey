@@ -6,6 +6,8 @@ import (
 	"github.com/kabukky/journey/configuration"
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/filenames"
+	"github.com/kabukky/journey/flags"
+	"github.com/kabukky/journey/plugins"
 	"github.com/kabukky/journey/server"
 	"github.com/kabukky/journey/templates"
 	"log"
@@ -34,17 +36,20 @@ func checkHttpsCertificates() {
 
 func main() {
 	// Setup
+	var err error
 
 	// GOMAXPROCS - Maybe not needed
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	// Write log to file
-	logFile, err := os.OpenFile(filenames.LogFilename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	if err != nil {
-		log.Fatal("Error: Couldn't open log file: " + err.Error())
+	// Write log to file if Journey is not in dev mode
+	if !flags.IsInDevMode {
+		logFile, err := os.OpenFile(filenames.LogFilename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+		if err != nil {
+			log.Fatal("Error: Couldn't open log file: " + err.Error())
+		}
+		defer logFile.Close()
+		log.SetOutput(logFile)
 	}
-	defer logFile.Close()
-	log.SetOutput(logFile)
 
 	// Configuration is read from config.json by loading the configuration package
 
@@ -60,6 +65,14 @@ func main() {
 	if err != nil {
 		log.Fatal("Error: Couldn't compile templates: " + err.Error())
 		return
+	}
+
+	// Plugins
+	err = plugins.Load()
+	if err == nil {
+		// Close LuaPool at the end
+		defer plugins.LuaPool.Shutdown()
+		log.Println("Plugins loaded.")
 	}
 
 	// HTTP(S) Server

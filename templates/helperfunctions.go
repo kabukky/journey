@@ -4,7 +4,7 @@ import (
 	"github.com/kabukky/journey/structure"
 )
 
-var helperFuctions = map[string]func(*Helper, *structure.RequestData) []byte{
+var helperFuctions = map[string]func(*structure.Helper, *structure.RequestData) []byte{
 
 	// Null function
 	"null": nullFunc,

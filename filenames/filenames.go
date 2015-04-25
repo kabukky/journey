@@ -12,13 +12,14 @@ var (
 	// Initialization of the working directory - needed to load relative assets
 	_ = initializeWorkingDirectory()
 
-	// For assets that are created or changed while running journey
+	// For assets that are created, changed, our user-provided while running journey
 	ConfigFilename   = filepath.Join(flags.CustomPath, "config.json")
 	LogFilename      = filepath.Join(flags.CustomPath, "log.txt")
 	DatabaseFilename = filepath.Join(flags.CustomPath, "content", "data", "journey.db")
 	ThemesFilepath   = filepath.Join(flags.CustomPath, "content", "themes")
 	ImagesFilepath   = filepath.Join(flags.CustomPath, "content", "images")
 	ContentFilepath  = filepath.Join(flags.CustomPath, "content")
+	PluginsFilepath  = filepath.Join(flags.CustomPath, "content", "plugins")
 
 	// For https
 	HttpsCertFilename = filepath.Join(flags.CustomPath, "content", "https", "cert.pem")

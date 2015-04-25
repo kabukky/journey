@@ -1,8 +1,4 @@
-package templates
-
-import (
-	"github.com/kabukky/journey/structure"
-)
+package structure
 
 // Helpers are created during parsing of the theme (template files). Helpers should never be altered during template execution (Helpers are shared across all requests).
 type Helper struct {
@@ -12,6 +8,6 @@ type Helper struct {
 	Position   int
 	Block      []byte
 	Children   []Helper
-	Function   func(*Helper, *structure.RequestData) []byte
+	Function   func(*Helper, *RequestData) []byte
 	BodyHelper *Helper
 }
