@@ -4,7 +4,7 @@ A blog engine written in Go, compatible with Ghost themes.
 ![Editor](https://raw.githubusercontent.com/kabukky/journey/gh-pages/images/journey.png)
 
 ## About
-Please note that Journey is still in alpha and has not been tested in production.
+Please note that Journey is still in alpha and has not been tested in production. Not all Ghost theme helpers have been implemented yet so there is bound to be trouble with some Ghost themes. Please open a [New Issue](https://github.com/kabukky/journey/issues) if you encounter a theme that doesn't work.
 
 #### Easy to work with
 Create or update your posts from any place and any device. Simply point your browser to yourblog.url/admin/, log in, and start typing away!
@@ -25,7 +25,7 @@ Other blog engines require you to install Nginx or Apache just to enable HTTPS. 
 Don't worry about installing the correct version of Node.js, Python, or anything else. Just download the [latest release](https://www.github.com/kabukky/journey/releases) for your operating system and cpu architecture, then place the folder anywhere you like and run the Journey executable. Done!
 
 #### Lightweight and fast
-Journey is still in an early stage of development. However, initial tests indicate that it is about 10 times faster at generating pages than Ghost running on Node.js. It also eats very little of your precious memory. For example: Testing it on Mac OS X, it takes about 3.5 MB of it and then happily carries on doing its job.
+Journey is still in an early stage of development. However, initial tests indicate that it is much faster at generating pages than Ghost running on Node.js. It also eats very little of your precious memory. For example: Testing it on Mac OS X, it takes about 3.5 MB of it and then happily carries on doing its job.
 
 This slimness makes Journey an ideal candidate for setting up micro blogs or hosting it on low-end vps machines or micro computers such as the Raspberry Pi.
 

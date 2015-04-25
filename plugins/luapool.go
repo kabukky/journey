@@ -15,7 +15,7 @@ type lStatePool struct {
 	saved []map[string]*lua.LState
 }
 
-func (pl *lStatePool) Get(values *structure.RequestData) map[string]*lua.LState {
+func (pl *lStatePool) Get(helper *structure.Helper, values *structure.RequestData) map[string]*lua.LState {
 	pl.m.Lock()
 	defer pl.m.Unlock()
 	n := len(pl.saved)
@@ -23,7 +23,7 @@ func (pl *lStatePool) Get(values *structure.RequestData) map[string]*lua.LState 
 		x := pl.New()
 		// Since these are new lua states, do the lua file.
 		for key, value := range x {
-			setUpVm(value, values, LuaPool.files[key])
+			setUpVm(value, helper, values, LuaPool.files[key])
 			value.DoFile(LuaPool.files[key])
 		}
 		return x
@@ -31,7 +31,7 @@ func (pl *lStatePool) Get(values *structure.RequestData) map[string]*lua.LState 
 	x := pl.saved[n-1]
 	// Set the new values for this request in every lua state
 	for key, value := range x {
-		setUpVm(value, values, LuaPool.files[key])
+		setUpVm(value, helper, values, LuaPool.files[key])
 	}
 	pl.saved = pl.saved[0 : n-1]
 	return x
