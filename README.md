@@ -9,11 +9,14 @@ Please note that Journey is still in alpha and has not been tested in production
 #### Easy to work with
 Create or update your posts from any place and any device. Simply point your browser to yourblog.url/admin/, log in, and start typing away!
 
+#### Extensible
+Write plugins in Lua to implement custom behavior when generating pages. Learn how on the [Wiki](https://github.com/kabukky/journey/wiki/Creating-a-Journey-Plugin)!
+
 #### Good stuff available right away
 Use Ghost themes to design your blog. There's already a great community of designers working on Ghost compatible themes. Check out the [Ghost Marketplace](http://marketplace.ghost.org) to get an idea.
 
 #### Good stuff to come
-Hopefully. Planning the future of Journey, high priority goals are: Plug-in support, MySQL and PostgreSQL support, and Google App Engine support.
+Hopefully. Planning the future of Journey, high priority goals are support of MySQL, PostgreSQL, and Google App Engine.
 
 #### Easily secure
 Other blog engines require you to install Nginx or Apache just to enable HTTPS. With Journey, simply enable HTTPS in the configuration and start using it for development purposes. For production, simply replace the generated certificates with your own and you are ready to go.
