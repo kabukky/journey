@@ -1,11 +1,12 @@
 package filenames
 
 import (
-	"github.com/kabukky/journey/flags"
-	"github.com/kardianos/osext"
 	"log"
 	"os"
 	"path/filepath"
+
+	"github.com/kabukky/journey/flags"
+	"github.com/kardianos/osext"
 )
 
 var (
@@ -28,6 +29,7 @@ var (
 	//For built-in files (e.g. the admin interface)
 	AdminFilepath  = filepath.Join("built-in", "admin")
 	PublicFilepath = filepath.Join("built-in", "public")
+	ProjectPath    = filepath.Join("built-in", "project")
 
 	// For handlebars (this is a url string)
 	JqueryFilename = "/public/jquery/jquery.js"
