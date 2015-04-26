@@ -365,7 +365,11 @@ func apiUploadHandler(w http.ResponseWriter, r *http.Request, _ map[string]strin
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			allFilePaths = append(allFilePaths, strings.Replace(dst.Name(), filenames.ContentFilepath, "", 1))
+			// Rewrite to file path on server
+			filePath = strings.Replace(dst.Name(), filenames.ImagesFilepath, "/images", 1)
+			// Make sure to always use "/" as path separator (to make a valid url that we can use on the blog)
+			filePath = filepath.ToSlash(filePath)
+			allFilePaths = append(allFilePaths, filePath)
 		}
 		json, err := json.Marshal(allFilePaths)
 		if err != nil {
@@ -397,6 +401,8 @@ func apiImagesHandler(w http.ResponseWriter, r *http.Request, params map[string]
 			if !info.IsDir() && (strings.EqualFold(filepath.Ext(filePath), ".jpg") || strings.EqualFold(filepath.Ext(filePath), ".jpeg") || strings.EqualFold(filepath.Ext(filePath), ".gif") || strings.EqualFold(filepath.Ext(filePath), ".png") || strings.EqualFold(filepath.Ext(filePath), ".svg")) {
 				// Rewrite to file path on server
 				filePath = strings.Replace(filePath, filenames.ImagesFilepath, "/images", 1)
+				// Make sure to always use "/" as path separator (to make a valid url that we can use on the blog)
+				filePath = filepath.ToSlash(filePath)
 				// Prepend file to slice (thus reversing the order)
 				images = append([]string{filePath}, images...)
 			}
