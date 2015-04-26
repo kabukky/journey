@@ -1,13 +1,14 @@
 package server
 
 import (
+	"net/http"
+	"path/filepath"
+	"strconv"
+
 	"github.com/dimfeld/httptreemux"
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/filenames"
 	"github.com/kabukky/journey/templates"
-	"net/http"
-	"path/filepath"
-	"strconv"
 )
 
 func indexHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
@@ -149,6 +150,11 @@ func publicHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 	return
 }
 
+func pagesHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	http.ServeFile(w, r, filepath.Join(filenames.PagesFilepath, params["pagespath"]))
+	return
+}
+
 func InitializeBlog(router *httptreemux.TreeMux) {
 	// For index
 	router.GET("/", indexHandler)
@@ -166,4 +172,7 @@ func InitializeBlog(router *httptreemux.TreeMux) {
 	router.GET("/assets/*filepath", assetsHandler)
 	router.GET("/images/*filepath", imagesHandler)
 	router.GET("/public/*filepath", publicHandler)
+
+	// For serving standalone projects with customized url
+	router.GET("/*pagespath", pagesHandler)
 }
