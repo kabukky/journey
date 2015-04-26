@@ -1,11 +1,12 @@
 package filenames
 
 import (
-	"github.com/kabukky/journey/flags"
-	"github.com/kardianos/osext"
 	"log"
 	"os"
 	"path/filepath"
+
+	"github.com/kabukky/journey/flags"
+	"github.com/kardianos/osext"
 )
 
 var (
@@ -20,6 +21,7 @@ var (
 	ImagesFilepath   = filepath.Join(flags.CustomPath, "content", "images")
 	ContentFilepath  = filepath.Join(flags.CustomPath, "content")
 	PluginsFilepath  = filepath.Join(flags.CustomPath, "content", "plugins")
+	PagesFilepath    = filepath.Join(flags.CustomPath, "content", "pages")
 
 	// For https
 	HttpsCertFilename = filepath.Join(flags.CustomPath, "content", "https", "cert.pem")
