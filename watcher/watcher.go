@@ -68,7 +68,7 @@ func createWatcher(extensionsFunctions map[string]func() error) (*fsnotify.Watch
 					}
 				}
 			case err := <-watcher.Errors:
-				log.Println("Error while watching theme directory.", err)
+				log.Println("Error while watching directory:", err)
 			}
 		}
 	}()
