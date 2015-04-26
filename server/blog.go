@@ -150,8 +150,8 @@ func publicHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 	return
 }
 
-func projectHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
-	http.ServeFile(w, r, filepath.Join(filenames.ProjectPath, params["projectpath"]))
+func pagesHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	http.ServeFile(w, r, filepath.Join(filenames.PagesFilepath, params["pagespath"]))
 	return
 }
 
@@ -174,5 +174,5 @@ func InitializeBlog(router *httptreemux.TreeMux) {
 	router.GET("/public/*filepath", publicHandler)
 
 	// For serving standalone projects with customized url
-	router.GET("/*projectpath", projectHandler)
+	router.GET("/*pagespath", pagesHandler)
 }

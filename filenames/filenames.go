@@ -21,6 +21,7 @@ var (
 	ImagesFilepath   = filepath.Join(flags.CustomPath, "content", "images")
 	ContentFilepath  = filepath.Join(flags.CustomPath, "content")
 	PluginsFilepath  = filepath.Join(flags.CustomPath, "content", "plugins")
+	PagesFilepath    = filepath.Join(flags.CustomPath, "content", "pages")
 
 	// For https
 	HttpsCertFilename = filepath.Join(flags.CustomPath, "content", "https", "cert.pem")
@@ -29,7 +30,6 @@ var (
 	//For built-in files (e.g. the admin interface)
 	AdminFilepath  = filepath.Join("built-in", "admin")
 	PublicFilepath = filepath.Join("built-in", "public")
-	ProjectPath    = filepath.Join("built-in", "project")
 
 	// For handlebars (this is a url string)
 	JqueryFilename = "/public/jquery/jquery.js"
