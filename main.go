@@ -48,7 +48,7 @@ func main() {
 			log.Fatal("Error: Couldn't open log file: " + err.Error())
 		}
 		defer logFile.Close()
-		log.SetOutput(logFile)
+		//log.SetOutput(logFile)
 	}
 
 	// Configuration is read from config.json by loading the configuration package
@@ -82,10 +82,12 @@ func main() {
 		checkHttpsCertificates()
 		httpRouter := httptreemux.New()
 		httpsRouter := httptreemux.New()
-		// Blog as http
+		// Blog and pages as http
 		server.InitializeBlog(httpRouter)
-		// Blog as https
+		server.InitializePages(httpRouter)
+		// Blog and pages as https
 		server.InitializeBlog(httpsRouter)
+		server.InitializePages(httpsRouter)
 		// Admin as https and http redirect
 		// Add redirection to http router
 		httpRouter.GET("/admin/*path", httpsRedirect)
@@ -101,8 +103,9 @@ func main() {
 		checkHttpsCertificates()
 		httpsRouter := httptreemux.New()
 		httpRouter := httptreemux.New()
-		// Blog as https
+		// Blog and pages as https
 		server.InitializeBlog(httpsRouter)
+		server.InitializePages(httpsRouter)
 		// Admin as https
 		server.InitializeAdmin(httpsRouter)
 		// Add redirection to http router
@@ -116,8 +119,9 @@ func main() {
 		http.ListenAndServe(configuration.Config.HttpHostAndPort, httpRouter)
 	default: // This is configuration.HttpsUsage == "None"
 		httpRouter := httptreemux.New()
-		// Blog as http
+		// Blog and pages as http
 		server.InitializeBlog(httpRouter)
+		server.InitializePages(httpRouter)
 		// Admin as http
 		server.InitializeAdmin(httpRouter)
 		// Start http server

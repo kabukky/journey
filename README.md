@@ -37,6 +37,9 @@ To get started with Journey, go to the the [Releases Page](https://github.com/ka
 
 After that, head over to [Setting up Journey](https://github.com/kabukky/journey/wiki/Setting-up-Journey) to configure your Journey blog on your local machine. If you'd like to set up Journey on a linux server, head over to [Installing Journey on Ubuntu Server](https://github.com/kabukky/journey/wiki/Installing-Journey-on-Ubuntu-Server) for a step-by-step tutorial.
 
+## Plugins
+Did you create a Journey plugin? Write me [@kabukky](https://twitter.com/kabukky) or me@kaihag.com and I'll add a link to it here.
+
 ## Questions?
 Please read the [FAQ](https://github.com/kabukky/journey/wiki/FAQ) Wiki page or write to me@kaihag.com.
 
