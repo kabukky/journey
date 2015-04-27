@@ -31,6 +31,10 @@ content/https/*
 content/plugins/*
 !content/plugins/README.md
 
+# Pages
+content/pages/*
+!content/pages/README.md
+
 # Go
 # Compiled Object files, Static and Dynamic libs (Shared Objects)
 *.o
