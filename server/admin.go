@@ -70,6 +70,10 @@ type JsonImage struct {
 
 // Function to serve the login page
 func getLoginHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+	if database.RetrieveUsersCount() == 0 {
+		http.Redirect(w, r, "/admin/register/", 302)
+		return
+	}
 	http.ServeFile(w, r, filepath.Join(filenames.AdminFilepath, "login.html"))
 	return
 }
@@ -94,11 +98,9 @@ func getRegistrationHandler(w http.ResponseWriter, r *http.Request, _ map[string
 	if database.RetrieveUsersCount() == 0 {
 		http.ServeFile(w, r, filepath.Join(filenames.AdminFilepath, "registration.html"))
 		return
-	} else {
-		http.Redirect(w, r, "/admin/", 302)
-		return
 	}
-
+	http.Redirect(w, r, "/admin/", 302)
+	return
 }
 
 // Function to recieve a registration form.

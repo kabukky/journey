@@ -15,6 +15,7 @@ var (
 	// For assets that are created, changed, our user-provided while running journey
 	ConfigFilename   = filepath.Join(flags.CustomPath, "config.json")
 	LogFilename      = filepath.Join(flags.CustomPath, "log.txt")
+	DatabaseFilepath = filepath.Join(flags.CustomPath, "content", "data")
 	DatabaseFilename = filepath.Join(flags.CustomPath, "content", "data", "journey.db")
 	ThemesFilepath   = filepath.Join(flags.CustomPath, "content", "themes")
 	ImagesFilepath   = filepath.Join(flags.CustomPath, "content", "images")
@@ -23,6 +24,7 @@ var (
 	PagesFilepath    = filepath.Join(flags.CustomPath, "content", "pages")
 
 	// For https
+	HttpsFilepath     = filepath.Join(flags.CustomPath, "content", "https")
 	HttpsCertFilename = filepath.Join(flags.CustomPath, "content", "https", "cert.pem")
 	HttpsKeyFilename  = filepath.Join(flags.CustomPath, "content", "https", "key.pem")
 
@@ -53,7 +55,7 @@ func init() {
 }
 
 func createDirectories() error {
-	paths := []string{filepath.Join(flags.CustomPath, "content", "data"), filepath.Join(flags.CustomPath, "content", "themes"), filepath.Join(flags.CustomPath, "content", "images"), filepath.Join(flags.CustomPath, "content", "https"), filepath.Join(flags.CustomPath, "content", "plugins")}
+	paths := []string{DatabaseFilepath, ThemesFilepath, ImagesFilepath, HttpsFilepath, PluginsFilepath, PagesFilepath}
 	for _, path := range paths {
 		if _, err := os.Stat(path); os.IsNotExist(err) {
 			log.Println("Creating " + path)

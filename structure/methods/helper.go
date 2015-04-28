@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+// Function to put all arguments into a neatly organized map (splitting argument.Name with format "name=argument" into map["name"]"argument")
+// for easier lookup and use in helper functions.
 func ProcessHelperArguments(arguments []structure.Helper) map[string]string {
 	argumentsMap := make(map[string]string)
 	for index, _ := range arguments {
