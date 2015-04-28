@@ -13,7 +13,7 @@ Create or update your posts from any place and any device. Simply point your bro
 Write plugins in Lua to implement custom behavior when generating pages. Learn how to do it on the [Wiki](https://github.com/kabukky/journey/wiki/Creating-a-Journey-Plugin)!
 
 #### Good stuff available right away
-Use Ghost themes to design your blog. There's already a great community of designers working on Ghost compatible themes. Check out the [Ghost Marketplace](http://marketplace.ghost.org) to get an idea.
+Use Ghost themes to design your blog. There's already a great community of designers working on Ghost compatible themes. Check out the [Ghost Marketplace](http://marketplace.ghost.org) to get an idea. You can also migrate your existing Ghost installation to Journey with [a few simple steps](https://github.com/kabukky/journey/wiki/Migrating-from-Ghost-to-Journey).
 
 #### Good stuff to come
 Hopefully. Planning the future of Journey, high priority goals are support of MySQL, PostgreSQL, and Google App Engine.

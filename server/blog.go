@@ -165,5 +165,6 @@ func InitializeBlog(router *httptreemux.TreeMux) {
 	// For serving asset files
 	router.GET("/assets/*filepath", assetsHandler)
 	router.GET("/images/*filepath", imagesHandler)
+	router.GET("/content/images/*filepath", imagesHandler) // This is here to keep compatibility with Ghost
 	router.GET("/public/*filepath", publicHandler)
 }

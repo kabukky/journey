@@ -213,7 +213,7 @@ func convertUsers(readDB *sql.DB) error {
 		if err != nil {
 			return err
 		}
-		// Convert strings to byte array since that is how Journey saves the user name and email (Login won't work wihout this).
+		// Convert strings to byte array since that is how Journey saves the user name and email (login won't work without this).
 		if name.Valid {
 			row.name = []byte(name.String)
 		}
