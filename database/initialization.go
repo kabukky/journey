@@ -2,7 +2,9 @@ package database
 
 import (
 	"database/sql"
+	"github.com/kabukky/journey/database/migration"
 	"github.com/kabukky/journey/filenames"
+	"github.com/kabukky/journey/helpers"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/twinj/uuid"
 	"time"
@@ -121,7 +123,11 @@ var stmtInitialization = `CREATE TABLE IF NOT EXISTS
 	`
 
 func Initialize() error {
-	// TODO: If there is no journey.db, convert ghost database if available (time format needs to change to be compatible with journey)
+	// If journey.db does not exist, look for a Ghost database to convert
+	if !helpers.FileExists(filenames.DatabaseFilename) {
+		// Convert Ghost database if available (time format needs to change to be compatible with journey)
+		migration.Ghost()
+	}
 	// Open or create database file
 	var err error
 	readDB, err = sql.Open("sqlite3", filenames.DatabaseFilename)

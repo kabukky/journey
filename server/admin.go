@@ -68,11 +68,17 @@ type JsonImage struct {
 	Filename string
 }
 
+// Function to serve the login page
 func getLoginHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+	if database.RetrieveUsersCount() == 0 {
+		http.Redirect(w, r, "/admin/register/", 302)
+		return
+	}
 	http.ServeFile(w, r, filepath.Join(filenames.AdminFilepath, "login.html"))
 	return
 }
 
+// Function to receive a login form
 func postLoginHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	name := r.FormValue("name")
 	password := r.FormValue("password")
@@ -87,17 +93,17 @@ func postLoginHandler(w http.ResponseWriter, r *http.Request, _ map[string]strin
 	return
 }
 
+// Function to serve the registration form
 func getRegistrationHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	if database.RetrieveUsersCount() == 0 {
 		http.ServeFile(w, r, filepath.Join(filenames.AdminFilepath, "registration.html"))
 		return
-	} else {
-		http.Redirect(w, r, "/admin/", 302)
-		return
 	}
-
+	http.Redirect(w, r, "/admin/", 302)
+	return
 }
 
+// Function to recieve a registration form.
 func postRegistrationHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	if database.RetrieveUsersCount() == 0 { // TODO: Or check if authenticated user is admin when adding users from inside the admin area
 		name := r.FormValue("name")
@@ -127,13 +133,14 @@ func postRegistrationHandler(w http.ResponseWriter, r *http.Request, _ map[strin
 	}
 }
 
-// Not used at the moment.
+// Function to log out the user. Not used at the moment.
 func logoutHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	authentication.ClearSession(w)
 	http.Redirect(w, r, "/admin/", 302)
 	return
 }
 
+// Function to route the /admin/ url accordingly. (Is user logged in? Is at least one user registered?)
 func adminHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	if database.RetrieveUsersCount() == 0 {
 		http.Redirect(w, r, "/admin/register/", 302)
@@ -150,6 +157,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	}
 }
 
+// Function to serve files belonging to the admin interface.
 func adminFileHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
 	userName := authentication.GetUserName(r)
 	if userName != "" {
@@ -162,11 +170,11 @@ func adminFileHandler(w http.ResponseWriter, r *http.Request, params map[string]
 	}
 }
 
+// API function to get all posts by pages
 func apiPostsHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
 	userName := authentication.GetUserName(r)
 	if userName != "" {
 		number := params["number"]
-		// API function to get all posts by pages
 		page, err := strconv.Atoi(number)
 		if err != nil || page < 1 {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -192,6 +200,7 @@ func apiPostsHandler(w http.ResponseWriter, r *http.Request, params map[string]s
 	}
 }
 
+// API function to get a post by id
 func getApiPostHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
 	userName := authentication.GetUserName(r)
 	if userName != "" {
@@ -221,6 +230,7 @@ func getApiPostHandler(w http.ResponseWriter, r *http.Request, params map[string
 	}
 }
 
+// API function to create a post
 func postApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	userName := authentication.GetUserName(r)
 	if userName != "" {
@@ -259,6 +269,7 @@ func postApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]str
 	}
 }
 
+// API function to update a post.
 func patchApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	userName := authentication.GetUserName(r)
 	if userName != "" {
@@ -303,6 +314,7 @@ func patchApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 	}
 }
 
+// API function to delete a post by id.
 func deleteApiPostHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
 	userName := authentication.GetUserName(r)
 	if userName != "" {
@@ -327,10 +339,10 @@ func deleteApiPostHandler(w http.ResponseWriter, r *http.Request, params map[str
 	}
 }
 
+// API function to upload images
 func apiUploadHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	userName := authentication.GetUserName(r)
 	if userName != "" {
-		// API function to upload images
 		// Create multipart reader
 		reader, err := r.MultipartReader()
 		if err != nil {
@@ -385,11 +397,11 @@ func apiUploadHandler(w http.ResponseWriter, r *http.Request, _ map[string]strin
 	}
 }
 
+// API function to get all images by pages
 func apiImagesHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
 	userName := authentication.GetUserName(r)
 	if userName != "" {
 		number := params["number"]
-		// API function to get all images by pages
 		page, err := strconv.Atoi(number)
 		if err != nil || page < 1 {
 			http.Error(w, "Not a valid api function!", http.StatusInternalServerError)
@@ -440,10 +452,11 @@ func apiImagesHandler(w http.ResponseWriter, r *http.Request, params map[string]
 	}
 }
 
+// API function to delete an image by its filename.
 func deleteApiImageHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	userName := authentication.GetUserName(r)
 	if userName != "" { // TODO: Check if the user has permissions to delete the image
-		// Delete image
+		// Get the file name from the json data
 		decoder := json.NewDecoder(r.Body)
 		var json JsonImage
 		err := decoder.Decode(&json)
@@ -473,10 +486,10 @@ func deleteApiImageHandler(w http.ResponseWriter, r *http.Request, _ map[string]
 	}
 }
 
+// API function to get blog settings
 func getApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	userName := authentication.GetUserName(r)
 	if userName != "" {
-		// API function to get blog settings
 		blog, err := database.RetrieveBlog()
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -497,6 +510,7 @@ func getApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]stri
 	}
 }
 
+// API function to update blog settings
 func patchApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	userName := authentication.GetUserName(r)
 	if userName != "" {
@@ -505,7 +519,6 @@ func patchApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		// API function to update blog settings
 		decoder := json.NewDecoder(r.Body)
 		var json JsonBlog
 		err = decoder.Decode(&json)
@@ -548,6 +561,7 @@ func patchApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 	}
 }
 
+// API function to get user settings
 func getApiUserHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
 	userName := authentication.GetUserName(r)
 	if userName != "" {
@@ -557,7 +571,6 @@ func getApiUserHandler(w http.ResponseWriter, r *http.Request, params map[string
 			return
 		}
 		id := params["id"]
-		// API function to get user settings
 		userIdToGet, err := strconv.ParseInt(id, 10, 64)
 		if err != nil || userIdToGet < 1 {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -586,6 +599,7 @@ func getApiUserHandler(w http.ResponseWriter, r *http.Request, params map[string
 	}
 }
 
+// API function to patch user settings
 func patchApiUserHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	userName := authentication.GetUserName(r)
 	if userName != "" {
@@ -594,7 +608,6 @@ func patchApiUserHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		// API function to patch user settings
 		decoder := json.NewDecoder(r.Body)
 		var json JsonUser
 		err = decoder.Decode(&json)
@@ -640,6 +653,7 @@ func patchApiUserHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 	}
 }
 
+// API function to get the id of the currently authenticated user
 func getApiUserIdHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	userName := authentication.GetUserName(r)
 	if userName != "" {
@@ -648,7 +662,6 @@ func getApiUserIdHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		// API function to get the id of the authenticated user
 		jsonUserId := JsonUserId{Id: userId}
 		json, err := json.Marshal(jsonUserId)
 		if err != nil {

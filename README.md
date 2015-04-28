@@ -13,7 +13,7 @@ Create or update your posts from any place and any device. Simply point your bro
 Write plugins in Lua to implement custom behavior when generating pages. Learn how to do it on the [Wiki](https://github.com/kabukky/journey/wiki/Creating-a-Journey-Plugin)!
 
 #### Good stuff available right away
-Use Ghost themes to design your blog. There's already a great community of designers working on Ghost compatible themes. Check out the [Ghost Marketplace](http://marketplace.ghost.org) to get an idea.
+Use Ghost themes to design your blog. There's already a great community of designers working on Ghost compatible themes. Check out the [Ghost Marketplace](http://marketplace.ghost.org) to get an idea. You can also migrate your existing Ghost installation to Journey with [a few simple steps](https://github.com/kabukky/journey/wiki/Migrating-from-Ghost-to-Journey).
 
 #### Good stuff to come
 Hopefully. Planning the future of Journey, high priority goals are support of MySQL, PostgreSQL, and Google App Engine.
@@ -36,6 +36,9 @@ This slimness makes Journey an ideal candidate for setting up micro blogs or hos
 To get started with Journey, go to the the [Releases Page](https://github.com/kabukky/journey/releases) and download the zip file corresponding to your operating system and cpu architecture. Then extract Journey anywhere you like. Why not place it in your home folder (e.g. /home/youruser/journey/)?
 
 After that, head over to [Setting up Journey](https://github.com/kabukky/journey/wiki/Setting-up-Journey) to configure your Journey blog on your local machine. If you'd like to set up Journey on a linux server, head over to [Installing Journey on Ubuntu Server](https://github.com/kabukky/journey/wiki/Installing-Journey-on-Ubuntu-Server) for a step-by-step tutorial.
+
+## Plugins
+Did you create a Journey plugin? Write me [@kabukky](https://twitter.com/kabukky) or me@kaihag.com and I'll add a link to it here.
 
 ## Questions?
 Please read the [FAQ](https://github.com/kabukky/journey/wiki/FAQ) Wiki page or write to me@kaihag.com.
