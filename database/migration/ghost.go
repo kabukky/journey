@@ -13,7 +13,7 @@ import (
 
 const stmtRetrieveGhostPosts = "SELECT id, (created_at/1000), (updated_at/1000), (published_at/1000) FROM posts"
 const stmtRetrieveGhostTags = "SELECT id, (created_at/1000), (updated_at/1000) FROM tags"
-const stmtRetrieveGhostUsers = "SELECT id, (last_login/1000), (created_at/1000), (updated_at/1000) FROM users"
+const stmtRetrieveGhostUsers = "SELECT id, name, email, (last_login/1000), (created_at/1000), (updated_at/1000) FROM users"
 const stmtRetrieveGhostRoles = "SELECT id, (created_at/1000), (updated_at/1000) FROM roles"
 const stmtRetrieveGhostSettings = "SELECT id, (created_at/1000), (updated_at/1000) FROM settings"
 const stmtRetrieveGhostPermissions = "SELECT id, (created_at/1000), (updated_at/1000) FROM permissions"
@@ -21,7 +21,7 @@ const stmtRetrieveGhostClients = "SELECT id, (created_at/1000), (updated_at/1000
 
 const stmtUpdateGhostPost = "UPDATE posts SET created_at = ?, updated_at = ?, published_at = ? WHERE id = ?"
 const stmtUpdateGhostTags = "UPDATE tags SET created_at = ?, updated_at = ? WHERE id = ?"
-const stmtUpdateGhostUsers = "UPDATE users SET last_login = ?, created_at = ?, updated_at = ? WHERE id = ?"
+const stmtUpdateGhostUsers = "UPDATE users SET name = ?, email= ?, last_login = ?, created_at = ?, updated_at = ? WHERE id = ?"
 const stmtUpdateGhostRoles = "UPDATE roles SET created_at = ?, updated_at = ? WHERE id = ?"
 const stmtUpdateGhostSettings = "UPDATE settings SET created_at = ?, updated_at = ? WHERE id = ?"
 const stmtUpdateGhostPermissions = "UPDATE permissions SET created_at = ?, updated_at = ? WHERE id = ?"
@@ -30,6 +30,8 @@ const stmtUpdateGhostTheme = "UPDATE settings SET value = ?, updated_at = ?, upd
 
 type dateHolder struct {
 	id          int64
+	name        []byte
+	email       []byte
 	createdAt   *time.Time
 	updatedAt   *time.Time
 	publishedAt *time.Time
@@ -202,12 +204,21 @@ func convertUsers(readDB *sql.DB) error {
 	// Read all rows to structs
 	for rows.Next() {
 		row := dateHolder{}
+		var name sql.NullString
+		var email sql.NullString
 		var lastLogin sql.NullInt64
 		var createdAt sql.NullInt64
 		var updatedAt sql.NullInt64
-		err := rows.Scan(&row.id, &lastLogin, &createdAt, &updatedAt)
+		err := rows.Scan(&row.id, &name, &email, &lastLogin, &createdAt, &updatedAt)
 		if err != nil {
 			return err
+		}
+		// Convert strings to byte array since that is how Journey saves the user name and email (Login won't work wihout this).
+		if name.Valid {
+			row.name = []byte(name.String)
+		}
+		if email.Valid {
+			row.email = []byte(email.String)
 		}
 		// Convert dates
 		if lastLogin.Valid {
@@ -233,7 +244,7 @@ func convertUsers(readDB *sql.DB) error {
 			return err
 		}
 		// Update the database with new date formats
-		_, err = writeDB.Exec(stmtUpdateGhostUsers, row.lastLogin, row.createdAt, row.updatedAt, row.id)
+		_, err = writeDB.Exec(stmtUpdateGhostUsers, row.name, row.email, row.lastLogin, row.createdAt, row.updatedAt, row.id)
 		if err != nil {
 			writeDB.Rollback()
 			return err
