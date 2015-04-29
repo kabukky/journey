@@ -13,6 +13,7 @@ type RequestData struct {
 	CurrentIndexPage     int
 	CurrentPostIndex     int
 	CurrentTagIndex      int
-	CurrentHelperContext int // 0 = index, 1 = post, 2 = tag, 3 = author - used by block helpers
-	CurrentTemplate      int // 0 = index, 1 = post, 2 = tag, 3 = author - never changes during execution. Used by funcs like body_classFunc etc to output the correct class
+	CurrentHelperContext int      // 0 = index, 1 = post, 2 = tag, 3 = author - used by block helpers
+	CurrentTemplate      int      // 0 = index, 1 = post, 2 = tag, 3 = author - never changes during execution. Used by funcs like body_classFunc etc to output the correct class
+	ContentForHelpers    []Helper // contentFor helpers that are attached to the currently rendering helper
 }

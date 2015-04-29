@@ -27,6 +27,8 @@ var helperFuctions = map[string]func(*structure.Helper, *structure.RequestData) 
 	"plural":           pluralFunc,
 	"date":             dateFunc,
 	"image":            imageFunc,
+	"contentFor":       contentForFunc,
+	"block":            blockFunc,
 
 	// @blog functions
 	"@blog.title":       atBlogDotTitleFunc,

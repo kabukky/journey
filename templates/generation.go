@@ -170,10 +170,10 @@ func compileTemplate(data []byte, name string) *structure.Helper {
 	data, allHelpers = findHelper(data, allHelpers)
 	baseHelper.Block = data
 	baseHelper.Children = allHelpers
-	// Handle extend helper
+	// Handle extend and contentFor helpers
 	for index, child := range baseHelper.Children {
 		if child.Name == "body" {
-			baseHelper.BodyHelper = &baseHelper.Children[index]
+			baseHelper.BodyHelper = &baseHelper.Children[index] //TODO: This handles only one body helper per hbs file. That is a potential bug source, but no theme should be using more than one per file anyway.
 		}
 	}
 	return &baseHelper

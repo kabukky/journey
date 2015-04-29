@@ -43,6 +43,30 @@ func nullFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	return []byte{}
 }
 
+func contentForFunc(helper *structure.Helper, values *structure.RequestData) []byte {
+	// If there is no array attached to the request data already, make one
+	if values.ContentForHelpers == nil {
+		values.ContentForHelpers = make([]structure.Helper, 0)
+	}
+	// Collect all contentFor helpers to use them with a block helper
+	values.ContentForHelpers = append(values.ContentForHelpers, *helper)
+	return []byte{}
+}
+
+func blockFunc(helper *structure.Helper, values *structure.RequestData) []byte {
+	if len(helper.Arguments) != 0 {
+		// Loop through the collected contentFor helpers and execute the appropriate one
+		for index, _ := range values.ContentForHelpers {
+			if len(values.ContentForHelpers[index].Arguments) != 0 {
+				if values.ContentForHelpers[index].Arguments[0].Name == helper.Arguments[0].Name {
+					return executeHelper(&values.ContentForHelpers[index], values, values.CurrentHelperContext)
+				}
+			}
+		}
+	}
+	return []byte{}
+}
+
 func paginationDotTotalFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	if values.CurrentTemplate == 0 { // index
 		return []byte(strconv.FormatInt(values.Blog.PostCount, 10))
