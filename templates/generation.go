@@ -9,9 +9,9 @@ import (
 	"github.com/kabukky/journey/helpers"
 	"github.com/kabukky/journey/plugins"
 	"github.com/kabukky/journey/structure"
+	"github.com/kabukky/journey/structure/methods"
 	"github.com/kabukky/journey/watcher"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -204,23 +204,12 @@ func inspectTemplateFile(filePath string, info os.FileInfo, err error) error {
 	return nil
 }
 
-func Generate() error {
-	compiledTemplates.Lock()
-	defer compiledTemplates.Unlock()
-	activeTheme, err := database.RetrieveActiveTheme()
-	if err != nil {
-		return err
-	}
-	// Compile all template files
-	// First clear compiledTemplates map (theme could have been changed)
-	compiledTemplates.m = make(map[string]*structure.Helper)
-	currentThemePath := filepath.Join(filenames.ThemesFilepath, *activeTheme)
+func compileTheme(themePath string) error {
 	// Check if the theme folder exists
-	if _, err := os.Stat(currentThemePath); os.IsNotExist(err) {
-		log.Fatal("Error: Couldn't find theme files in " + currentThemePath + ": " + err.Error())
-		return err
+	if _, err := os.Stat(themePath); os.IsNotExist(err) {
+		return errors.New("Couldn't find theme files in " + themePath + ": " + err.Error())
 	}
-	err = filepath.Walk(currentThemePath, inspectTemplateFile)
+	err := filepath.Walk(themePath, inspectTemplateFile)
 	if err != nil {
 		return err
 	}
@@ -231,9 +220,65 @@ func Generate() error {
 	if _, ok := compiledTemplates.m["post"]; !ok {
 		return errors.New("Couldn't compile template 'post'. Is post.hbs missing?")
 	}
+	return nil
+}
+
+func checkThemes() error {
+	// Get currently set theme from database
+	activeTheme, err := database.RetrieveActiveTheme()
+	if err != nil {
+		return err
+	}
+	currentThemePath := filepath.Join(filenames.ThemesFilepath, *activeTheme)
+	err = compileTheme(currentThemePath)
+	if err == nil {
+		return nil
+	}
+	// If the currently set theme couldnt be compiled, try the default theme (promenade)
+	err = compileTheme(filepath.Join(filenames.ThemesFilepath, "promenade"))
+	if err == nil {
+		// Update the theme name in the database
+		err = methods.UpdateActiveTheme("promenade", 1)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+	// If all of that didn't work, try the available themes in order
+	allThemes := GetAllThemes()
+	for _, theme := range allThemes {
+		err = compileTheme(filepath.Join(filenames.ThemesFilepath, theme))
+		if err == nil {
+			// Update the theme name in the database
+			err = methods.UpdateActiveTheme(theme, 1)
+			if err != nil {
+				return err
+			}
+			return nil
+		}
+	}
+	return errors.New("Couldn't find a theme to use in " + filenames.ThemesFilepath)
+}
+
+func Generate() error {
+	compiledTemplates.Lock()
+	defer compiledTemplates.Unlock()
+	// First clear compiledTemplates map (theme could have been changed)
+	compiledTemplates.m = make(map[string]*structure.Helper)
+	// Compile all template files
+	err := checkThemes()
+	if err != nil {
+		return err
+	}
 	// If the dev flag is set, watch the theme directory and the plugin directoy for changes
 	// TODO: It seems unclean to do the watching of the plugins in the templates package. Move this somewhere else.
 	if flags.IsInDevMode {
+		// Get the currently used theme path
+		activeTheme, err := database.RetrieveActiveTheme()
+		if err != nil {
+			return err
+		}
+		currentThemePath := filepath.Join(filenames.ThemesFilepath, *activeTheme)
 		// Create watcher
 		err = watcher.Watch([]string{currentThemePath, filenames.PluginsFilepath}, map[string]func() error{".hbs": Generate, ".lua": plugins.Load})
 		if err != nil {
