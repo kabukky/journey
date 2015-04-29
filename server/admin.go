@@ -85,6 +85,14 @@ func postLoginHandler(w http.ResponseWriter, r *http.Request, _ map[string]strin
 	if name != "" && password != "" {
 		if authentication.LoginIsCorrect(name, password) {
 			authentication.SetSession(name, w)
+			userId, err := getUserId(name)
+			if err != nil {
+				log.Println("Couldn't get id of logged in user:", err)
+			}
+			err = database.UpdateLastLogin(time.Now(), userId)
+			if err != nil {
+				log.Println("Couldn't update last login date of a user:", err)
+			}
 		} else {
 			log.Println("Failed login attempt for user " + name)
 		}

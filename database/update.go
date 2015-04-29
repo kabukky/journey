@@ -8,6 +8,7 @@ const stmtUpdatePost = "UPDATE posts SET title = ?, slug = ?, markdown = ?, html
 const stmtUpdatePostPublished = "UPDATE posts SET title = ?, slug = ?, markdown = ?, html = ?, featured = ?, page = ?, status = ?, image = ?, updated_at = ?, updated_by = ?, published_at = ?, published_by = ? WHERE id = ?"
 const stmtUpdateSettings = "UPDATE settings SET value = ?, updated_at = ?, updated_by = ? WHERE key = ?"
 const stmtUpdateUser = "UPDATE users SET email = ?, image = ?, cover = ?, bio = ?, website = ?, location = ?, updated_at = ?, updated_by = ? WHERE id = ?"
+const stmtUpdateLastLogin = "UPDATE users SET last_login = ? WHERE id = ?"
 const stmtUpdateUserPassword = "UPDATE users SET password = ?, updated_at = ?, updated_by = ? WHERE id = ?"
 
 func UpdatePost(id int64, title []byte, slug string, markdown []byte, html []byte, featured bool, isPage bool, published bool, image []byte, updated_at time.Time, updated_by int64) error {
@@ -103,6 +104,20 @@ func UpdateUser(id int64, email []byte, image []byte, cover []byte, bio []byte, 
 		return err
 	}
 	_, err = writeDB.Exec(stmtUpdateUser, email, image, cover, bio, website, location, updated_at, updated_by, id)
+	if err != nil {
+		writeDB.Rollback()
+		return err
+	}
+	return writeDB.Commit()
+}
+
+func UpdateLastLogin(date time.Time, userId int64) error {
+	writeDB, err := readDB.Begin()
+	if err != nil {
+		writeDB.Rollback()
+		return err
+	}
+	_, err = writeDB.Exec(stmtUpdateLastLogin, date, userId)
 	if err != nil {
 		writeDB.Rollback()
 		return err
