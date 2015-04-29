@@ -82,6 +82,20 @@ func UpdateSettings(title []byte, description []byte, logo []byte, cover []byte,
 	return writeDB.Commit()
 }
 
+func UpdateActiveTheme(activeTheme string, updated_at time.Time, updated_by int64) error {
+	writeDB, err := readDB.Begin()
+	if err != nil {
+		writeDB.Rollback()
+		return err
+	}
+	_, err = writeDB.Exec(stmtUpdateSettings, activeTheme, updated_at, updated_by, "activeTheme")
+	if err != nil {
+		writeDB.Rollback()
+		return err
+	}
+	return writeDB.Commit()
+}
+
 func UpdateUser(id int64, email []byte, image []byte, cover []byte, bio []byte, website []byte, location []byte, updated_at time.Time, updated_by int64) error {
 	writeDB, err := readDB.Begin()
 	if err != nil {

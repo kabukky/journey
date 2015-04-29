@@ -17,6 +17,14 @@ func UpdateBlog(b *structure.Blog, userId int64) error {
 	return nil
 }
 
+func UpdateActiveTheme(activeTheme string, userId int64) error {
+	err := database.UpdateActiveTheme(activeTheme, time.Now(), userId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func GenerateBlog() (*structure.Blog, error) {
 	// Generate blog from db
 	blog, err := database.RetrieveBlog()
