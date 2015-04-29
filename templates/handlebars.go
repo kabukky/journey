@@ -368,7 +368,14 @@ func authorFunc(helper *structure.Helper, values *structure.RequestData) []byte 
 	if len(helper.Block) != 0 {
 		return executeHelper(helper, values, 3) // context = author
 	}
-	// Else return author.name
+	// Else return author name (as link)
+	arguments := methods.ProcessHelperArguments(helper.Arguments)
+	for key, value := range arguments {
+		// If link is set to false, just return the name
+		if key == "autolink" && value == "false" {
+			return evaluateEscape(values.Posts[values.CurrentPostIndex].Author.Name, helper.Unescaped)
+		}
+	}
 	var buffer bytes.Buffer
 	buffer.WriteString("<a href=\"")
 	buffer.WriteString("/author/")
@@ -382,16 +389,7 @@ func authorFunc(helper *structure.Helper, values *structure.RequestData) []byte 
 }
 
 func authorDotNameFunc(helper *structure.Helper, values *structure.RequestData) []byte {
-	var buffer bytes.Buffer
-	buffer.WriteString("<a href=\"")
-	buffer.WriteString("/author/")
-	// TODO: Error handling if there is no Posts[values.CurrentPostIndex]
-	buffer.WriteString(values.Posts[values.CurrentPostIndex].Author.Slug)
-	buffer.WriteString("\">")
-	// TODO: Error handling if there is no Posts[values.CurrentPostIndex]
-	buffer.Write(evaluateEscape(values.Posts[values.CurrentPostIndex].Author.Name, helper.Unescaped))
-	buffer.WriteString("</a>")
-	return buffer.Bytes()
+	return evaluateEscape(values.Posts[values.CurrentPostIndex].Author.Name, helper.Unescaped)
 }
 
 func bioFunc(helper *structure.Helper, values *structure.RequestData) []byte {
