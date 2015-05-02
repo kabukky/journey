@@ -141,7 +141,7 @@ func nextFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 			return []byte{}
 		}
 	}
-	maxPages := int64((float64(count) / float64(values.Blog.PostsPerPage)) + 0.5)
+	maxPages := positiveCeilingInt64(float64(count) / float64(values.Blog.PostsPerPage))
 	if int64(values.CurrentIndexPage) < maxPages {
 		return []byte{1}
 	}
@@ -170,7 +170,7 @@ func pagesFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 			return []byte{}
 		}
 	}
-	maxPages := int64((float64(count) / float64(values.Blog.PostsPerPage)) + 0.5)
+	maxPages := positiveCeilingInt64(float64(count) / float64(values.Blog.PostsPerPage))
 	return []byte(strconv.FormatInt(maxPages, 10))
 }
 
@@ -224,7 +224,7 @@ func page_urlFunc(helper *structure.Helper, values *structure.RequestData) []byt
 					return []byte{}
 				}
 			}
-			maxPages := int64((float64(count) / float64(values.Blog.PostsPerPage)) + 0.5)
+			maxPages := positiveCeilingInt64(float64(count) / float64(values.Blog.PostsPerPage))
 			if int64(values.CurrentIndexPage) < maxPages {
 				var buffer bytes.Buffer
 				if values.CurrentTemplate == 3 { // author
@@ -747,47 +747,24 @@ func paginationFunc(helper *structure.Helper, values *structure.RequestData) []b
 			return []byte{}
 		}
 	}
-	if count > values.Blog.PostsPerPage {
-		maxPages := int64((float64(count) / float64(values.Blog.PostsPerPage)) + 0.5)
-		var buffer bytes.Buffer
-		buffer.WriteString("<nav class=\"pagination\" role=\"navigation\">")
-		// If this is not the first index page, display a back link
-		if values.CurrentIndexPage > 1 {
-			buffer.WriteString("\n\t\t<a class=\"newer-posts\" href=\"")
-			if values.CurrentIndexPage == 2 {
-				if values.CurrentTemplate == 3 { // author
-					buffer.WriteString("/author/")
-					// TODO: Error handling if there is no Posts[values.CurrentPostIndex]
-					buffer.WriteString(values.Posts[values.CurrentPostIndex].Author.Slug)
-				} else if values.CurrentTemplate == 2 { // tag
-					buffer.WriteString("/tag/")
-					// TODO: Error handling if there is no Posts[values.CurrentPostIndex]
-					buffer.WriteString(values.CurrentTag.Slug)
-				}
-				buffer.WriteString("/")
-			} else {
-				if values.CurrentTemplate == 3 { // author
-					buffer.WriteString("/author/")
-					// TODO: Error handling if there is no Posts[values.CurrentPostIndex]
-					buffer.WriteString(values.Posts[values.CurrentPostIndex].Author.Slug)
-				} else if values.CurrentTemplate == 2 { // tag
-					buffer.WriteString("/tag/")
-					// TODO: Error handling if there is no Posts[values.CurrentPostIndex]
-					buffer.WriteString(values.CurrentTag.Slug)
-				}
-				buffer.WriteString("/page/")
-				buffer.WriteString(strconv.Itoa(values.CurrentIndexPage - 1))
-				buffer.WriteString("/")
+	maxPages := positiveCeilingInt64(float64(count) / float64(values.Blog.PostsPerPage))
+	var buffer bytes.Buffer
+	buffer.WriteString("<nav class=\"pagination\" role=\"navigation\">")
+	// If this is not the first index page, display a back link
+	if values.CurrentIndexPage > 1 {
+		buffer.WriteString("\n\t\t<a class=\"newer-posts\" href=\"")
+		if values.CurrentIndexPage == 2 {
+			if values.CurrentTemplate == 3 { // author
+				buffer.WriteString("/author/")
+				// TODO: Error handling if there is no Posts[values.CurrentPostIndex]
+				buffer.WriteString(values.Posts[values.CurrentPostIndex].Author.Slug)
+			} else if values.CurrentTemplate == 2 { // tag
+				buffer.WriteString("/tag/")
+				// TODO: Error handling if there is no Posts[values.CurrentPostIndex]
+				buffer.WriteString(values.CurrentTag.Slug)
 			}
-			buffer.WriteString("\">&larr; Newer Posts</a>")
-		}
-		buffer.WriteString("\n\t<span class=\"page-number\">Page ")
-		buffer.WriteString(strconv.Itoa(values.CurrentIndexPage))
-		buffer.WriteString(" of ")
-		buffer.WriteString(strconv.FormatInt(maxPages, 10))
-		buffer.WriteString("</span>")
-		if int64(values.CurrentIndexPage) < maxPages {
-			buffer.WriteString("\n\t\t<a class=\"older-posts\" href=\"")
+			buffer.WriteString("/")
+		} else {
 			if values.CurrentTemplate == 3 { // author
 				buffer.WriteString("/author/")
 				// TODO: Error handling if there is no Posts[values.CurrentPostIndex]
@@ -798,14 +775,33 @@ func paginationFunc(helper *structure.Helper, values *structure.RequestData) []b
 				buffer.WriteString(values.CurrentTag.Slug)
 			}
 			buffer.WriteString("/page/")
-			buffer.WriteString(strconv.Itoa(values.CurrentIndexPage + 1))
-			buffer.WriteString("/\">Older Posts &rarr;</a>")
+			buffer.WriteString(strconv.Itoa(values.CurrentIndexPage - 1))
+			buffer.WriteString("/")
 		}
-		buffer.WriteString("\n</nav>")
-		return buffer.Bytes()
-	} else {
-		return []byte("<nav class=\"pagination\" role=\"navigation\">\n\t<span class=\"page-number\">Page 1 of 1</span>\n</nav>")
+		buffer.WriteString("\">&larr; Newer Posts</a>")
 	}
+	buffer.WriteString("\n\t<span class=\"page-number\">Page ")
+	buffer.WriteString(strconv.Itoa(values.CurrentIndexPage))
+	buffer.WriteString(" of ")
+	buffer.WriteString(strconv.FormatInt(maxPages, 10))
+	buffer.WriteString("</span>")
+	if int64(values.CurrentIndexPage) < maxPages {
+		buffer.WriteString("\n\t\t<a class=\"older-posts\" href=\"")
+		if values.CurrentTemplate == 3 { // author
+			buffer.WriteString("/author/")
+			// TODO: Error handling if there is no Posts[values.CurrentPostIndex]
+			buffer.WriteString(values.Posts[values.CurrentPostIndex].Author.Slug)
+		} else if values.CurrentTemplate == 2 { // tag
+			buffer.WriteString("/tag/")
+			// TODO: Error handling if there is no Posts[values.CurrentPostIndex]
+			buffer.WriteString(values.CurrentTag.Slug)
+		}
+		buffer.WriteString("/page/")
+		buffer.WriteString(strconv.Itoa(values.CurrentIndexPage + 1))
+		buffer.WriteString("/\">Older Posts &rarr;</a>")
+	}
+	buffer.WriteString("\n</nav>")
+	return buffer.Bytes()
 }
 
 func idFunc(helper *structure.Helper, values *structure.RequestData) []byte {
@@ -904,4 +900,12 @@ func evaluateEscape(value []byte, unescaped bool) []byte {
 		return value
 	}
 	return []byte(html.EscapeString(string(value)))
+}
+
+func positiveCeilingInt64(input float64) int64 {
+	output := int64(input)
+	if input - float64(output) > 0 {
+		output++
+	}
+	return output
 }
