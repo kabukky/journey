@@ -38,7 +38,7 @@ func UpdatePost(id int64, title []byte, slug string, markdown []byte, html []byt
 	return writeDB.Commit()
 }
 
-func UpdateSettings(title []byte, description []byte, logo []byte, cover []byte, postsPerPage int64, activeTheme string, updated_at time.Time, updated_by int64) error {
+func UpdateSettings(title []byte, description []byte, logo []byte, cover []byte, postsPerPage int64, activeTheme string, navigation []byte, updated_at time.Time, updated_by int64) error {
 	writeDB, err := readDB.Begin()
 	if err != nil {
 		writeDB.Rollback()
@@ -76,6 +76,12 @@ func UpdateSettings(title []byte, description []byte, logo []byte, cover []byte,
 	}
 	// ActiveTheme
 	_, err = writeDB.Exec(stmtUpdateSettings, activeTheme, updated_at, updated_by, "activeTheme")
+	if err != nil {
+		writeDB.Rollback()
+		return err
+	}
+	// Navigation
+	_, err = writeDB.Exec(stmtUpdateSettings, navigation, updated_at, updated_by, "navigation")
 	if err != nil {
 		writeDB.Rollback()
 		return err

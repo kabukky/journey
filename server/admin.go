@@ -38,13 +38,15 @@ type JsonPost struct {
 }
 
 type JsonBlog struct {
-	Title        string
-	Description  string
-	Logo         string
-	Cover        string
-	Themes       []string
-	ActiveTheme  string
-	PostsPerPage int64
+	Url             string
+	Title           string
+	Description     string
+	Logo            string
+	Cover           string
+	Themes          []string
+	ActiveTheme     string
+	PostsPerPage    int64
+	NavigationItems []structure.Navigation
 }
 
 type JsonUser struct {
@@ -333,7 +335,7 @@ func deleteApiPostHandler(w http.ResponseWriter, r *http.Request, params map[str
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		err = database.DeletePostById(postId)
+		err = methods.DeletePost(postId)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -498,12 +500,10 @@ func deleteApiImageHandler(w http.ResponseWriter, r *http.Request, _ map[string]
 func getApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	userName := authentication.GetUserName(r)
 	if userName != "" {
-		blog, err := database.RetrieveBlog()
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		blogJson := JsonBlog{Title: string(blog.Title), Description: string(blog.Description), Logo: string(blog.Logo), Cover: string(blog.Cover), PostsPerPage: blog.PostsPerPage, Themes: templates.GetAllThemes(), ActiveTheme: blog.ActiveTheme}
+		// Read lock the global blog
+		methods.Blog.RLock()
+		defer methods.Blog.RUnlock()
+		blogJson := blogToJson(methods.Blog)
 		json, err := json.Marshal(blogJson)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -538,13 +538,23 @@ func patchApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 		if json.PostsPerPage < 1 {
 			json.PostsPerPage = 1
 		}
-		// Retrieve old post settings for comparison
+		// Remove blog url in front of navigation urls
+		for index, _ := range json.NavigationItems {
+			if strings.HasPrefix(json.NavigationItems[index].Url, json.Url) {
+				json.NavigationItems[index].Url = strings.Replace(json.NavigationItems[index].Url, json.Url, "", 1)
+				// If we removed the blog url, there should be a / in front of the url
+				if !strings.HasPrefix(json.NavigationItems[index].Url, "/") {
+					json.NavigationItems[index].Url = "/" + json.NavigationItems[index].Url
+				}
+			}
+		}
+		// Retrieve old blog settings for comparison
 		blog, err := database.RetrieveBlog()
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		tempBlog := structure.Blog{Url: []byte(configuration.Config.Url), Title: []byte(json.Title), Description: []byte(json.Description), Logo: []byte(json.Logo), Cover: []byte(json.Cover), AssetPath: []byte("/assets/"), PostCount: blog.PostCount, PostsPerPage: json.PostsPerPage, ActiveTheme: json.ActiveTheme}
+		tempBlog := structure.Blog{Url: []byte(configuration.Config.Url), Title: []byte(json.Title), Description: []byte(json.Description), Logo: []byte(json.Logo), Cover: []byte(json.Cover), AssetPath: []byte("/assets/"), PostCount: blog.PostCount, PostsPerPage: json.PostsPerPage, ActiveTheme: json.ActiveTheme, NavigationItems: json.NavigationItems}
 		err = methods.UpdateBlog(&tempBlog, userId)
 		// Check if active theme setting has been changed, if so, generate templates from new theme
 		if tempBlog.ActiveTheme != blog.ActiveTheme {
@@ -719,6 +729,20 @@ func postToJson(post *structure.Post) *JsonPost {
 	}
 	jsonPost.Tags = strings.Join(tags, ",")
 	return &jsonPost
+}
+
+func blogToJson(blog *structure.Blog) *JsonBlog {
+	var jsonBlog JsonBlog
+	jsonBlog.Url = string(blog.Url)
+	jsonBlog.Title = string(blog.Title)
+	jsonBlog.Description = string(blog.Description)
+	jsonBlog.Logo = string(blog.Logo)
+	jsonBlog.Cover = string(blog.Cover)
+	jsonBlog.PostsPerPage = blog.PostsPerPage
+	jsonBlog.Themes = templates.GetAllThemes()
+	jsonBlog.ActiveTheme = blog.ActiveTheme
+	jsonBlog.NavigationItems = blog.NavigationItems
+	return &jsonBlog
 }
 
 func InitializeAdmin(router *httptreemux.TreeMux) {

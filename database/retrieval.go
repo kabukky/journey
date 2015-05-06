@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"encoding/json"
 	"github.com/kabukky/journey/structure"
 	"time"
 )
@@ -347,11 +348,23 @@ func RetrieveBlog() (*structure.Blog, error) {
 	if err != nil {
 		return &tempBlog, err
 	}
+	// Post count
 	postCount, err := RetrieveNumberOfPosts()
 	if err != nil {
 		return &tempBlog, err
 	}
 	tempBlog.PostCount = postCount
+	// Navigation
+	var navigation []byte
+	row = readDB.QueryRow(stmtRetrieveBlog, "navigation")
+	err = row.Scan(&navigation)
+	if err != nil {
+		return &tempBlog, err
+	}
+	tempBlog.NavigationItems, err = makeNavigation(navigation)
+	if err != nil {
+		return &tempBlog, err
+	}
 	return &tempBlog, err
 }
 
@@ -373,4 +386,13 @@ func RetrieveUsersCount() int {
 		return -1
 	}
 	return userCount
+}
+
+func makeNavigation(navigation []byte) ([]structure.Navigation, error) {
+	navigationItems := make([]structure.Navigation, 0)
+	err := json.Unmarshal(navigation, &navigationItems)
+	if err != nil {
+		return navigationItems, err
+	}
+	return navigationItems, nil
 }

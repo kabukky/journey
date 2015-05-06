@@ -1,5 +1,6 @@
 //register the modules (don't forget ui bootstrap and bootstrap switch)
 var adminApp = angular.module('adminApp', ['ngRoute', 'frapontillo.bootstrap-switch', 'ui.bootstrap', 'infinite-scroll']);
+
 adminApp.config(function($routeProvider) {
 	$routeProvider.
 		when('/', {
@@ -35,12 +36,32 @@ adminApp.directive('imgSelectionDirective', function() {
     return {
         restrict: 'A',
         link: function(scope, elem, attrs) {
-            $(elem).click(function() {
-              $('.imgselected').removeClass('imgselected');
-              $(elem).children('img').addClass('imgselected');
-        });
+          $(elem).click(function() {
+            $('.imgselected').removeClass('imgselected');
+            $(elem).children('img').addClass('imgselected');
+          });
       }
     }
+});
+
+//directive to add/remove the blog url to/from the navigation url fields
+adminApp.directive('evaluateUrl', function() {
+  return {
+    require: 'ngModel',
+    link: function(scope, elem, attrs, ctrl) {
+      elem.on('blur', function() {
+        var value = elem.val();
+        //if the url of this item doesn't start with http/https, add the blog url to it.
+        if (!(value.substring(0, 'http://'.length) === 'http://') && !(value.substring(0, 'https://'.length) === 'https://') && !(value.substring(0, scope.shared.blog.Url.length) === scope.shared.blog.Url)) {
+          if ((value.substring(0, 1) != '/') && (scope.shared.blog.Url.slice(-1) != '/')) {
+            value = '/' + value;
+          }
+          value = scope.shared.blog.Url + value;
+          elem.val(value);
+        }
+      });
+    }
+  };
 });
 
 //factory to load items in infinite-scroll
@@ -93,11 +114,30 @@ adminApp.controller('SettingsCtrl', function ($scope, $http, $timeout, $sce, $lo
   //change the navbar according to controller
   $scope.navbarHtml = $sce.trustAsHtml('<ul class="nav navbar-nav"><li><a href="#/">Content</a></li><li><a href="#/create/">New Post</a></li><li class="active"><a href="#/settings/">Settings<span class="sr-only">(current)</span></a></li></ul>');
   $scope.shared = sharingService.shared;
+  //variable to hold the field prefix
+  $scope.prefix = '';
   $scope.loadData = function() {
     $http.get('/admin/api/blog').success(function(data) {
       $scope.shared.blog = data;
+      //select active theme
       var themeIndex = $scope.shared.blog.Themes.indexOf($scope.shared.blog.ActiveTheme);
       $scope.shared.blog.ActiveTheme = $scope.shared.blog.Themes[themeIndex];
+      //make sure NavigationItems is not null
+      if ($scope.shared.blog.NavigationItems == null) {
+        $scope.shared.blog.NavigationItems = []
+      }
+      //append the blog url to the navigation items if necessary
+      for (var i = 0; i < $scope.shared.blog.NavigationItems.length; i++) {
+        var value = $scope.shared.blog.NavigationItems[i].url;
+        //if the url of this item doesn't start with http/https, add the blog url to it.
+        if (!(value.substring(0, 'http://'.length) === 'http://') && !(value.substring(0, 'https://'.length) === 'https://') && !(value.substring(0, $scope.shared.blog.Url.length) === $scope.shared.blog.Url)) {
+          if ((value.substring(0, 1) != '/') && ($scope.shared.blog.Url.slice(-1) != '/')) {
+            value = '/' + value;
+          }
+          value = $scope.shared.blog.Url + value;
+          $scope.shared.blog.NavigationItems[i].url = value;
+        }
+      }
     });
     $http.get('/admin/api/userid').success(function(data) {
       $scope.authenticatedUser = data;
@@ -107,6 +147,16 @@ adminApp.controller('SettingsCtrl', function ($scope, $http, $timeout, $sce, $lo
     });
   };
   $scope.loadData();
+  $scope.deleteNavItem = function(index) {
+    $scope.shared.blog.NavigationItems.splice(index, 1);
+  };
+  $scope.addNavItem = function() {
+    var url = $scope.shared.blog.Url
+    if (url.slice(-1) != '/') {
+      url = url + '/';
+    }
+    $scope.shared.blog['NavigationItems'].push({label: 'Home', url: url});
+  };
   $scope.save = function() {
     $http.patch('/admin/api/blog', $scope.shared.blog);
     $http.patch('/admin/api/user', $scope.shared.user).success(function(data) {

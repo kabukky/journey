@@ -3,6 +3,7 @@ package methods
 import (
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/structure"
+	"log"
 	"time"
 )
 
@@ -34,6 +35,11 @@ func SavePost(p *structure.Post) error {
 		if err != nil {
 			return err
 		}
+	}
+	// Generate new global blog
+	err = GenerateBlog()
+	if err != nil {
+		log.Panic("Error: couldn't generate blog data:", err)
 	}
 	return nil
 }
@@ -71,6 +77,24 @@ func UpdatePost(p *structure.Post) error {
 		if err != nil {
 			return err
 		}
+	}
+	// Generate new global blog
+	err = GenerateBlog()
+	if err != nil {
+		log.Panic("Error: couldn't generate blog data:", err)
+	}
+	return nil
+}
+
+func DeletePost(postId int64) error {
+	err := database.DeletePostById(postId)
+	if err != nil {
+		return err
+	}
+	// Generate new global blog
+	err = GenerateBlog()
+	if err != nil {
+		log.Panic("Error: couldn't generate blog data:", err)
 	}
 	return nil
 }

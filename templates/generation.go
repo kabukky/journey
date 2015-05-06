@@ -12,6 +12,7 @@ import (
 	"github.com/kabukky/journey/structure/methods"
 	"github.com/kabukky/journey/watcher"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -193,13 +194,21 @@ func createTemplateFromFile(filename string) (*structure.Helper, error) {
 	return helper, nil
 }
 
+func compileFile(fileName string) error {
+	helper, err := createTemplateFromFile(fileName)
+	if err != nil {
+		return err
+	}
+	compiledTemplates.m[helper.Name] = helper
+	return nil
+}
+
 func inspectTemplateFile(filePath string, info os.FileInfo, err error) error {
 	if !info.IsDir() && filepath.Ext(filePath) == ".hbs" {
-		helper, err := createTemplateFromFile(filePath)
+		err := compileFile(filePath)
 		if err != nil {
 			return err
 		}
-		compiledTemplates.m[helper.Name] = helper
 	}
 	return nil
 }
@@ -219,6 +228,21 @@ func compileTheme(themePath string) error {
 	}
 	if _, ok := compiledTemplates.m["post"]; !ok {
 		return errors.New("Couldn't compile template 'post'. Is post.hbs missing?")
+	}
+	// Check if pagination and navigation templates have been provided by the theme.
+	// If not, use the build in ones.
+	if _, ok := compiledTemplates.m["pagination"]; !ok {
+		err = compileFile(filepath.Join(filenames.HbsFilepath, "pagination.hbs"))
+		if err != nil {
+			log.Println("Warning: Couldn't compile pagination template.")
+		}
+	}
+	if _, ok := compiledTemplates.m["navigation"]; !ok {
+		err = compileFile(filepath.Join(filenames.HbsFilepath, "navigation.hbs"))
+		if err != nil {
+			log.Println("Warning: Couldn't compile navigation template.")
+		}
+
 	}
 	return nil
 }

@@ -31,6 +31,7 @@ var (
 	//For built-in files (e.g. the admin interface)
 	AdminFilepath  = filepath.Join("built-in", "admin")
 	PublicFilepath = filepath.Join("built-in", "public")
+	HbsFilepath    = filepath.Join("built-in", "hbs")
 
 	// For handlebars (this is a url string)
 	JqueryFilename = "/public/jquery/jquery.js"

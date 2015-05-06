@@ -34,7 +34,7 @@ func Generate(input string, table string) string {
 	// Don't allow a few specific slugs that are used by the blog
 	if table == "posts" && (output == "rss" || output == "tag" || output == "author" || output == "page" || output == "admin") {
 		output = generateUniqueSlug(output, table, 2)
-	} else if table == "tags" { // We want duplicate tag slugs
+	} else if table == "tags" || table == "navigation" { // We want duplicate tag and navigation slugs
 		return output
 	}
 	return generateUniqueSlug(output, table, 1)

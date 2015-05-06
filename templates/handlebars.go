@@ -39,7 +39,44 @@ func nullFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 			values.PluginVMs = nil
 		}
 	}
-	//log.Println("Warning: This helper is not implemented:", helper.Name)
+	log.Println("Warning: This helper is not implemented:", helper.Name)
+	return []byte{}
+}
+
+func slugFunc(helper *structure.Helper, values *structure.RequestData) []byte {
+	if len(values.Blog.NavigationItems) != 0 {
+		return evaluateEscape([]byte(values.Blog.NavigationItems[values.CurrentNavigationIndex].Slug), helper.Unescaped)
+	}
+	return []byte{}
+}
+
+func currentFunc(helper *structure.Helper, values *structure.RequestData) []byte {
+	if len(values.Blog.NavigationItems) != 0 {
+		url := values.Blog.NavigationItems[values.CurrentNavigationIndex].Url
+		// Since the router rewrites all urls with a trailing slash, add / to url if not already there
+		if !strings.HasSuffix(url, "/") {
+			url = url + "/"
+		}
+		if values.CurrentPath == url {
+			return []byte("t")
+		}
+	}
+	return []byte{}
+}
+
+func navigationFunc(helper *structure.Helper, values *structure.RequestData) []byte {
+	if len(values.Blog.NavigationItems) == 0 {
+		return []byte{}
+	} else if templateHelper, ok := compiledTemplates.m["navigation"]; ok {
+		return executeHelper(templateHelper, values, values.CurrentHelperContext)
+	}
+	return []byte{}
+}
+
+func labelFunc(helper *structure.Helper, values *structure.RequestData) []byte {
+	if len(values.Blog.NavigationItems) != 0 {
+		return evaluateEscape([]byte(values.Blog.NavigationItems[values.CurrentNavigationIndex].Label), helper.Unescaped)
+	}
 	return []byte{}
 }
 
@@ -63,6 +100,13 @@ func blockFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 				}
 			}
 		}
+	}
+	return []byte{}
+}
+
+func paginationFunc(helper *structure.Helper, values *structure.RequestData) []byte {
+	if templateHelper, ok := compiledTemplates.m["pagination"]; ok {
+		return executeHelper(templateHelper, values, values.CurrentHelperContext)
 	}
 	return []byte{}
 }
@@ -518,7 +562,12 @@ func urlFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 		for key, value := range arguments {
 			if key == "absolute" {
 				if value == "true" {
-					buffer.Write(values.Blog.Url)
+					// Only write the blog url if navigation url does not begin with http/https
+					if values.CurrentHelperContext == 4 && (!strings.HasPrefix(values.Blog.NavigationItems[values.CurrentNavigationIndex].Url, "http://") && !strings.HasPrefix(values.Blog.NavigationItems[values.CurrentNavigationIndex].Url, "https://")) { // navigation
+						buffer.Write(values.Blog.Url)
+					} else if values.CurrentHelperContext != 4 {
+						buffer.Write(values.Blog.Url)
+					}
 				}
 			}
 		}
@@ -533,6 +582,9 @@ func urlFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 		// TODO: Error handling if there is no Posts[values.CurrentPostIndex]
 		buffer.WriteString(values.Posts[values.CurrentPostIndex].Author.Slug)
 		buffer.WriteString("/")
+		return evaluateEscape(buffer.Bytes(), helper.Unescaped)
+	} else if values.CurrentHelperContext == 4 { // author
+		buffer.WriteString(values.Blog.NavigationItems[values.CurrentNavigationIndex].Url)
 		return evaluateEscape(buffer.Bytes(), helper.Unescaped)
 	}
 	return []byte{}
@@ -726,88 +778,6 @@ func tagDotSlugFunc(helper *structure.Helper, values *structure.RequestData) []b
 	}
 }
 
-func paginationFunc(helper *structure.Helper, values *structure.RequestData) []byte {
-	if template, ok := compiledTemplates.m["pagination"]; ok { // If the theme has a pagination.hbs
-		return executeHelper(template, values, values.CurrentHelperContext)
-	}
-	var count int64
-	var err error
-	if values.CurrentTemplate == 0 { // index
-		count = values.Blog.PostCount
-	} else if values.CurrentTemplate == 2 { // tag
-		count, err = database.RetrieveNumberOfPostsByTag(values.CurrentTag.Id)
-		if err != nil {
-			log.Println("Couldn't get number of posts for tag", err.Error())
-			return []byte{}
-		}
-	} else if values.CurrentTemplate == 3 { // author
-		count, err = database.RetrieveNumberOfPostsByUser(values.Posts[values.CurrentPostIndex].Author.Id)
-		if err != nil {
-			log.Println("Couldn't get number of posts for author", err.Error())
-			return []byte{}
-		}
-	}
-	if count > values.Blog.PostsPerPage {
-		maxPages := int64((float64(count) / float64(values.Blog.PostsPerPage)) + 0.5)
-		var buffer bytes.Buffer
-		buffer.WriteString("<nav class=\"pagination\" role=\"navigation\">")
-		// If this is not the first index page, display a back link
-		if values.CurrentIndexPage > 1 {
-			buffer.WriteString("\n\t\t<a class=\"newer-posts\" href=\"")
-			if values.CurrentIndexPage == 2 {
-				if values.CurrentTemplate == 3 { // author
-					buffer.WriteString("/author/")
-					// TODO: Error handling if there is no Posts[values.CurrentPostIndex]
-					buffer.WriteString(values.Posts[values.CurrentPostIndex].Author.Slug)
-				} else if values.CurrentTemplate == 2 { // tag
-					buffer.WriteString("/tag/")
-					// TODO: Error handling if there is no Posts[values.CurrentPostIndex]
-					buffer.WriteString(values.CurrentTag.Slug)
-				}
-				buffer.WriteString("/")
-			} else {
-				if values.CurrentTemplate == 3 { // author
-					buffer.WriteString("/author/")
-					// TODO: Error handling if there is no Posts[values.CurrentPostIndex]
-					buffer.WriteString(values.Posts[values.CurrentPostIndex].Author.Slug)
-				} else if values.CurrentTemplate == 2 { // tag
-					buffer.WriteString("/tag/")
-					// TODO: Error handling if there is no Posts[values.CurrentPostIndex]
-					buffer.WriteString(values.CurrentTag.Slug)
-				}
-				buffer.WriteString("/page/")
-				buffer.WriteString(strconv.Itoa(values.CurrentIndexPage - 1))
-				buffer.WriteString("/")
-			}
-			buffer.WriteString("\">&larr; Newer Posts</a>")
-		}
-		buffer.WriteString("\n\t<span class=\"page-number\">Page ")
-		buffer.WriteString(strconv.Itoa(values.CurrentIndexPage))
-		buffer.WriteString(" of ")
-		buffer.WriteString(strconv.FormatInt(maxPages, 10))
-		buffer.WriteString("</span>")
-		if int64(values.CurrentIndexPage) < maxPages {
-			buffer.WriteString("\n\t\t<a class=\"older-posts\" href=\"")
-			if values.CurrentTemplate == 3 { // author
-				buffer.WriteString("/author/")
-				// TODO: Error handling if there is no Posts[values.CurrentPostIndex]
-				buffer.WriteString(values.Posts[values.CurrentPostIndex].Author.Slug)
-			} else if values.CurrentTemplate == 2 { // tag
-				buffer.WriteString("/tag/")
-				// TODO: Error handling if there is no Posts[values.CurrentPostIndex]
-				buffer.WriteString(values.CurrentTag.Slug)
-			}
-			buffer.WriteString("/page/")
-			buffer.WriteString(strconv.Itoa(values.CurrentIndexPage + 1))
-			buffer.WriteString("/\">Older Posts &rarr;</a>")
-		}
-		buffer.WriteString("\n</nav>")
-		return buffer.Bytes()
-	} else {
-		return []byte("<nav class=\"pagination\" role=\"navigation\">\n\t<span class=\"page-number\">Page 1 of 1</span>\n</nav>")
-	}
-}
-
 func idFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	return []byte(strconv.FormatInt(values.Posts[values.CurrentPostIndex].Id, 10))
 }
@@ -841,6 +811,13 @@ func foreachFunc(helper *structure.Helper, values *structure.RequestData) []byte
 				values.CurrentTagIndex = index
 				buffer.Write(executeHelper(helper, values, 2)) // context = tag
 				//}
+			}
+			return buffer.Bytes()
+		case "navigation":
+			var buffer bytes.Buffer
+			for index, _ := range values.Blog.NavigationItems {
+				values.CurrentNavigationIndex = index
+				buffer.Write(executeHelper(helper, values, 4)) // context = navigation
 			}
 			return buffer.Bytes()
 		default:
