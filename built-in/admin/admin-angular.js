@@ -91,7 +91,7 @@ adminApp.factory('infiniteScrollFactory', function($http) {
 
 adminApp.controller('ContentCtrl', function ($scope, $http, $sce, $location, infiniteScrollFactory, sharingService){
   //change the navbar according to controller
-  $scope.navbarHtml = $sce.trustAsHtml('<ul class="nav navbar-nav"><li class="active"><a href="#/">Content<span class="sr-only">(current)</span></a></li><li><a href="#/create/">New Post</a></li><li><a href="#/settings/">Settings</a></li></ul>');
+  $scope.navbarHtml = $sce.trustAsHtml('<ul class="nav navbar-nav"><li class="active"><a href="#/">Content<span class="sr-only">(current)</span></a></li><li><a href="#/create/">New Post</a></li><li><a href="#/settings/">Settings</a></li><li><a href="logout/" class="logout">Log Out</a></li></ul>');
   $scope.infiniteScrollFactory = new infiniteScrollFactory('/admin/api/posts/');
   $scope.openPost = function(postId) {
     $location.url('/edit/' + postId);
@@ -112,7 +112,7 @@ adminApp.controller('ContentCtrl', function ($scope, $http, $sce, $location, inf
 
 adminApp.controller('SettingsCtrl', function ($scope, $http, $timeout, $sce, $location, sharingService){
   //change the navbar according to controller
-  $scope.navbarHtml = $sce.trustAsHtml('<ul class="nav navbar-nav"><li><a href="#/">Content</a></li><li><a href="#/create/">New Post</a></li><li class="active"><a href="#/settings/">Settings<span class="sr-only">(current)</span></a></li></ul>');
+  $scope.navbarHtml = $sce.trustAsHtml('<ul class="nav navbar-nav"><li><a href="#/">Content</a></li><li><a href="#/create/">New Post</a></li><li class="active"><a href="#/settings/">Settings<span class="sr-only">(current)</span></a></li><li><a href="logout/" class="logout">Log Out</a></li></ul>');
   $scope.shared = sharingService.shared;
   //variable to hold the field prefix
   $scope.prefix = '';
@@ -169,7 +169,7 @@ adminApp.controller('CreateCtrl', function ($scope, $http, $sce, $location, shar
   //create markdown converter
   var converter = new Showdown.converter();
   //change the navbar according to controller
-  $scope.navbarHtml = $sce.trustAsHtml('<ul class="nav navbar-nav"><li><a href="#/">Content</a></li><li class="active"><a href="#/create/">New Post<span class="sr-only">(current)</span></a></li><li><a href="#/settings/">Settings</a></li></ul>');
+  $scope.navbarHtml = $sce.trustAsHtml('<ul class="nav navbar-nav"><li><a href="#/">Content</a></li><li class="active"><a href="#/create/">New Post<span class="sr-only">(current)</span></a></li><li><a href="#/settings/">Settings</a></li><li><a href="logout/" class="logout">Log Out</a></li></ul>');
 	$scope.shared = sharingService.shared;
   $scope.shared.post = {Title: 'New Post', Slug: '', Markdown: 'Write something!', IsPublished: false, Image: '', Tags: ''}
 	$scope.change = function() {
@@ -189,7 +189,7 @@ adminApp.controller('EditCtrl', function ($scope, $routeParams, $http, $sce, $lo
   //create markdown converter
   var converter = new Showdown.converter();
   //change the navbar according to controller
-  $scope.navbarHtml = $sce.trustAsHtml('<ul class="nav navbar-nav"><li><a href="#/">Content</a></li><li><a href="#/create/">New Post</a></li><li><a href="#/settings/">Settings</a></li></ul>');
+  $scope.navbarHtml = $sce.trustAsHtml('<ul class="nav navbar-nav"><li><a href="#/">Content</a></li><li><a href="#/create/">New Post</a></li><li><a href="#/settings/">Settings</a></li><li><a href="logout/" class="logout">Log Out</a></li></ul>');
   $scope.shared = sharingService.shared;
   $scope.shared.post = {}
   $scope.change = function() {

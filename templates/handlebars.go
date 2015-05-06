@@ -58,7 +58,7 @@ func currentFunc(helper *structure.Helper, values *structure.RequestData) []byte
 			url = url + "/"
 		}
 		if values.CurrentPath == url {
-			return []byte("t")
+			return []byte{1}
 		}
 	}
 	return []byte{}

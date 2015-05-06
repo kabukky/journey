@@ -146,7 +146,7 @@ func postRegistrationHandler(w http.ResponseWriter, r *http.Request, _ map[strin
 // Function to log out the user. Not used at the moment.
 func logoutHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	authentication.ClearSession(w)
-	http.Redirect(w, r, "/admin/", 302)
+	http.Redirect(w, r, "/admin/login/", 302)
 	return
 }
 

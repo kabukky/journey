@@ -65,6 +65,10 @@ img {
     margin-right: 15px;
 }
 
+.logout {
+    color: #f04124 !important;
+}
+
 .post-content-row {
     cursor: pointer;
 }
@@ -148,6 +152,7 @@ img {
     font-size: 16px;
     color: #ffffff;
 }
+
 .navigation-item {
     padding-top: 10px;
     padding-bottom: 10px;
