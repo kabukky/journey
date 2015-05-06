@@ -741,7 +741,7 @@ func atOddFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 }
 
 func nameFunc(helper *structure.Helper, values *structure.RequestData) []byte {
-	// If tag (commented out the code for generating a link. Ghost doesn't seem to do that either.
+	// If tag (commented out the code for generating a link. Ghost doesn't seem to do that either).
 	if values.CurrentHelperContext == 2 { // tag
 		//var buffer bytes.Buffer
 		//buffer.WriteString("<a href=\"")
@@ -753,7 +753,7 @@ func nameFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 		//return buffer.Bytes()
 		return evaluateEscape(values.Posts[values.CurrentPostIndex].Tags[values.CurrentTagIndex].Name, helper.Unescaped)
 	}
-	// If author (commented out the code for generating a link. Ghost doesn't seem to do that.
+	// If author (commented out the code for generating a link. Ghost doesn't seem to do that).
 	//var buffer bytes.Buffer
 	//buffer.WriteString("<a href=\"")
 	//buffer.WriteString("/author/")
