@@ -16,7 +16,6 @@ var helperFuctions = map[string]func(*structure.Helper, *structure.RequestData) 
 	"!<":               extendFunc,
 	"body":             bodyFunc,
 	"asset":            assetFunc,
-	"pagination":       paginationFunc,
 	"encode":           encodeFunc,
 	">":                insertFunc,
 	"meta_title":       meta_titleFunc,
@@ -27,6 +26,8 @@ var helperFuctions = map[string]func(*structure.Helper, *structure.RequestData) 
 	"plural":           pluralFunc,
 	"date":             dateFunc,
 	"image":            imageFunc,
+	"contentFor":       contentForFunc,
+	"block":            blockFunc,
 
 	// @blog functions
 	"@blog.title":       atBlogDotTitleFunc,
@@ -34,13 +35,13 @@ var helperFuctions = map[string]func(*structure.Helper, *structure.RequestData) 
 	"@blog.logo":        atBlogDotLogoFunc,
 	"@blog.cover":       atBlogDotCoverFunc,
 	"@blog.description": atBlogDotDescriptionFunc,
+	"@blog.navigation":  navigationFunc,
 
 	// Post functions
 	"post":       postFunc,
 	"excerpt":    excerptFunc,
 	"title":      titleFunc,
 	"content":    contentFunc,
-	"url":        urlFunc,
 	"post_class": post_classFunc,
 	"featured":   featuredFunc,
 	"id":         idFunc,
@@ -65,20 +66,28 @@ var helperFuctions = map[string]func(*structure.Helper, *structure.RequestData) 
 	"author.cover":    coverFunc,
 	"author.location": locationFunc,
 
+	// Navigation functions
+	"navigation": navigationFunc,
+	"label":      labelFunc,
+	"current":    currentFunc,
+	"slug":       slugFunc,
+
 	// Multiple block functions
 	"@first": atFirstFunc,
 	"@last":  atLastFunc,
 	"@even":  atEvenFunc,
 	"@odd":   atOddFunc,
 	"name":   nameFunc,
+	"url":    urlFunc,
 
 	// Pagination functions
-	"prev":     prevFunc,
-	"next":     nextFunc,
-	"page":     pageFunc,
-	"pages":    pagesFunc,
-	"page_url": page_urlFunc,
-	"pageUrl":  page_urlFunc,
+	"pagination": paginationFunc,
+	"prev":       prevFunc,
+	"next":       nextFunc,
+	"page":       pageFunc,
+	"pages":      pagesFunc,
+	"page_url":   page_urlFunc,
+	"pageUrl":    page_urlFunc,
 
 	// Possible if arguments
 	"posts":           postsFunc,

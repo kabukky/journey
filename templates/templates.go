@@ -21,23 +21,22 @@ type Templates struct {
 
 func newTemplates() *Templates { return &Templates{m: make(map[string]*structure.Helper)} }
 
-// Global compiled templates - thread safe and accessible from all packages
+// Global compiled templates - thread safe and accessible by all requests
 var compiledTemplates = newTemplates()
 
-func ShowPostTemplate(writer http.ResponseWriter, slug string) error {
+func ShowPostTemplate(writer http.ResponseWriter, r *http.Request, slug string) error {
+	// Read lock templates and global blog
 	compiledTemplates.RLock()
 	defer compiledTemplates.RUnlock()
-	blog, err := methods.GenerateBlog()
-	if err != nil {
-		return err
-	}
+	methods.Blog.RLock()
+	defer methods.Blog.RUnlock()
 	post, err := database.RetrievePostBySlug(slug)
 	if err != nil {
 		return err
 	} else if !post.IsPublished { // Make sure the post is published before rendering it
 		return errors.New("Post not published.")
 	}
-	requestData := structure.RequestData{Posts: make([]structure.Post, 1), Blog: blog, CurrentTemplate: 1} // CurrentTemplate = post
+	requestData := structure.RequestData{Posts: make([]structure.Post, 1), Blog: methods.Blog, CurrentTemplate: 1, CurrentPath: r.URL.Path} // CurrentTemplate = post
 	requestData.Posts[0] = *post
 	// If the post is a page and the page template is available, use the page template
 	if post.IsPage {
@@ -54,26 +53,25 @@ func ShowPostTemplate(writer http.ResponseWriter, slug string) error {
 	return err
 }
 
-func ShowAuthorTemplate(writer http.ResponseWriter, slug string, page int) error {
+func ShowAuthorTemplate(writer http.ResponseWriter, r *http.Request, slug string, page int) error {
+	// Read lock templates and global blog
 	compiledTemplates.RLock()
 	defer compiledTemplates.RUnlock()
+	methods.Blog.RLock()
+	defer methods.Blog.RUnlock()
 	postIndex := int64(page - 1)
 	if postIndex < 0 {
 		postIndex = 0
-	}
-	blog, err := methods.GenerateBlog()
-	if err != nil {
-		return err
 	}
 	author, err := database.RetrieveUserBySlug(slug)
 	if err != nil {
 		return err
 	}
-	posts, err := database.RetrievePostsByUser(author.Id, blog.PostsPerPage, (blog.PostsPerPage * postIndex))
+	posts, err := database.RetrievePostsByUser(author.Id, methods.Blog.PostsPerPage, (methods.Blog.PostsPerPage * postIndex))
 	if err != nil {
 		return err
 	}
-	requestData := structure.RequestData{Posts: posts, Blog: blog, CurrentIndexPage: page, CurrentTemplate: 3} // CurrentTemplate = author
+	requestData := structure.RequestData{Posts: posts, Blog: methods.Blog, CurrentIndexPage: page, CurrentTemplate: 3, CurrentPath: r.URL.Path} // CurrentTemplate = author
 	if template, ok := compiledTemplates.m["author"]; ok {
 		_, err = writer.Write(executeHelper(template, &requestData, 0)) // context = index
 	} else {
@@ -86,26 +84,25 @@ func ShowAuthorTemplate(writer http.ResponseWriter, slug string, page int) error
 	return err
 }
 
-func ShowTagTemplate(writer http.ResponseWriter, slug string, page int) error {
+func ShowTagTemplate(writer http.ResponseWriter, r *http.Request, slug string, page int) error {
+	// Read lock templates and global blog
 	compiledTemplates.RLock()
 	defer compiledTemplates.RUnlock()
+	methods.Blog.RLock()
+	defer methods.Blog.RUnlock()
 	postIndex := int64(page - 1)
 	if postIndex < 0 {
 		postIndex = 0
-	}
-	blog, err := methods.GenerateBlog()
-	if err != nil {
-		return err
 	}
 	tag, err := database.RetrieveTagBySlug(slug)
 	if err != nil {
 		return err
 	}
-	posts, err := database.RetrievePostsByTag(tag.Id, blog.PostsPerPage, (blog.PostsPerPage * postIndex))
+	posts, err := database.RetrievePostsByTag(tag.Id, methods.Blog.PostsPerPage, (methods.Blog.PostsPerPage * postIndex))
 	if err != nil {
 		return err
 	}
-	requestData := structure.RequestData{Posts: posts, Blog: blog, CurrentIndexPage: page, CurrentTag: tag, CurrentTemplate: 2} // CurrentTemplate = tag
+	requestData := structure.RequestData{Posts: posts, Blog: methods.Blog, CurrentIndexPage: page, CurrentTag: tag, CurrentTemplate: 2, CurrentPath: r.URL.Path} // CurrentTemplate = tag
 	if template, ok := compiledTemplates.m["tag"]; ok {
 		_, err = writer.Write(executeHelper(template, &requestData, 0)) // context = index
 	} else {
@@ -118,23 +115,22 @@ func ShowTagTemplate(writer http.ResponseWriter, slug string, page int) error {
 	return err
 }
 
-func ShowIndexTemplate(writer http.ResponseWriter, page int) error {
+func ShowIndexTemplate(w http.ResponseWriter, r *http.Request, page int) error {
+	// Read lock templates and global blog
 	compiledTemplates.RLock()
 	defer compiledTemplates.RUnlock()
+	methods.Blog.RLock()
+	defer methods.Blog.RUnlock()
 	postIndex := int64(page - 1)
 	if postIndex < 0 {
 		postIndex = 0
 	}
-	blog, err := methods.GenerateBlog()
+	posts, err := database.RetrievePostsForIndex(methods.Blog.PostsPerPage, (methods.Blog.PostsPerPage * postIndex))
 	if err != nil {
 		return err
 	}
-	posts, err := database.RetrievePostsForIndex(blog.PostsPerPage, (blog.PostsPerPage * postIndex))
-	if err != nil {
-		return err
-	}
-	requestData := structure.RequestData{Posts: posts, Blog: blog, CurrentIndexPage: page, CurrentTemplate: 0} // CurrentTemplate = index
-	_, err = writer.Write(executeHelper(compiledTemplates.m["index"], &requestData, 0))                        // context = index
+	requestData := structure.RequestData{Posts: posts, Blog: methods.Blog, CurrentIndexPage: page, CurrentTemplate: 0, CurrentPath: r.URL.Path} // CurrentTemplate = index
+	_, err = w.Write(executeHelper(compiledTemplates.m["index"], &requestData, 0))                                                              // context = index
 	if requestData.PluginVMs != nil {
 		// Put the lua state map back into the pool
 		plugins.LuaPool.Put(requestData.PluginVMs)

@@ -2,8 +2,8 @@ package server
 
 import (
 	"github.com/dimfeld/httptreemux"
-	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/filenames"
+	"github.com/kabukky/journey/structure/methods"
 	"github.com/kabukky/journey/templates"
 	"net/http"
 	"path/filepath"
@@ -14,7 +14,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request, params map[string]stri
 	number := params["number"]
 	if number == "" {
 		// Render index template (first page)
-		err := templates.ShowIndexTemplate(w, 1)
+		err := templates.ShowIndexTemplate(w, r, 1)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -27,7 +27,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request, params map[string]stri
 		return
 	}
 	// Render index template
-	err = templates.ShowIndexTemplate(w, page)
+	err = templates.ShowIndexTemplate(w, r, page)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -41,7 +41,7 @@ func authorHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 	number := params["number"]
 	if function == "" {
 		// Render author template (first page)
-		err := templates.ShowAuthorTemplate(w, slug, 1)
+		err := templates.ShowAuthorTemplate(w, r, slug, 1)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -62,7 +62,7 @@ func authorHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 		return
 	}
 	// Render author template
-	err = templates.ShowAuthorTemplate(w, slug, page)
+	err = templates.ShowAuthorTemplate(w, r, slug, page)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -76,7 +76,7 @@ func tagHandler(w http.ResponseWriter, r *http.Request, params map[string]string
 	number := params["number"]
 	if function == "" {
 		// Render tag template (first page)
-		err := templates.ShowTagTemplate(w, slug, 1)
+		err := templates.ShowTagTemplate(w, r, slug, 1)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -97,7 +97,7 @@ func tagHandler(w http.ResponseWriter, r *http.Request, params map[string]string
 		return
 	}
 	// Render tag template
-	err = templates.ShowTagTemplate(w, slug, page)
+	err = templates.ShowTagTemplate(w, r, slug, page)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -120,7 +120,7 @@ func postHandler(w http.ResponseWriter, r *http.Request, params map[string]strin
 		return
 	}
 	// Render post template
-	err := templates.ShowPostTemplate(w, slug)
+	err := templates.ShowPostTemplate(w, r, slug)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -129,13 +129,10 @@ func postHandler(w http.ResponseWriter, r *http.Request, params map[string]strin
 }
 
 func assetsHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
-	// TODO: It might be possible to do this more efficently. Getting the theme from the database at every request seems like too much.
-	activeTheme, err := database.RetrieveActiveTheme()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	http.ServeFile(w, r, filepath.Join(filenames.ThemesFilepath, *activeTheme, "assets", params["filepath"]))
+	// Read lock global blog
+	methods.Blog.RLock()
+	defer methods.Blog.RUnlock()
+	http.ServeFile(w, r, filepath.Join(filenames.ThemesFilepath, methods.Blog.ActiveTheme, "assets", params["filepath"]))
 	return
 }
 

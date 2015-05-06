@@ -1,6 +1,7 @@
 package watcher
 
 import (
+	"github.com/kabukky/journey/helpers"
 	"gopkg.in/fsnotify.v1"
 	"log"
 	"os"
@@ -58,7 +59,7 @@ func createWatcher(extensionsFunctions map[string]func() error) (*fsnotify.Watch
 			case event := <-watcher.Events:
 				if event.Op&fsnotify.Write == fsnotify.Write {
 					for key, value := range extensionsFunctions {
-						if filepath.Ext(event.Name) == key {
+						if !helpers.IsDirectory(event.Name) && filepath.Ext(event.Name) == key {
 							// Call the function associated with this file extension
 							err := value()
 							if err != nil {

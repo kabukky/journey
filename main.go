@@ -9,6 +9,7 @@ import (
 	"github.com/kabukky/journey/flags"
 	"github.com/kabukky/journey/plugins"
 	"github.com/kabukky/journey/server"
+	"github.com/kabukky/journey/structure/methods"
 	"github.com/kabukky/journey/templates"
 	"log"
 	"net/http"
@@ -57,6 +58,13 @@ func main() {
 	err = database.Initialize()
 	if err != nil {
 		log.Fatal("Error: Couldn't initialize database: " + err.Error())
+		return
+	}
+
+	// Global blog data
+	err = methods.GenerateBlog()
+	if err != nil {
+		log.Fatal("Error: Couldn't generate blog data: " + err.Error())
 		return
 	}
 

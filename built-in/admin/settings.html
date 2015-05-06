@@ -56,6 +56,35 @@
 	    </div>
 	</form>
 	<div class="page-header">
+		<h1>Navigation</h1>
+	</div>
+	<form class="form-horizontal">
+	    <div class="form-group navigation-item" ng-repeat="navItem in shared.blog.NavigationItems">
+	    	<div class="col-sm-6">
+		    	<div class="row">
+			        <label for="navigation-label" class="col-sm-2 col-sm-offset-2 control-label">Label</label>
+			        <div class="col-sm-8">
+			            <input type="text" class="form-control" ng-model="navItem.label" value="{{navItem.label}}">
+			        </div>
+		    	</div>
+		    	<div class="row">
+			    	<label for="navigation-url" class="col-sm-2 col-sm-offset-2 control-label">Url</label>
+			        <div class="col-sm-8">
+			            <input evaluate-url type="text" class="form-control" ng-model="navItem.url" value="{{navItem.url}}">
+			        </div>
+		    	</div>
+	    	</div>
+	    	<div class="col-sm-2">
+	    		<button type="button" class="btn btn-danger" id="delete-navigation-row" ng-click="deleteNavItem($index)">− Item</button>
+	    	</div>
+	    </div>
+	    <div class="form-group">
+	    	<div class="col-sm-2 col-sm-offset-2">
+	    		<button type="button" class="btn btn-success" id="add-navigation-row" ng-click="addNavItem()">+ Item</button>
+	    	</div>
+		</div>
+	</form>
+	<div class="page-header">
 		<h1>User {{shared.user.Name}}</h1>
 	</div>
 	<form class="form-horizontal">
@@ -113,7 +142,7 @@
 <div class="navbar navbar-default navbar-fixed-bottom">
 	<div class="container-fluid">
 		<form class="navbar-form save-button-navbar" role="form">
-				<button type="button" class="btn btn-primary" id="settings-save-button" ng-click="save()">Save</button>
+			<button type="button" class="btn btn-primary" id="settings-save-button" ng-click="save()">Save</button>
 		</form>
 	</div>
 </div>
