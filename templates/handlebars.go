@@ -185,7 +185,7 @@ func nextFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 			return []byte{}
 		}
 	}
-	maxPages := int64((float64(count) / float64(values.Blog.PostsPerPage)) + 0.5)
+	maxPages := positiveCeilingInt64(float64(count) / float64(values.Blog.PostsPerPage))
 	if int64(values.CurrentIndexPage) < maxPages {
 		return []byte{1}
 	}
@@ -214,7 +214,11 @@ func pagesFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 			return []byte{}
 		}
 	}
-	maxPages := int64((float64(count) / float64(values.Blog.PostsPerPage)) + 0.5)
+	maxPages := positiveCeilingInt64(float64(count) / float64(values.Blog.PostsPerPage))
+	// Output at least 1 (even if there are no posts in the database)
+	if maxPages == 0 {
+		maxPages = 1
+	}
 	return []byte(strconv.FormatInt(maxPages, 10))
 }
 
@@ -268,7 +272,7 @@ func page_urlFunc(helper *structure.Helper, values *structure.RequestData) []byt
 					return []byte{}
 				}
 			}
-			maxPages := int64((float64(count) / float64(values.Blog.PostsPerPage)) + 0.5)
+			maxPages := positiveCeilingInt64(float64(count) / float64(values.Blog.PostsPerPage))
 			if int64(values.CurrentIndexPage) < maxPages {
 				var buffer bytes.Buffer
 				if values.CurrentTemplate == 3 { // author
@@ -881,4 +885,12 @@ func evaluateEscape(value []byte, unescaped bool) []byte {
 		return value
 	}
 	return []byte(html.EscapeString(string(value)))
+}
+
+func positiveCeilingInt64(input float64) int64 {
+	output := int64(input)
+	if (input - float64(output)) > 0 {
+		output++
+	}
+	return output
 }
