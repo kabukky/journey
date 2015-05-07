@@ -22,6 +22,7 @@ var (
 	ContentFilepath  = filepath.Join(flags.CustomPath, "content")
 	PluginsFilepath  = filepath.Join(flags.CustomPath, "content", "plugins")
 	PagesFilepath    = filepath.Join(flags.CustomPath, "content", "pages")
+	StaticFilepath   = filepath.Join(flags.CustomPath, "content", "static")
 
 	// For https
 	HttpsFilepath     = filepath.Join(flags.CustomPath, "content", "https")
