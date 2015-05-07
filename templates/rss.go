@@ -66,8 +66,8 @@ func ShowAuthorRss(writer http.ResponseWriter, slug string) error {
 func createFeed(values *structure.RequestData) *feeds.Feed {
 	now := time.Now()
 	feed := &feeds.Feed{
-		Title:       string(makeCdata(values.Blog.Title)),
-		Description: string(makeCdata(values.Blog.Description)),
+		Title:       string(values.Blog.Title),
+		Description: string(values.Blog.Description),
 		Link:        &feeds.Link{Href: string(values.Blog.Url)},
 		Created:     now,
 	}
@@ -79,8 +79,8 @@ func createFeed(values *structure.RequestData) *feeds.Feed {
 			buffer.WriteString("/")
 			buffer.WriteString(values.Posts[i].Slug)
 			feed.Items = append(feed.Items, &feeds.Item{
-				Title:       string(makeCdata(values.Posts[i].Title)),
-				Description: string(makeCdata(values.Posts[i].Html)),
+				Title:       string(values.Posts[i].Title),
+				Description: string(values.Posts[i].Html),
 				Link:        &feeds.Link{Href: buffer.String()},
 				Id:          string(values.Posts[i].Uuid),
 				Author:      &feeds.Author{Name: string(values.Posts[i].Author.Name), Email: ""},
@@ -90,12 +90,4 @@ func createFeed(values *structure.RequestData) *feeds.Feed {
 	}
 
 	return feed
-}
-
-func makeCdata(input []byte) []byte {
-	var buffer bytes.Buffer
-	buffer.WriteString("<![CDATA[")
-	buffer.Write(input)
-	buffer.WriteString("]]>")
-	return buffer.Bytes()
 }
