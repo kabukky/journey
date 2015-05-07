@@ -5,6 +5,7 @@ import (
 	"github.com/kabukky/journey/database/migration"
 	"github.com/kabukky/journey/filenames"
 	"github.com/kabukky/journey/helpers"
+	"github.com/kabukky/journey/structure"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/twinj/uuid"
 	"time"
@@ -146,6 +147,98 @@ func Initialize() error {
 	// TODO: Is Commit()/Rollback() needed for DB.Exec()?
 	if err != nil {
 		return err
+	}
+	err = checkBlogSettings()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Function to check and insert any missing blog settings into the database (settings could be missing if migrating from Ghost).
+func checkBlogSettings() error {
+	tempBlog := structure.Blog{}
+	// Check for title
+	row := readDB.QueryRow(stmtRetrieveBlog, "title")
+	err := row.Scan(&tempBlog.Title)
+	if err != nil {
+		// Insert title
+		err = insertSettingString("title", "My Blog", "blog", time.Now(), 1)
+		if err != nil {
+			return err
+		}
+	}
+	// Check for description
+	row = readDB.QueryRow(stmtRetrieveBlog, "description")
+	err = row.Scan(&tempBlog.Description)
+	if err != nil {
+		// Insert description
+		err = insertSettingString("description", "Just another Blog", "blog", time.Now(), 1)
+		if err != nil {
+			return err
+		}
+	}
+	// Check for email
+	var email []byte
+	row = readDB.QueryRow(stmtRetrieveBlog, "email")
+	err = row.Scan(&email)
+	if err != nil {
+		// Insert email
+		err = insertSettingString("email", "", "blog", time.Now(), 1)
+		if err != nil {
+			return err
+		}
+	}
+	// Check for logo
+	row = readDB.QueryRow(stmtRetrieveBlog, "logo")
+	err = row.Scan(&tempBlog.Logo)
+	if err != nil {
+		// Insert logo
+		err = insertSettingString("logo", "/public/images/blog-logo.jpg", "blog", time.Now(), 1)
+		if err != nil {
+			return err
+		}
+	}
+	// Check for cover
+	row = readDB.QueryRow(stmtRetrieveBlog, "cover")
+	err = row.Scan(&tempBlog.Cover)
+	if err != nil {
+		// Insert cover
+		err = insertSettingString("cover", "/public/images/blog-cover.jpg", "blog", time.Now(), 1)
+		if err != nil {
+			return err
+		}
+	}
+	// Check for postsPerPage
+	row = readDB.QueryRow(stmtRetrieveBlog, "postsPerPage")
+	err = row.Scan(&tempBlog.PostsPerPage)
+	if err != nil {
+		// Insert postsPerPage
+		err = insertSettingInt64("postsPerPage", 5, "blog", time.Now(), 1)
+		if err != nil {
+			return err
+		}
+	}
+	// Check for activeTheme
+	row = readDB.QueryRow(stmtRetrieveBlog, "activeTheme")
+	err = row.Scan(&tempBlog.ActiveTheme)
+	if err != nil {
+		// Insert activeTheme
+		err = insertSettingString("activeTheme", "promenade", "theme", time.Now(), 1)
+		if err != nil {
+			return err
+		}
+	}
+	// Check for navigation
+	var navigation []byte
+	row = readDB.QueryRow(stmtRetrieveBlog, "navigation")
+	err = row.Scan(&navigation)
+	if err != nil {
+		// Insert navigation
+		err = insertSettingString("navigation", "[{\"label\":\"Home\", \"url\":\"/\"}]", "blog", time.Now(), 1)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
