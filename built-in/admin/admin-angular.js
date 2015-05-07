@@ -21,14 +21,20 @@ adminApp.config(function($routeProvider) {
     }).
 		otherwise({
         	redirectTo: '/'
-		});
+	});
 });
 
 //service for sharing the markdown content across controllers
 adminApp.factory('sharingService', function(){
-
-  return { shared: { post: {}, blog: {}, user: {}, infiniteScrollFactory: null, selected: "" } }
-
+  return {
+    shared: {
+      post: {},
+      blog: {},
+      user: {},
+      infiniteScrollFactory: null,
+      selected: ''
+    }
+  }
 });
 
 //directive to handle visual selection of images
@@ -97,7 +103,7 @@ adminApp.controller('ContentCtrl', function ($scope, $http, $sce, $location, inf
     $location.url('/edit/' + postId);
   };
   $scope.deletePost = function(postId, postTitle) {
-    if (confirm('Are you sure you want to delete post "' + postTitle + '"?')) {
+    if (confirm('Are you sure you want to delete the post "' + postTitle + '"?')) {
       $http.delete('/admin/api/post/' + postId).success(function(data) {
         //delete post from array
         for (var i = 0; i < $scope.infiniteScrollFactory.items.length; i++) {

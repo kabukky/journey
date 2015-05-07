@@ -19,7 +19,7 @@ func SaveUser(u *structure.User, hashedPassword string, createdBy int64) error {
 }
 
 func UpdateUser(u *structure.User, updatedById int64) error {
-	err := database.UpdateUser(u.Id, u.Email, u.Image, u.Cover, u.Bio, u.Website, u.Location, time.Now(), updatedById)
+	err := database.UpdateUser(u.Id, u.Name, u.Slug, u.Email, u.Image, u.Cover, u.Bio, u.Website, u.Location, time.Now(), updatedById)
 	if err != nil {
 		return err
 	}
