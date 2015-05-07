@@ -52,6 +52,7 @@ type JsonBlog struct {
 type JsonUser struct {
 	Id               int64
 	Name             string
+	Slug             string
 	Email            string
 	Image            string
 	Cover            string
@@ -86,15 +87,7 @@ func postLoginHandler(w http.ResponseWriter, r *http.Request, _ map[string]strin
 	password := r.FormValue("password")
 	if name != "" && password != "" {
 		if authentication.LoginIsCorrect(name, password) {
-			authentication.SetSession(name, w)
-			userId, err := getUserId(name)
-			if err != nil {
-				log.Println("Couldn't get id of logged in user:", err)
-			}
-			err = database.UpdateLastLogin(time.Now(), userId)
-			if err != nil {
-				log.Println("Couldn't update last login date of a user:", err)
-			}
+			logInUser(name, w)
 		} else {
 			log.Println("Failed login attempt for user " + name)
 		}
@@ -597,13 +590,13 @@ func getApiUserHandler(w http.ResponseWriter, r *http.Request, params map[string
 			http.Error(w, "You don't have permission to access this data.", http.StatusForbidden)
 			return
 		}
-		author, err := database.RetrieveUser(userIdToGet)
+		user, err := database.RetrieveUser(userIdToGet)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		authorJson := JsonUser{Id: author.Id, Name: string(author.Name), Email: string(author.Email), Image: string(author.Image), Cover: string(author.Cover), Bio: string(author.Bio), Website: string(author.Website), Location: string(author.Location)}
-		json, err := json.Marshal(authorJson)
+		userJson := userToJson(user)
+		json, err := json.Marshal(userJson)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -633,19 +626,34 @@ func patchApiUserHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		// Make sure user id is over 0 and E-Mail is included.
+		// Make sure user id is over 0
 		if json.Id < 1 {
 			http.Error(w, "Wrong user id.", http.StatusInternalServerError)
-			return
-		} else if json.Email == "" {
-			http.Error(w, "Email needs to be included.", http.StatusInternalServerError)
 			return
 		} else if userId != json.Id { // Make sure the authenticated user is only changing his/her own data. TODO: Make sure the user is admin when multiple users have been introduced
 			http.Error(w, "You don't have permission to change this data.", http.StatusInternalServerError)
 			return
 		}
-		author := structure.User{Id: json.Id, Email: []byte(json.Email), Image: []byte(json.Image), Cover: []byte(json.Cover), Bio: []byte(json.Bio), Website: []byte(json.Website), Location: []byte(json.Location)}
-		err = methods.UpdateUser(&author, userId)
+		// Get old user data to compare
+		tempUser, err := database.RetrieveUser(json.Id)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		// Make sure user email is provided
+		if json.Email == "" {
+			json.Email = string(tempUser.Email)
+		}
+		// Make sure user name is provided
+		if json.Name == "" {
+			json.Name = string(tempUser.Name)
+		}
+		// Make sure user slug is provided
+		if json.Slug == "" {
+			json.Slug = tempUser.Slug
+		}
+		user := structure.User{Id: json.Id, Name: []byte(json.Name), Slug: json.Slug, Email: []byte(json.Email), Image: []byte(json.Image), Cover: []byte(json.Cover), Bio: []byte(json.Bio), Website: []byte(json.Website), Location: []byte(json.Location)}
+		err = methods.UpdateUser(&user, userId)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -656,11 +664,15 @@ func patchApiUserHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			err = database.UpdateUserPassword(author.Id, encryptedPassword, time.Now(), json.Id)
+			err = database.UpdateUserPassword(user.Id, encryptedPassword, time.Now(), json.Id)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
+		}
+		// Check if the user name was changed. If so, update the session cookie to the new user name.
+		if json.Name != string(tempUser.Name) {
+			logInUser(json.Name, w)
 		}
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("User settings updated!"))
@@ -703,6 +715,18 @@ func getUserId(userName string) (int64, error) {
 	return user.Id, nil
 }
 
+func logInUser(name string, w http.ResponseWriter) {
+	authentication.SetSession(name, w)
+	userId, err := getUserId(name)
+	if err != nil {
+		log.Println("Couldn't get id of logged in user:", err)
+	}
+	err = database.UpdateLastLogin(time.Now(), userId)
+	if err != nil {
+		log.Println("Couldn't update last login date of a user:", err)
+	}
+}
+
 func postsToJson(posts []structure.Post) *[]JsonPost {
 	jsonPosts := make([]JsonPost, len(posts))
 	for index, _ := range posts {
@@ -743,6 +767,20 @@ func blogToJson(blog *structure.Blog) *JsonBlog {
 	jsonBlog.ActiveTheme = blog.ActiveTheme
 	jsonBlog.NavigationItems = blog.NavigationItems
 	return &jsonBlog
+}
+
+func userToJson(user *structure.User) *JsonUser {
+	var jsonUser JsonUser
+	jsonUser.Id = user.Id
+	jsonUser.Name = string(user.Name)
+	jsonUser.Slug = user.Slug
+	jsonUser.Email = string(user.Email)
+	jsonUser.Image = string(user.Image)
+	jsonUser.Cover = string(user.Cover)
+	jsonUser.Bio = string(user.Bio)
+	jsonUser.Website = string(user.Website)
+	jsonUser.Location = string(user.Location)
+	return &jsonUser
 }
 
 func InitializeAdmin(router *httptreemux.TreeMux) {

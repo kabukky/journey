@@ -5,27 +5,30 @@ import (
 	"github.com/gorilla/feeds"
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/structure"
+	"github.com/kabukky/journey/structure/methods"
 	"net/http"
 	"time"
 )
 
 func ShowIndexRss(writer http.ResponseWriter) error {
+	// Read lock global blog
+	methods.Blog.RLock()
+	defer methods.Blog.RUnlock()
 	// 15 posts in rss for now
 	posts, err := database.RetrievePostsForIndex(15, 0)
 	if err != nil {
 		return err
 	}
-	blog, err := database.RetrieveBlog()
-	if err != nil {
-		return err
-	}
-	blogData := &structure.RequestData{Posts: posts, Blog: blog}
+	blogData := &structure.RequestData{Posts: posts, Blog: methods.Blog}
 	feed := createFeed(blogData)
 	err = feed.WriteRss(writer)
 	return err
 }
 
 func ShowTagRss(writer http.ResponseWriter, slug string) error {
+	// Read lock global blog
+	methods.Blog.RLock()
+	defer methods.Blog.RUnlock()
 	tag, err := database.RetrieveTagBySlug(slug)
 	if err != nil {
 		return err
@@ -35,17 +38,16 @@ func ShowTagRss(writer http.ResponseWriter, slug string) error {
 	if err != nil {
 		return err
 	}
-	blog, err := database.RetrieveBlog()
-	if err != nil {
-		return err
-	}
-	blogData := &structure.RequestData{Posts: posts, Blog: blog}
+	blogData := &structure.RequestData{Posts: posts, Blog: methods.Blog}
 	feed := createFeed(blogData)
 	err = feed.WriteRss(writer)
 	return err
 }
 
 func ShowAuthorRss(writer http.ResponseWriter, slug string) error {
+	// Read lock global blog
+	methods.Blog.RLock()
+	defer methods.Blog.RUnlock()
 	author, err := database.RetrieveUserBySlug(slug)
 	if err != nil {
 		return err
@@ -55,11 +57,7 @@ func ShowAuthorRss(writer http.ResponseWriter, slug string) error {
 	if err != nil {
 		return err
 	}
-	blog, err := database.RetrieveBlog()
-	if err != nil {
-		return err
-	}
-	blogData := &structure.RequestData{Posts: posts, Blog: blog}
+	blogData := &structure.RequestData{Posts: posts, Blog: methods.Blog}
 	feed := createFeed(blogData)
 	err = feed.WriteRss(writer)
 	return err
@@ -68,8 +66,8 @@ func ShowAuthorRss(writer http.ResponseWriter, slug string) error {
 func createFeed(values *structure.RequestData) *feeds.Feed {
 	now := time.Now()
 	feed := &feeds.Feed{
-		Title:       string(makeCdata(values.Blog.Title)),
-		Description: string(makeCdata(values.Blog.Description)),
+		Title:       string(values.Blog.Title),
+		Description: string(values.Blog.Description),
 		Link:        &feeds.Link{Href: string(values.Blog.Url)},
 		Created:     now,
 	}
@@ -81,8 +79,8 @@ func createFeed(values *structure.RequestData) *feeds.Feed {
 			buffer.WriteString("/")
 			buffer.WriteString(values.Posts[i].Slug)
 			feed.Items = append(feed.Items, &feeds.Item{
-				Title:       string(makeCdata(values.Posts[i].Title)),
-				Description: string(makeCdata(values.Posts[i].Html)),
+				Title:       string(values.Posts[i].Title),
+				Description: string(values.Posts[i].Html),
 				Link:        &feeds.Link{Href: buffer.String()},
 				Id:          string(values.Posts[i].Uuid),
 				Author:      &feeds.Author{Name: string(values.Posts[i].Author.Name), Email: ""},
@@ -92,12 +90,4 @@ func createFeed(values *structure.RequestData) *feeds.Feed {
 	}
 
 	return feed
-}
-
-func makeCdata(input []byte) []byte {
-	var buffer bytes.Buffer
-	buffer.WriteString("<![CDATA[")
-	buffer.Write(input)
-	buffer.WriteString("]]>")
-	return buffer.Bytes()
 }
