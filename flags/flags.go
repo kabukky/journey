@@ -20,7 +20,7 @@ func init() {
 
 func parseFlags() {
 	// Check if a custom content path has been provided by the user
-	flag.StringVar(&CustomPath, "custom-path", "", "Specify a custom path to store content files. Note: Journey needs read and write access to that path. Example: -custom-path=/absolute/path/to/custom/folder")
-	flag.BoolVar(&IsInDevMode, "dev", false, "Set this flag to put Journey in developer mode. Features of developer mode: Themes will be recompiled immediately after changes to the files.")
+	flag.StringVar(&CustomPath, "custom-path", "", "Specify a custom path to store content files. Note: Journey needs read and write access to that path. A theme folder needs to be present in the custon path under content/themes. Example: -custom-path=/absolute/path/to/custom/folder")
+	flag.BoolVar(&IsInDevMode, "dev", false, "Set this flag to put Journey in developer mode. Features of developer mode: Themes and plugins will be recompiled immediately after changes to the files. The log is output to the console instead of log.txt")
 	flag.Parse()
 }
