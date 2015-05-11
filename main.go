@@ -98,6 +98,7 @@ func main() {
 		server.InitializePages(httpsRouter)
 		// Admin as https and http redirect
 		// Add redirection to http router
+		httpRouter.GET("/admin/", httpsRedirect)
 		httpRouter.GET("/admin/*path", httpsRedirect)
 		// Add routes to https router
 		server.InitializeAdmin(httpsRouter)
