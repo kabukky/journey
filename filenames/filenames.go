@@ -12,22 +12,23 @@ var (
 	// Determine the path the Journey executable is in - needed to load relative assets
 	ExecutablePath = determineExecutablePath()
 
-	// Determine the path the the content folder
-	ContentPath = determineContentPath()
+	// Determine the path the the assets folder (default: Journey root folder)
+	AssetPath = determineContentPath()
 
 	// For assets that are created, changed, our user-provided while running journey
-	ConfigFilename   = filepath.Join(ExecutablePath, "config.json")
-	DatabaseFilepath = filepath.Join(ContentPath, "data")
-	DatabaseFilename = filepath.Join(ContentPath, "data", "journey.db")
-	ThemesFilepath   = filepath.Join(ContentPath, "themes")
-	ImagesFilepath   = filepath.Join(ContentPath, "images")
-	PluginsFilepath  = filepath.Join(ContentPath, "plugins")
-	PagesFilepath    = filepath.Join(ContentPath, "pages")
+	ConfigFilename   = filepath.Join(AssetPath, "config.json")
+	ContentFilepath  = filepath.Join(AssetPath, "content")
+	DatabaseFilepath = filepath.Join(ContentFilepath, "data")
+	DatabaseFilename = filepath.Join(ContentFilepath, "data", "journey.db")
+	ThemesFilepath   = filepath.Join(ContentFilepath, "themes")
+	ImagesFilepath   = filepath.Join(ContentFilepath, "images")
+	PluginsFilepath  = filepath.Join(ContentFilepath, "plugins")
+	PagesFilepath    = filepath.Join(ContentFilepath, "pages")
 
 	// For https
-	HttpsFilepath     = filepath.Join(ContentPath, "https")
-	HttpsCertFilename = filepath.Join(ContentPath, "https", "cert.pem")
-	HttpsKeyFilename  = filepath.Join(ContentPath, "https", "key.pem")
+	HttpsFilepath     = filepath.Join(ContentFilepath, "https")
+	HttpsCertFilename = filepath.Join(ContentFilepath, "https", "cert.pem")
+	HttpsKeyFilename  = filepath.Join(ContentFilepath, "https", "key.pem")
 
 	//For built-in files (e.g. the admin interface)
 	AdminFilepath  = filepath.Join(ExecutablePath, "built-in", "admin")
@@ -77,7 +78,7 @@ func determineContentPath() string {
 	} else {
 		contentPath = determineExecutablePath()
 	}
-	return filepath.Join(contentPath, "content")
+	return contentPath
 }
 
 func determineExecutablePath() string {

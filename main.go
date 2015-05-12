@@ -116,10 +116,18 @@ func main() {
 		server.InitializeAdmin(httpsRouter)
 		// Start https server
 		log.Println("Starting https server on port " + httpsPort + "...")
-		go http.ListenAndServeTLS(httpsPort, filenames.HttpsCertFilename, filenames.HttpsKeyFilename, httpsRouter)
+		go func() {
+			err := http.ListenAndServeTLS(httpsPort, filenames.HttpsCertFilename, filenames.HttpsKeyFilename, httpsRouter)
+			if err != nil {
+				log.Fatal("Error: Couldn't start the HTTPS server:", err)
+			}
+		}()
 		// Start http server
 		log.Println("Starting http server on port " + httpPort + "...")
-		http.ListenAndServe(httpPort, httpRouter)
+		err := http.ListenAndServe(httpPort, httpRouter)
+		if err != nil {
+			log.Fatal("Error: Couldn't start the HTTP server:", err)
+		}
 	case "All":
 		checkHttpsCertificates()
 		httpsRouter := httptreemux.New()
@@ -134,10 +142,18 @@ func main() {
 		httpRouter.GET("/*path", httpsRedirect)
 		// Start https server
 		log.Println("Starting https server on port " + httpsPort + "...")
-		go http.ListenAndServeTLS(httpsPort, filenames.HttpsCertFilename, filenames.HttpsKeyFilename, httpsRouter)
+		go func() {
+			err := http.ListenAndServeTLS(httpsPort, filenames.HttpsCertFilename, filenames.HttpsKeyFilename, httpsRouter)
+			if err != nil {
+				log.Fatal("Error: Couldn't start the HTTPS server:", err)
+			}
+		}()
 		// Start http server
 		log.Println("Starting http server on port " + httpPort + "...")
-		http.ListenAndServe(httpPort, httpRouter)
+		err := http.ListenAndServe(httpPort, httpRouter)
+		if err != nil {
+			log.Fatal("Error: Couldn't start the HTTP server:", err)
+		}
 	default: // This is configuration.HttpsUsage == "None"
 		httpRouter := httptreemux.New()
 		// Blog and pages as http
@@ -148,6 +164,9 @@ func main() {
 		// Start http server
 		log.Println("Starting server without HTTPS support. Please enable HTTPS in " + filenames.ConfigFilename + " to improve security.")
 		log.Println("Starting http server on port " + httpPort + "...")
-		http.ListenAndServe(httpPort, httpRouter)
+		err := http.ListenAndServe(httpPort, httpRouter)
+		if err != nil {
+			log.Fatal("Error: Couldn't start the HTTP server:", err)
+		}
 	}
 }
