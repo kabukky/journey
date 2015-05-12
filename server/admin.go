@@ -652,6 +652,24 @@ func patchApiUserHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 		if json.Slug == "" {
 			json.Slug = tempUser.Slug
 		}
+		// Check if new name is already taken
+		if json.Name != string(tempUser.Name) {
+			_, err = database.RetrieveUserByName([]byte(json.Name))
+			if err == nil {
+				// The new user name is already taken. Assign the old name.
+				// TODO: Return error that will be displayed in the admin interface.
+				json.Name = string(tempUser.Name)
+			}
+		}
+		// Check if new slug is already taken
+		if json.Slug != tempUser.Slug {
+			_, err = database.RetrieveUserBySlug(json.Slug)
+			if err == nil {
+				// The new user slug is already taken. Assign the old slug.
+				// TODO: Return error that will be displayed in the admin interface.
+				json.Slug = tempUser.Slug
+			}
+		}
 		user := structure.User{Id: json.Id, Name: []byte(json.Name), Slug: json.Slug, Email: []byte(json.Email), Image: []byte(json.Image), Cover: []byte(json.Cover), Bio: []byte(json.Bio), Website: []byte(json.Website), Location: []byte(json.Location)}
 		err = methods.UpdateUser(&user, userId)
 		if err != nil {
