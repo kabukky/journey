@@ -15,6 +15,7 @@ import (
 	"net/http"
 	"os"
 	"runtime"
+	"strings"
 )
 
 func httpsRedirect(w http.ResponseWriter, r *http.Request, _ map[string]string) {
@@ -42,9 +43,9 @@ func main() {
 	// GOMAXPROCS - Maybe not needed
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	// Write log to file if Journey is not in dev mode
-	if !flags.IsInDevMode {
-		logFile, err := os.OpenFile(filenames.LogFilename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	// Write log to file if the log flag was provided
+	if flags.Log != "" {
+		logFile, err := os.OpenFile(flags.Log, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 		if err != nil {
 			log.Fatal("Error: Couldn't open log file: " + err.Error())
 		}
@@ -57,21 +58,21 @@ func main() {
 	// Database
 	err = database.Initialize()
 	if err != nil {
-		log.Fatal("Error: Couldn't initialize database: " + err.Error())
+		log.Fatal("Error: Couldn't initialize database:", err)
 		return
 	}
 
 	// Global blog data
 	err = methods.GenerateBlog()
 	if err != nil {
-		log.Fatal("Error: Couldn't generate blog data: " + err.Error())
+		log.Fatal("Error: Couldn't generate blog data:", err)
 		return
 	}
 
 	// Templates
 	err = templates.Generate()
 	if err != nil {
-		log.Fatal("Error: Couldn't compile templates: " + err.Error())
+		log.Fatal("Error: Couldn't compile templates:", err)
 		return
 	}
 
@@ -84,6 +85,17 @@ func main() {
 	}
 
 	// HTTP(S) Server
+	httpPort := configuration.Config.HttpHostAndPort
+	httpsPort := configuration.Config.HttpsHostAndPort
+	// Check if HTTP/HTTPS flags were provided
+	if flags.HttpPort != "" {
+		components := strings.SplitAfterN(httpPort, ":", 2)
+		httpPort = components[0] + flags.HttpPort
+	}
+	if flags.HttpsPort != "" {
+		components := strings.SplitAfterN(httpsPort, ":", 2)
+		httpsPort = components[0] + flags.HttpsPort
+	}
 	// Determine the kind of https support (as set in the config.json)
 	switch configuration.Config.HttpsUsage {
 	case "AdminOnly":
@@ -103,11 +115,11 @@ func main() {
 		// Add routes to https router
 		server.InitializeAdmin(httpsRouter)
 		// Start https server
-		log.Println("Starting https server on port " + configuration.Config.HttpsHostAndPort + "...")
-		go http.ListenAndServeTLS(configuration.Config.HttpsHostAndPort, filenames.HttpsCertFilename, filenames.HttpsKeyFilename, httpsRouter)
+		log.Println("Starting https server on port " + httpsPort + "...")
+		go http.ListenAndServeTLS(httpsPort, filenames.HttpsCertFilename, filenames.HttpsKeyFilename, httpsRouter)
 		// Start http server
-		log.Println("Starting http server on port " + configuration.Config.HttpHostAndPort + "...")
-		http.ListenAndServe(configuration.Config.HttpHostAndPort, httpRouter)
+		log.Println("Starting http server on port " + httpPort + "...")
+		http.ListenAndServe(httpPort, httpRouter)
 	case "All":
 		checkHttpsCertificates()
 		httpsRouter := httptreemux.New()
@@ -121,11 +133,11 @@ func main() {
 		httpRouter.GET("/", httpsRedirect)
 		httpRouter.GET("/*path", httpsRedirect)
 		// Start https server
-		log.Println("Starting https server on port " + configuration.Config.HttpsHostAndPort + "...")
-		go http.ListenAndServeTLS(configuration.Config.HttpsHostAndPort, filenames.HttpsCertFilename, filenames.HttpsKeyFilename, httpsRouter)
+		log.Println("Starting https server on port " + httpsPort + "...")
+		go http.ListenAndServeTLS(httpsPort, filenames.HttpsCertFilename, filenames.HttpsKeyFilename, httpsRouter)
 		// Start http server
-		log.Println("Starting http server on port " + configuration.Config.HttpHostAndPort + "...")
-		http.ListenAndServe(configuration.Config.HttpHostAndPort, httpRouter)
+		log.Println("Starting http server on port " + httpPort + "...")
+		http.ListenAndServe(httpPort, httpRouter)
 	default: // This is configuration.HttpsUsage == "None"
 		httpRouter := httptreemux.New()
 		// Blog and pages as http
@@ -135,7 +147,7 @@ func main() {
 		server.InitializeAdmin(httpRouter)
 		// Start http server
 		log.Println("Starting server without HTTPS support. Please enable HTTPS in " + filenames.ConfigFilename + " to improve security.")
-		log.Println("Starting http server on port " + configuration.Config.HttpHostAndPort + "...")
-		http.ListenAndServe(configuration.Config.HttpHostAndPort, httpRouter)
+		log.Println("Starting http server on port " + httpPort + "...")
+		http.ListenAndServe(httpPort, httpRouter)
 	}
 }
