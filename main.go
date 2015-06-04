@@ -72,7 +72,7 @@ func main() {
 	}
 
 	// Plugins
-	if err = plugins.Load(); err != nil {
+	if err = plugins.Load(); err == nil {
 		// Close LuaPool at the end
 		defer plugins.LuaPool.Shutdown()
 		log.Println("Plugins loaded.")
