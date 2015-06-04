@@ -43,7 +43,7 @@ func main() {
 
 	// Write log to file if the log flag was provided
 	if flags.Log != "" {
-		logFile, err := os.OpenFile(flags.Log, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666); 
+		logFile, err := os.OpenFile(flags.Log, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 		if err != nil {
 			log.Fatal("Error: Couldn't open log file: " + err.Error())
 		}
