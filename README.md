@@ -35,7 +35,11 @@ This slimness makes Journey an ideal candidate for setting up micro blogs or hos
 ## Installing Journey
 To get started with Journey, go to the the [Releases Page](https://github.com/kabukky/journey/releases) and download the zip file corresponding to your operating system and cpu architecture. Then extract Journey anywhere you like. Why not place it in your home folder (e.g. /home/youruser/journey/)?
 
-After that, head over to [Setting up Journey](https://github.com/kabukky/journey/wiki/Setting-up-Journey) to configure your Journey blog on your local machine. If you'd like to set up Journey on a linux server, head over to [Installing Journey on Ubuntu Server](https://github.com/kabukky/journey/wiki/Installing-Journey-on-Ubuntu-Server) for a step-by-step tutorial.
+After that, head over to [Setting up Journey](https://github.com/kabukky/journey/wiki/Setting-up-Journey) to configure your Journey blog on your local machine.
+
+If you'd like to set up Journey on a Linux server, head over to [Installing Journey on Ubuntu Server](https://github.com/kabukky/journey/wiki/Installing-Journey-on-Ubuntu-Server) for a step-by-step tutorial.
+
+Journey even runs as a Windows Azure Web App. It's a great way to try out or host a low traffic Journey blog for free on the internet! Head over to [Hosting Journey as a Windows Azure Web App](https://github.com/kabukky/journey/wiki/Hosting-Journey-as-a-Windows-Azure-Web-App) for a step-by-step tutorial.
 
 ## Plugins
 Did you create a Journey plugin? Write me [@kabukky](https://twitter.com/kabukky) or me@kaihag.com and I'll add a link to it here.

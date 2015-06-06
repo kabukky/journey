@@ -1,27 +1,29 @@
-//register the modules (don't forget ui bootstrap and bootstrap switch)
+// TODO: Split this Angular app into a proper directory structure
+
+//register the modules
 var adminApp = angular.module('adminApp', ['ngRoute', 'frapontillo.bootstrap-switch', 'ui.bootstrap', 'infinite-scroll']);
 
 adminApp.config(function($routeProvider) {
-	$routeProvider.
-		when('/', {
-			templateUrl: 'content.html',
-			controller: 'ContentCtrl'
-		}).
-		when('/edit/:Id', {
-			templateUrl: 'post.html',
-			controller: 'EditCtrl'
-		}).
-		when('/create/', {
-			templateUrl: 'post.html',
-			controller: 'CreateCtrl'
-		}).
+  $routeProvider.
+    when('/', {
+      templateUrl: 'content.html',
+      controller: 'ContentCtrl'
+    }).
+    when('/edit/:Id', {
+      templateUrl: 'post.html',
+      controller: 'EditCtrl'
+    }).
+    when('/create/', {
+      templateUrl: 'post.html',
+      controller: 'CreateCtrl'
+    }).
     when('/settings/', {
       templateUrl: 'settings.html',
       controller: 'SettingsCtrl'
     }).
-		otherwise({
-        	redirectTo: '/'
-	});
+    otherwise({
+          redirectTo: '/'
+  });
 });
 
 //service for sharing the markdown content across controllers
@@ -176,9 +178,9 @@ adminApp.controller('CreateCtrl', function ($scope, $http, $sce, $location, shar
   var converter = new Showdown.converter();
   //change the navbar according to controller
   $scope.navbarHtml = $sce.trustAsHtml('<ul class="nav navbar-nav"><li><a href="#/">Content</a></li><li class="active"><a href="#/create/">New Post<span class="sr-only">(current)</span></a></li><li><a href="#/settings/">Settings</a></li><li><a href="logout/" class="logout">Log Out</a></li></ul>');
-	$scope.shared = sharingService.shared;
+  $scope.shared = sharingService.shared;
   $scope.shared.post = {Title: 'New Post', Slug: '', Markdown: 'Write something!', IsPublished: false, Image: '', Tags: ''}
-	$scope.change = function() {
+  $scope.change = function() {
     document.getElementById('html-div').innerHTML = '<h1>' + $scope.shared.post.Title + '</h1><br>' + converter.makeHtml($scope.shared.post.Markdown);
     //resize the markdown textarea
     $('.textarea-autosize').val($scope.shared.post.Markdown).trigger('autosize.resize');
@@ -203,12 +205,12 @@ adminApp.controller('EditCtrl', function ($scope, $routeParams, $http, $sce, $lo
     //resize the markdown textarea
     $('.textarea-autosize').val($scope.shared.post.Markdown).trigger('autosize.resize');
   };
-	$http.get('/admin/api/post/' + $routeParams.Id).success(function(data) {
-		$scope.shared.post = data;
+  $http.get('/admin/api/post/' + $routeParams.Id).success(function(data) {
+    $scope.shared.post = data;
     $scope.change();
   });
   $scope.save = function() {
-  	$http.patch('/admin/api/post', $scope.shared.post).success(function(data) {
+    $http.patch('/admin/api/post', $scope.shared.post).success(function(data) {
       $location.url('/');
     });
   };
@@ -245,7 +247,7 @@ adminApp.controller('EmptyModalCtrl', function ($scope, $modal, $http, sharingSe
 
 //modal for image selection and upload
 adminApp.controller('ImageModalCtrl', function ($scope, $modal, $http, sharingService, infiniteScrollFactory) {
-	$scope.shared = sharingService.shared;
+  $scope.shared = sharingService.shared;
   $scope.shared.infiniteScrollFactory = new infiniteScrollFactory('/admin/api/images/');
   $scope.shared.infiniteScrollFactory.nextPage();
   $scope.open = function (size, callingFrom) {
