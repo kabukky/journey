@@ -13,7 +13,7 @@ var (
 	ExecutablePath = determineExecutablePath()
 
 	// Determine the path the the assets folder (default: Journey root folder)
-	AssetPath = determineContentPath()
+	AssetPath = determineAssetPath()
 
 	// For assets that are created, changed, our user-provided while running journey
 	ConfigFilename   = filepath.Join(AssetPath, "config.json")
@@ -71,7 +71,7 @@ func createDirectories() error {
 	return nil
 }
 
-func determineContentPath() string {
+func determineAssetPath() string {
 	contentPath := ""
 	if flags.CustomPath != "" {
 		contentPath = flags.CustomPath
