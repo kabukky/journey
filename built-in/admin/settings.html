@@ -33,13 +33,13 @@
 	    <div class="form-group">
 	        <label for="blog-logo" class="col-sm-2 control-label">Logo</label>
 	        <div class="col-sm-10">
-	            <a ng-controller="ImageModalCtrl" ng-click="open('lg', 'blog-logo')"><img class="img-settings img-thumbnail img-settings" id="blog-logo" src="{{shared.blog.Logo}}" alt="{{shared.blog.Logo}}" ng-if="shared.blog.Logo!=''" /><img class="img-settings img-thumbnail img-settings" id="blog-logo" src="/public/images/no-image.png" alt="No image" ng-if="shared.blog.Logo==''" /></a>
+	            <a ng-controller="ImageModalCtrl" ng-click="open('lg', 'blog-logo')"><img class="img-settings img-thumbnail img-settings" id="blog-logo" ng-src="{{shared.blog.Logo}}" alt="{{shared.blog.Logo}}" ng-if="shared.blog.Logo!=''" /><img class="img-settings img-thumbnail img-settings" id="blog-logo" src="/public/images/no-image.png" alt="No image" ng-if="shared.blog.Logo==''" /></a>
 			</div>
 	    </div>
 	    <div class="form-group">
 	        <label for="blog-cover" class="col-sm-2 control-label">Cover</label>
 	        <div class="col-sm-10">
-	            <a ng-controller="ImageModalCtrl" ng-click="open('lg', 'blog-cover')"><img class="img-settings img-thumbnail img-settings" id="blog-cover" src="{{shared.blog.Cover}}" alt="{{shared.blog.Cover}}" ng-if="shared.blog.Cover!=''" /><img class="img-settings img-thumbnail img-settings" id="blog-cover" src="/public/images/no-image.png" alt="No image" ng-if="shared.blog.Cover==''" /></a>
+	            <a ng-controller="ImageModalCtrl" ng-click="open('lg', 'blog-cover')"><img class="img-settings img-thumbnail img-settings" id="blog-cover" ng-src="{{shared.blog.Cover}}" alt="{{shared.blog.Cover}}" ng-if="shared.blog.Cover!=''" /><img class="img-settings img-thumbnail img-settings" id="blog-cover" src="/public/images/no-image.png" alt="No image" ng-if="shared.blog.Cover==''" /></a>
 			</div>
 	    </div>
 	    <div class="form-group">
@@ -103,13 +103,13 @@
 	    <div class="form-group">
 	        <label for="user-image" class="col-sm-2 control-label">Avatar</label>
 	        <div class="col-sm-10">
-	            <a ng-controller="ImageModalCtrl" ng-click="open('lg', 'user-image')"><img class="img-settings img-thumbnail img-settings" id="user-image" src="{{shared.user.Image}}" alt="{{shared.user.Image}}" ng-if="shared.user.Image!=''" /><img class="img-settings img-thumbnail img-settings" id="user-image" src="/public/images/no-image.png" alt="No image" ng-if="shared.user.Image==''" /></a>
+	            <a ng-controller="ImageModalCtrl" ng-click="open('lg', 'user-image')"><img class="img-settings img-thumbnail img-settings" id="user-image" ng-src="{{shared.user.Image}}" alt="{{shared.user.Image}}" ng-if="shared.user.Image!=''" /><img class="img-settings img-thumbnail img-settings" id="user-image" src="/public/images/no-image.png" alt="No image" ng-if="shared.user.Image==''" /></a>
 			</div>
 	    </div>
 	    <div class="form-group">
 	        <label for="user-cover" class="col-sm-2 control-label">Cover</label>
 	        <div class="col-sm-10">
-	            <a ng-controller="ImageModalCtrl" ng-click="open('lg', 'user-cover')"><img class="img-settings img-thumbnail img-settings" id="user-cover" src="{{shared.user.Cover}}" alt="{{shared.user.Cover}}" ng-if="shared.user.Cover!=''" /><img class="img-settings img-thumbnail img-settings" id="user-cover" src="/public/images/no-image.png" alt="No image" ng-if="shared.user.Cover==''" /></a>
+	            <a ng-controller="ImageModalCtrl" ng-click="open('lg', 'user-cover')"><img class="img-settings img-thumbnail img-settings" id="user-cover" ng-src="{{shared.user.Cover}}" alt="{{shared.user.Cover}}" ng-if="shared.user.Cover!=''" /><img class="img-settings img-thumbnail img-settings" id="user-cover" src="/public/images/no-image.png" alt="No image" ng-if="shared.user.Cover==''" /></a>
 			</div>
 	    </div>
 	    <div class="form-group">
