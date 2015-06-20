@@ -248,8 +248,11 @@ func page_urlFunc(helper *structure.Helper, values *structure.RequestData) []byt
 						//TODO: Error handling if there is no Posts[values.CurrentPostIndex]
 						buffer.WriteString(values.CurrentTag.Slug)
 					}
-					buffer.WriteString("/page/")
-					buffer.WriteString(strconv.Itoa(values.CurrentIndexPage - 1))
+					page := values.CurrentIndexPage - 1
+					if page > 1 {
+						buffer.WriteString("/page/")
+						buffer.WriteString(strconv.Itoa(page))
+					}
 					buffer.WriteString("/")
 				}
 				return buffer.Bytes()
@@ -284,8 +287,11 @@ func page_urlFunc(helper *structure.Helper, values *structure.RequestData) []byt
 					// TODO: Error handling if there is no Posts[values.CurrentPostIndex]
 					buffer.WriteString(values.CurrentTag.Slug)
 				}
-				buffer.WriteString("/page/")
-				buffer.WriteString(strconv.Itoa(values.CurrentIndexPage + 1))
+				page := values.CurrentIndexPage + 1
+				if page > 1 {
+					buffer.WriteString("/page/")
+					buffer.WriteString(strconv.Itoa(page))
+				}
 				buffer.WriteString("/")
 				return buffer.Bytes()
 			}
