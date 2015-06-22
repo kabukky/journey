@@ -357,8 +357,15 @@ func body_classFunc(helper *structure.Helper, values *structure.RequestData) []b
 }
 
 func ghost_headFunc(helper *structure.Helper, values *structure.RequestData) []byte {
-	// TODO: Implement
-	return []byte{}
+	// SEO stuff:
+	// Output canonical url
+	var buffer bytes.Buffer
+	buffer.WriteString("<link rel=\"canonical\" href=\"")
+	buffer.Write(evaluateEscape(values.Blog.Url, helper.Unescaped))
+	buffer.WriteString(values.CurrentPath)
+	buffer.WriteString("\">")
+	// TODO: structured data
+	return buffer.Bytes()
 }
 
 func ghost_footFunc(helper *structure.Helper, values *structure.RequestData) []byte {
@@ -871,6 +878,7 @@ func atBlogDotTitleFunc(helper *structure.Helper, values *structure.RequestData)
 func atBlogDotUrlFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	var buffer bytes.Buffer
 	buffer.Write(values.Blog.Url)
+	buffer.WriteString("/")
 	return evaluateEscape(buffer.Bytes(), helper.Unescaped)
 }
 
