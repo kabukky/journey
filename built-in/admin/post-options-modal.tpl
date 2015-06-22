@@ -11,6 +11,12 @@
                 </div>
             </div>
             <div class="form-group">
+                <label for="post-meta-description" class="col-sm-2 control-label">Meta Description</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" id="post-meta-description" ng-model="shared.post.MetaDescription" value="{{shared.post.MetaDescription}}">
+                </div>
+            </div>
+            <div class="form-group">
                 <label for="post-cover" class="col-sm-2 control-label">Cover</label>
                 <div class="col-sm-10">
                     <a ng-controller="ImageModalCtrl" ng-click="open('lg', 'post-cover')"><img class="img-settings img-thumbnail img-settings" id="post-cover" src="{{shared.post.Image}}" alt="{{shared.post.Image}}" ng-if="shared.post.Image!=''" /><img class="img-settings img-thumbnail img-settings" id="post-cover" src="/public/images/no-image.png" alt="No image" ng-if="shared.post.Image==''" /></a> <a class="text-danger" id="post-cover-delete" ng-controller="EmptyModalCtrl" ng-click="deleteCover()"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Remove</a>

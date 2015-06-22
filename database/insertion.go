@@ -6,14 +6,14 @@ import (
 	"time"
 )
 
-const stmtInsertPost = "INSERT INTO posts (id, uuid, title, slug, markdown, html, featured, page, status, image, author_id, created_at, created_by, updated_at, updated_by, published_at, published_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+const stmtInsertPost = "INSERT INTO posts (id, uuid, title, slug, markdown, html, featured, page, status, meta_description, image, author_id, created_at, created_by, updated_at, updated_by, published_at, published_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 const stmtInsertUser = "INSERT INTO users (id, uuid, name, slug, password, email, image, cover, created_at, created_by, updated_at, updated_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 const stmtInsertRoleUser = "INSERT INTO roles_users (id, role_id, user_id) VALUES (?, ?, ?)"
 const stmtInsertTag = "INSERT INTO tags (id, uuid, name, slug, created_at, created_by, updated_at, updated_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
 const stmtInsertPostTag = "INSERT INTO posts_tags (id, post_id, tag_id) VALUES (?, ?, ?)"
 const stmtInsertSetting = "INSERT INTO settings (id, uuid, key, value, type, created_at, created_by, updated_at, updated_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
 
-func InsertPost(title []byte, slug string, markdown []byte, html []byte, featured bool, isPage bool, published bool, image []byte, created_at time.Time, created_by int64) (int64, error) {
+func InsertPost(title []byte, slug string, markdown []byte, html []byte, featured bool, isPage bool, published bool, meta_description []byte, image []byte, created_at time.Time, created_by int64) (int64, error) {
 
 	status := "draft"
 	if published {
@@ -26,9 +26,9 @@ func InsertPost(title []byte, slug string, markdown []byte, html []byte, feature
 	}
 	var result sql.Result
 	if published {
-		result, err = writeDB.Exec(stmtInsertPost, nil, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), title, slug, markdown, html, featured, isPage, status, image, created_by, created_at, created_by, created_at, created_by, created_at, created_by)
+		result, err = writeDB.Exec(stmtInsertPost, nil, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), title, slug, markdown, html, featured, isPage, status, meta_description, image, created_by, created_at, created_by, created_at, created_by, created_at, created_by)
 	} else {
-		result, err = writeDB.Exec(stmtInsertPost, nil, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), title, slug, markdown, html, featured, isPage, status, image, created_by, created_at, created_by, created_at, created_by, nil, nil)
+		result, err = writeDB.Exec(stmtInsertPost, nil, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), title, slug, markdown, html, featured, isPage, status, meta_description, image, created_by, created_at, created_by, created_at, created_by, nil, nil)
 	}
 	if err != nil {
 		writeDB.Rollback()

@@ -397,7 +397,9 @@ func meta_titleFunc(helper *structure.Helper, values *structure.RequestData) []b
 
 func meta_descriptionFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	// TODO: Finish this
-	if values.CurrentTemplate != 1 { // not post
+	if values.CurrentTemplate == 1 || values.CurrentHelperContext == 1 { // post
+		return evaluateEscape(values.Posts[values.CurrentPostIndex].MetaDescription, helper.Unescaped)
+	} else {
 		return evaluateEscape(values.Blog.Description, helper.Unescaped)
 	}
 	// Nothing on post yet
