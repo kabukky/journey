@@ -7,13 +7,13 @@
             <div class="form-group">
                 <label for="post-slug" class="col-sm-2 control-label">Custom Slug</label>
                 <div class="col-sm-4">
-                    <input type="text" class="form-control" id="post-slug" ng-model="shared.post.Slug" value="{{shared.post.Slug}}">
+                    <input spellcheck="true" type="text" class="form-control" id="post-slug" ng-model="shared.post.Slug" value="{{shared.post.Slug}}">
                 </div>
             </div>
             <div class="form-group">
                 <label for="post-meta-description" class="col-sm-2 control-label">Meta Description</label>
                 <div class="col-sm-4">
-                    <input type="text" class="form-control" id="post-meta-description" ng-model="shared.post.MetaDescription" value="{{shared.post.MetaDescription}}">
+                    <input spellcheck="true" type="text" class="form-control" id="post-meta-description" ng-model="shared.post.MetaDescription" value="{{shared.post.MetaDescription}}">
                 </div>
             </div>
             <div class="form-group">
