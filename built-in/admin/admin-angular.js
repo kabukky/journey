@@ -210,8 +210,9 @@ adminApp.controller('EditCtrl', function ($scope, $routeParams, $http, $sce, $lo
     $scope.change();
   });
   $scope.save = function() {
+    $('#post-save-button').attr('disabled', 'true');
     $http.patch('/admin/api/post', $scope.shared.post).success(function(data) {
-      $location.url('/');
+      $('#post-save-button').removeAttr('disabled');
     });
   };
 });
