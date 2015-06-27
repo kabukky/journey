@@ -1,6 +1,6 @@
 /*!
  * @copyright Copyright &copy; Kartik Visweswaran, Krajee.com, 2014 - 2015
- * @version 4.2.2
+ * @version 4.2.3
  *
  * File input styled for Bootstrap 3.0 that utilizes HTML5 File Input's advanced 
  * features including the FileReader API. 
@@ -1283,6 +1283,7 @@
                         $newThumb.fadeIn('slow').css('display:inline-block');
                         self.initPreviewDeletes();
                         self.clearFileInput();
+                        $thumb.remove();
                     });
                 } else {
                     if (allFiles) {
