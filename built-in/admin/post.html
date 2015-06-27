@@ -77,4 +77,12 @@
 	$("#post-save-button").click(function() {
 		document.getElementById("post-save-button").disabled = true;
 	});
+	$(document).keydown(function(e) {
+		if ((e.which == '115' || e.which == '83' ) && (e.ctrlKey || e.metaKey)){
+			e.preventDefault();
+			angular.element(document.getElementById('post-save-button')).scope().save();
+			return false;
+		}
+		return true;
+	});
 </script>
