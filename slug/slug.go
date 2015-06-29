@@ -10,7 +10,7 @@ import (
 func Generate(input string, table string) string {
 	output := strings.Map(func(r rune) rune {
 		switch {
-		case r == ' ', r == '-':
+		case r == ' ', r == '-', r == '/':
 			return '-'
 		case r == '_', unicode.IsLetter(r), unicode.IsDigit(r):
 			return r
