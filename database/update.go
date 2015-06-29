@@ -4,14 +4,14 @@ import (
 	"time"
 )
 
-const stmtUpdatePost = "UPDATE posts SET title = ?, slug = ?, markdown = ?, html = ?, featured = ?, page = ?, status = ?, image = ?, updated_at = ?, updated_by = ? WHERE id = ?"
-const stmtUpdatePostPublished = "UPDATE posts SET title = ?, slug = ?, markdown = ?, html = ?, featured = ?, page = ?, status = ?, image = ?, updated_at = ?, updated_by = ?, published_at = ?, published_by = ? WHERE id = ?"
+const stmtUpdatePost = "UPDATE posts SET title = ?, slug = ?, markdown = ?, html = ?, featured = ?, page = ?, status = ?, meta_description = ?, image = ?, updated_at = ?, updated_by = ? WHERE id = ?"
+const stmtUpdatePostPublished = "UPDATE posts SET title = ?, slug = ?, markdown = ?, html = ?, featured = ?, page = ?, status = ?, meta_description = ?, image = ?, updated_at = ?, updated_by = ?, published_at = ?, published_by = ? WHERE id = ?"
 const stmtUpdateSettings = "UPDATE settings SET value = ?, updated_at = ?, updated_by = ? WHERE key = ?"
 const stmtUpdateUser = "UPDATE users SET name = ?, slug = ?, email = ?, image = ?, cover = ?, bio = ?, website = ?, location = ?, updated_at = ?, updated_by = ? WHERE id = ?"
 const stmtUpdateLastLogin = "UPDATE users SET last_login = ? WHERE id = ?"
 const stmtUpdateUserPassword = "UPDATE users SET password = ?, updated_at = ?, updated_by = ? WHERE id = ?"
 
-func UpdatePost(id int64, title []byte, slug string, markdown []byte, html []byte, featured bool, isPage bool, published bool, image []byte, updated_at time.Time, updated_by int64) error {
+func UpdatePost(id int64, title []byte, slug string, markdown []byte, html []byte, featured bool, isPage bool, published bool, meta_description []byte, image []byte, updated_at time.Time, updated_by int64) error {
 	currentPost, err := RetrievePostById(id)
 	if err != nil {
 		return err
@@ -27,9 +27,9 @@ func UpdatePost(id int64, title []byte, slug string, markdown []byte, html []byt
 	}
 	// If the updated post is published for the first time, add publication date and user
 	if published && !currentPost.IsPublished {
-		_, err = writeDB.Exec(stmtUpdatePostPublished, title, slug, markdown, html, featured, isPage, status, image, updated_at, updated_by, updated_at, updated_by, id)
+		_, err = writeDB.Exec(stmtUpdatePostPublished, title, slug, markdown, html, featured, isPage, status, meta_description, image, updated_at, updated_by, updated_at, updated_by, id)
 	} else {
-		_, err = writeDB.Exec(stmtUpdatePost, title, slug, markdown, html, featured, isPage, status, image, updated_at, updated_by, id)
+		_, err = writeDB.Exec(stmtUpdatePost, title, slug, markdown, html, featured, isPage, status, meta_description, image, updated_at, updated_by, id)
 	}
 	if err != nil {
 		writeDB.Rollback()
