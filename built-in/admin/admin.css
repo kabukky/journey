@@ -125,6 +125,9 @@ img {
 }
 
 #markdown-textarea {
+    outline: none;
+    box-shadow: none;
+    -webkit-box-shadow: none;
     width: 100%;
     padding: 0;
     resize: none;

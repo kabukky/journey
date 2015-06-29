@@ -1,8 +1,145 @@
+version 4.2.3
+=============
+**Date**: 21-Jun-2015
+
+1. (enh #336): Fixes to reset preview via `initUploadSuccess`.
+
+version 4.2.2
+=============
+**Date**: 18-Jun-2015
+
+1. (enh #332): Bump nuget and bower package versions.
+
+version 4.2.1
+=============
+**Date**: 15-Jun-2015
+
+1. (enh #279, #280): Fixed error for failed response types.
+2. (enh #287): Add Brazilian Portugese (pt-BR) translations.
+3. (bug #295): Validate `overwriteInitial` correctly for ajax uploads.
+4. (enh #296): Fixed license identifiers in bower.json and composer.json.
+5. (enh #297): Add Romanian translations.
+6. (enh #299): Enhancements for displaying uploaded file thumbnails.
+    - New property `showUploadedThumbs` that will display uploaded thumbnails until the remove/clear button is explicitly pressed.
+    - New event `filesuccessremove`. This will be triggered on removing the uploaded thumbnail using the thumbnail delete button. The event shares the following parameters:
+        - `id`: the HTML id attribute of the thumbnail container 
+      The `event` can be set to return `false` to abort the thumbnail removal.
+7. (enh #302): Add Greek (el) translations.
+8. (enh #303): Validate only files to be dragged and dropped.
+9. (enh #305): Implement better cleanup of memory with `revokeObjectURL`.
+10. (enh #307): Allow setting thumbnail frame css class and attributes via `initialPreviewConfig`.
+11. (enh #308): Better check for `data.error` being empty.
+12. (enh #309): Fixes for older browsers.
+13. (bug #310): Set missing caption icon on error.
+14. (bug #315): Fix parsing of preview settings for default (other) preview.
+15. (bug #327): More correct clearing of preview.
+16. (bug #328): Implement image dimension validations.
+    - New properties added to the plugin:
+        - `minImageWidth`
+        - `minImageHeight`
+        - `maxImageWidth`
+        - `maxImageHeight`
+        - `msgImageWidthSmall`
+        - `msgImageHeightSmall`
+        - `msgImageWidthLarge`
+        - `msgImageHeightLarge`
+17. (enh #329): Message translation updates.
+18. (enh #330): Minor enhancements in validating preview and progress bar display.
+
+version 4.2.0
+=============
+**Date**: 11-May-2015
+
+1. (enh #275): Add Czech & Slovakian translations.
+2. (enh #277): New `language` property to allow configuring multi lang widgets on same page.
+
+version 4.1.9
+=============
+**Date**: 02-May-2015
+
+1. (enh #232): Update docs to reflect updated bootstrap CDN domain.
+2. (enh #237): Better styling of file caption icon.
+3. (bug #238): Correct initialization of plugin variables when other than maxFileCount & maxFileSize.
+4. (enh #241): Enhancements to initial preview delete to perform validations before delete.
+5. (bug #243): Correct sending of `deleteExtraData`.
+6. (enh #244): Add Serbian translations.
+7. (enh #245): Allow initial caption to be set without initial preview.
+8. (bug #247): Correct mime types validation.
+9. (enh #248): keep chinese characters in file caption.
+10. (bug #249): Fix error message content display.
+11. (enh #250): Change default slug routine to allow umlauts in filenames.
+12. (enh #251): Add Italian localizations.
+13. (enh #252): Enhance async batch completion.
+14. (bug #253): Fix initial preview delete cache initialization.
+15. (bug #257): Fix upload single to replace thumbs correctly.
+16. (enh #258): Enhance messages to include file plural and single.
+17. (enh #259): Add Polish translations.
+18. (enh #263): Enhance parsing of file preview thumbnails and actions.
+19. (enh #264): Validate input type of file before initializing plugin.
+20. (enh #269, #272): Add Turkish translations.
+21. (enh #270): Add Portugese translations.
+22. (enh #271): Add Dutch translations.
+23. (bug #273): Reset caption correctly after all initial preview is deleted.
+
 version 4.1.8
 =============
-**Date**: 20-Feb-2015
+**Date**: 30-Mar-2015
 
 1. (bug #171): Fix typo for files validation.
+2. (enh #167, #173): New `deleteExtraData` property for ajax deletions.
+3. (enh #174): New `deleteUrl` property.
+4. (enh #175): Ability to override delete extra data in `initialPreviewConfig`.
+5. (enh #176): Wrong file in README installation steps fixed.
+6. (enh #177): Trigger filebatchpreupload if showPreview is `false`.
+7. (enh #178): Updated README for cancel button configuration.
+8. (enh #179): Validate and cast `maxFileSize` and `maxFileCount` to numeric - even if they have been setup as a string.
+9. (enh #181): Fix change event triggered for IE 11 when file input is set to empty.
+10. (enh #183): Delete extra data enhancements.
+11. (enh #184): Fix documentation for filedeleted event.
+12. (enh #187): New property `previewFileIcon` to configure file icon shown in preview for unreadable file types.
+13. (enh #188): Clear fileinput more correctly for all browsers when initialPreview is set enhancement
+14. (enh #189): Reinitialize initial preview delete events correctly on file selection.
+15. (enh #192): Ability to extend and add one's own ajax settings.
+    - New property `ajaxDeleteSettings` to help extend and add to delete ajax settings. 
+    - `ajaxSettings` to help extend and add upload ajax settings
+16. (bug #193): Better validation for triggering `filebatchuploadcomplete` on async batch upload completion.
+17. (enh #202): Ability to add Translations / Locales.
+    - Identify and group all messages that need to be translated configurable via `$.fn.fileinput.locales['<lang-code>']`
+    - Set default english messages configuration `$.fn.fileinput.locales['en']` within the plugin core code
+    - Individual locale files need to be created as separate js files e.g. `fileinput_locale_<lang>.js`
+18. (enh #203): Enhancements and revamp of all error events.
+    - fileerror
+    - fileuploaderror
+    - filebatchuploaderror
+    - filedeleteerror
+    - filefoldererror (new event - see #209)
+    - filecustomerror (new event - see #206)
+19. (enh #204): New properties `fileMinCount` and `msgFilesTooLess` (useful to make file input mandatory).
+    - The `fileMinCount` property will allow to set the minimum file count needed before triggering upload. It will work for both `ajax` uploads and `normal form based submission`.
+    - This will enable you to set the file input to be a mandatory / required input. (e.g. `fileMinCount` = `1`). The `msgFilesTooLess` will be displayed and error raised.
+    - If `fileMinCount` is set to `0` it will be treated as files are optional and no error will be triggered.
+20. (enh #205): Allow to auto set initialPreview within `filebatchuploadcomplete` & `filebatchuploadsuccess`.
+    - Allows you to auto define the `initialPreview` and  `initialPreviewConfig` after an ajax upload by returning these within the data object from your ajax response on `fileuploaded` & `filebatchuploadsuccess`. 
+21. (enh #206): Ability to add custom validation and trigger custom error to abort upload.
+    - This enhancement will enable you to add your additional custom validations to enhance the fileinput to be used for innumerous scenarios. It will allow an ability to return an associative object with any of the fileinput events (except the error events and the `filebatchuploadsuccess` or `filebatchuploadcomplete`) e.g. `change`, `fileselect`, `filepreupload`, `filebatchpreupload` etc. The object can return the following keys:
+        - `message`: _string_, the validation error message to be displayed before upload. If this is set the plugin will automatically abort the upload whenever called and display this as an error message. You can use this property for example to read a file and perform your own custom validation.
+        - `data`: _object_, an optional associative array of additional data that you can pass for usage later. 
+    - You can get this data by reading `abortData` in the parameters for the new `filecustomerror` event. This new event will be triggered during upload, when  you have triggered an abort from any of the other events. 
+22. (enh #209): Better validation for folder drag and drop and auto-skip any dropped folders. New property `msgFoldersNotAllowed` added to the plugin to allow configuring the message shown. The event `filefoldererror` is triggered when a folder is dragged.
+23. (enh #211): Add ability to show detailed server error stack via `showAjaxErrorDetails`.
+24. (enh #212): Revamp preview to use a new preview caching object.
+25. (enh #213): Code cleanup, eliminate change event on clear and properly reset preview cache after ajax deletes.
+26. (enh #215): Set default delete method REST compliant.
+27. (enh #216): Add Hungarian Translations.
+28. (enh #217): Ensure `filebatchselected` event is triggered after FileReader completes reading files selected.
+29. (enh #218): Do not clear preview for ajaxuploads until remove button clicked.
+30. (enh #222): Enhance to include dynamically replaceable thumbnail tags. Two new properties `previewThumbTags` and `initialPreviewThumbTags` will be available for configuration.
+31. (enh #225): Create Russian translations.
+32. (enh #226): Create Spanish (Latin American) translations.
+33. (enh #227): Created Ukranian translations and updated Russian translations.
+34. (enh #228): Created Thai translations.
+35. (enh #229): Created French translations.
+36. (enh #230): More correct initial preview delete reset.
 
 version 4.1.7
 =============
