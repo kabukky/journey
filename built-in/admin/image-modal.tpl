@@ -9,24 +9,30 @@
 			<button class="btn btn-warning" ng-click="cancel()">Cancel</button>
 		</div>
 		<div infinite-scroll="shared.infiniteScrollFactory.nextPage()" infinite-scroll-disabled="infiniteScrollFactory.busy" infinite-scroll-distance="1" infinite-scroll-container="'.modal'">
-			<div class="row" ng-repeat="image in shared.infiniteScrollFactory.items track by $index" ng-if="$index%3==0">
-				<div class="col-xs-4" ng-if="$index<shared.infiniteScrollFactory.items.length">
+			<div class="row" ng-repeat="image in shared.infiniteScrollFactory.items track by $index" ng-if="$index%4==0">
+				<div class="col-xs-3" ng-if="$index<shared.infiniteScrollFactory.items.length">
 					<a class="instance-hook" ng-click="shared.selected = shared.infiniteScrollFactory.items[$index]" img-selection-directive>
 						<img ng-class="{imgselected:$first,firstimg:$first}" class="img-thumbnail img-modal center-block" ng-src="{{shared.infiniteScrollFactory.items[$index]}}" alt="{{shared.infiniteScrollFactory.items[$index]}}" />
 					</a>
 					<div id="image-delete"><a class="text-danger" ng-click="deleteImage(shared.infiniteScrollFactory.items[$index])"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete</a></div>
 				</div>
-				<div class="col-xs-4" ng-if="$index+1<shared.infiniteScrollFactory.items.length">
+				<div class="col-xs-3" ng-if="$index+1<shared.infiniteScrollFactory.items.length">
 					<a class="instance-hook" ng-click="shared.selected = shared.infiniteScrollFactory.items[$index+1]" img-selection-directive>
 						<img class="img-thumbnail img-modal center-block" ng-src="{{shared.infiniteScrollFactory.items[$index+1]}}" alt="{{shared.infiniteScrollFactory.items[$index+1]}}" />
 					</a>
 					<div id="image-delete"><a class="text-danger" ng-click="deleteImage(shared.infiniteScrollFactory.items[$index+1])"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete</a></div>
 				</div>
-				<div class="col-xs-4" ng-if="$index+2<shared.infiniteScrollFactory.items.length">
+				<div class="col-xs-3" ng-if="$index+2<shared.infiniteScrollFactory.items.length">
 					<a class="instance-hook" ng-click="shared.selected = shared.infiniteScrollFactory.items[$index+2]" img-selection-directive>
 						<img class="img-thumbnail img-modal center-block" ng-src="{{shared.infiniteScrollFactory.items[$index+2]}}" alt="{{shared.infiniteScrollFactory.items[$index+2]}}" />
 					</a>
 					<div id="image-delete"><a class="text-danger" ng-click="deleteImage(shared.infiniteScrollFactory.items[$index+2])"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete</a></div>
+				</div>
+				<div class="col-xs-3" ng-if="$index+3<shared.infiniteScrollFactory.items.length">
+					<a class="instance-hook" ng-click="shared.selected = shared.infiniteScrollFactory.items[$index+3]" img-selection-directive>
+						<img class="img-thumbnail img-modal center-block" ng-src="{{shared.infiniteScrollFactory.items[$index+3]}}" alt="{{shared.infiniteScrollFactory.items[$index+3]}}" />
+					</a>
+					<div id="image-delete"><a class="text-danger" ng-click="deleteImage(shared.infiniteScrollFactory.items[$index+3])"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete</a></div>
 				</div>
 			</div>
 		</div>
