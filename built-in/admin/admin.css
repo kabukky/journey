@@ -125,13 +125,10 @@ img {
 }
 
 #markdown-textarea {
-    width: 100%;
+    width:100%;
     padding: 0;
     resize: none;
     border: none;
-    outline: none;
-    box-shadow: none;
-    -webkit-box-shadow: none;
 }
 
 .markdown-modal-button {

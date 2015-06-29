@@ -36,7 +36,7 @@ var (
 	HbsFilepath    = filepath.Join(ExecutablePath, "built-in", "hbs")
 
 	// For handlebars (this is a url string)
-	JqueryFilename = "/public/jquery/jquery.min.js"
+	JqueryFilename = "/public/jquery/jquery.js"
 
 	// For blog  (this is a url string)
 	// TODO: This is not used at the moment because it is still hard-coded into the create database string

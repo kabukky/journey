@@ -33,7 +33,6 @@ type JsonPost struct {
 	IsPage      bool
 	IsPublished bool
 	Image       string
-	MetaDescription string
 	Date        *time.Time
 	Tags        string
 }
@@ -258,7 +257,7 @@ func postApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]str
 			postSlug = slug.Generate(json.Title, "posts")
 		}
 		currentTime := time.Now()
-		post := structure.Post{Title: []byte(json.Title), Slug: postSlug, Markdown: []byte(json.Markdown), Html: conversion.GenerateHtmlFromMarkdown([]byte(json.Markdown)), IsFeatured: json.IsFeatured, IsPage: json.IsPage, IsPublished: json.IsPublished, MetaDescription: []byte(json.MetaDescription), Image: []byte(json.Image), Date: &currentTime, Tags: methods.GenerateTagsFromCommaString(json.Tags), Author: &structure.User{Id: userId}}
+		post := structure.Post{Title: []byte(json.Title), Slug: postSlug, Markdown: []byte(json.Markdown), Html: conversion.GenerateHtmlFromMarkdown([]byte(json.Markdown)), IsFeatured: json.IsFeatured, IsPage: json.IsPage, IsPublished: json.IsPublished, Image: []byte(json.Image), Date: &currentTime, Tags: methods.GenerateTagsFromCommaString(json.Tags), Author: &structure.User{Id: userId}}
 		err = methods.SavePost(&post)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -303,7 +302,7 @@ func patchApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 			postSlug = post.Slug
 		}
 		currentTime := time.Now()
-		*post = structure.Post{Id: json.Id, Title: []byte(json.Title), Slug: postSlug, Markdown: []byte(json.Markdown), Html: conversion.GenerateHtmlFromMarkdown([]byte(json.Markdown)), IsFeatured: json.IsFeatured, IsPage: json.IsPage, IsPublished: json.IsPublished, MetaDescription: []byte(json.MetaDescription), Image: []byte(json.Image), Date: &currentTime, Tags: methods.GenerateTagsFromCommaString(json.Tags), Author: &structure.User{Id: userId}}
+		*post = structure.Post{Id: json.Id, Title: []byte(json.Title), Slug: postSlug, Markdown: []byte(json.Markdown), Html: conversion.GenerateHtmlFromMarkdown([]byte(json.Markdown)), IsFeatured: json.IsFeatured, IsPage: json.IsPage, IsPublished: json.IsPublished, Image: []byte(json.Image), Date: &currentTime, Tags: methods.GenerateTagsFromCommaString(json.Tags), Author: &structure.User{Id: userId}}
 		err = methods.UpdatePost(post)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -764,7 +763,6 @@ func postToJson(post *structure.Post) *JsonPost {
 	jsonPost.IsFeatured = post.IsFeatured
 	jsonPost.IsPage = post.IsPage
 	jsonPost.IsPublished = post.IsPublished
-	jsonPost.MetaDescription = string(post.MetaDescription)
 	jsonPost.Image = string(post.Image)
 	jsonPost.Date = post.Date
 	tags := make([]string, len(post.Tags))

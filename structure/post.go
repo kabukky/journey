@@ -17,6 +17,5 @@ type Post struct {
 	Date        *time.Time
 	Tags        []Tag
 	Author      *User
-	MetaDescription []byte
 	Image       []byte
 }

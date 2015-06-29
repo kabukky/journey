@@ -248,11 +248,8 @@ func page_urlFunc(helper *structure.Helper, values *structure.RequestData) []byt
 						//TODO: Error handling if there is no Posts[values.CurrentPostIndex]
 						buffer.WriteString(values.CurrentTag.Slug)
 					}
-					page := values.CurrentIndexPage - 1
-					if page > 1 {
-						buffer.WriteString("/page/")
-						buffer.WriteString(strconv.Itoa(page))
-					}
+					buffer.WriteString("/page/")
+					buffer.WriteString(strconv.Itoa(values.CurrentIndexPage - 1))
 					buffer.WriteString("/")
 				}
 				return buffer.Bytes()
@@ -287,11 +284,8 @@ func page_urlFunc(helper *structure.Helper, values *structure.RequestData) []byt
 					// TODO: Error handling if there is no Posts[values.CurrentPostIndex]
 					buffer.WriteString(values.CurrentTag.Slug)
 				}
-				page := values.CurrentIndexPage + 1
-				if page > 1 {
-					buffer.WriteString("/page/")
-					buffer.WriteString(strconv.Itoa(page))
-				}
+				buffer.WriteString("/page/")
+				buffer.WriteString(strconv.Itoa(values.CurrentIndexPage + 1))
 				buffer.WriteString("/")
 				return buffer.Bytes()
 			}
@@ -357,15 +351,8 @@ func body_classFunc(helper *structure.Helper, values *structure.RequestData) []b
 }
 
 func ghost_headFunc(helper *structure.Helper, values *structure.RequestData) []byte {
-	// SEO stuff:
-	// Output canonical url
-	var buffer bytes.Buffer
-	buffer.WriteString("<link rel=\"canonical\" href=\"")
-	buffer.Write(evaluateEscape(values.Blog.Url, helper.Unescaped))
-	buffer.WriteString(values.CurrentPath)
-	buffer.WriteString("\">")
-	// TODO: structured data
-	return buffer.Bytes()
+	// TODO: Implement
+	return []byte{}
 }
 
 func ghost_footFunc(helper *structure.Helper, values *structure.RequestData) []byte {
@@ -397,9 +384,7 @@ func meta_titleFunc(helper *structure.Helper, values *structure.RequestData) []b
 
 func meta_descriptionFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	// TODO: Finish this
-	if values.CurrentTemplate == 1 || values.CurrentHelperContext == 1 { // post
-		return evaluateEscape(values.Posts[values.CurrentPostIndex].MetaDescription, helper.Unescaped)
-	} else {
+	if values.CurrentTemplate != 1 { // not post
 		return evaluateEscape(values.Blog.Description, helper.Unescaped)
 	}
 	// Nothing on post yet
@@ -880,7 +865,6 @@ func atBlogDotTitleFunc(helper *structure.Helper, values *structure.RequestData)
 func atBlogDotUrlFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	var buffer bytes.Buffer
 	buffer.Write(values.Blog.Url)
-	buffer.WriteString("/")
 	return evaluateEscape(buffer.Bytes(), helper.Unescaped)
 }
 

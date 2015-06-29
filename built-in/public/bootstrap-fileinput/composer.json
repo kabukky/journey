@@ -3,7 +3,7 @@
     "description": "An enhanced HTML 5 file input for Bootstrap 3.x with features for file preview for many file types, multiple selection, ajax uploads, and more.",
     "keywords": ["bootstrap", "jquery", "file", "input", "preview", "upload", "image", "multiple", "ajax", "delete", "progress"],
     "homepage": "https://github.com/kartik-v/bootstrap-fileinput",
-    "license": "BSD-3-Clause",
+    "license": "BSD 3-Clause",
     "authors": [
         {
             "name": "Kartik Visweswaran",
@@ -11,6 +11,7 @@
             "homepage": "http://www.krajee.com/"
         }
     ],
+	"minimum-stability": "stable",
     "autoload": {
         "psr-4": {
             "kartik\\plugins\\fileinput\\": ""
