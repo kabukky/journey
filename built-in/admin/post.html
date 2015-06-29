@@ -78,7 +78,7 @@
 		document.getElementById("post-save-button").disabled = true;
 	});
 	$(document).keydown(function(e) {
-		if ((e.which == '115' || e.which == '83' ) && (e.ctrlKey || e.metaKey)){
+		if ((e.which == '115' || e.which == '83' ) && (e.ctrlKey || e.metaKey) && !document.getElementById("post-save-button").disabled){
 			e.preventDefault();
 			angular.element(document.getElementById('post-save-button')).scope().save();
 			return false;

@@ -187,6 +187,7 @@ adminApp.controller('CreateCtrl', function ($scope, $http, $sce, $location, shar
   };
   $scope.change();
   $scope.save = function() {
+    $('#post-save-button').attr('disabled', 'true');
     $http.post('/admin/api/post', $scope.shared.post).success(function(data) {
       $location.url('/');
     });
