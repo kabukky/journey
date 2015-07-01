@@ -2,13 +2,15 @@ package slug
 
 import (
 	"github.com/kabukky/journey/database"
+	"regexp"
 	"strconv"
 	"strings"
 	"unicode"
 )
 
 func Generate(input string, table string) string {
-	output := strings.Map(func(r rune) rune {
+	hyphensRegex := regexp.MustCompile("-+")
+	output := hyphensRegex.ReplaceAllString(strings.Map(func(r rune) rune {
 		switch {
 		case r == ' ', r == '-', r == '/':
 			return '-'
@@ -17,7 +19,7 @@ func Generate(input string, table string) string {
 		default:
 			return -1
 		}
-	}, strings.ToLower(strings.TrimSpace(input)))
+	}, strings.ToLower(strings.TrimSpace(input))), "-")
 	// Maximum of 75 characters for slugs right now
 	maxLength := 75
 	if len([]rune(output)) > maxLength {
