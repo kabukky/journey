@@ -160,22 +160,22 @@
 </div>
 <script>
 	$(document).ready(function() {
-		$("#new-password").keyup(validate);
-  		$("#new-password-repeated").keyup(validate);
+		$("#new-password").on('keyup', validate);
+  		$("#new-password-repeated").on('keyup', validate);
 	});
 	function validate() {
 		var password = $("#new-password").val();
 		var repeatedPassword = $("#new-password-repeated").val();
 	    if(password == repeatedPassword) {
-			document.getElementById("settings-save-button").disabled = false;
+			$("#settings-save-button")[0].disabled = false;
 	    	$("#password-match-status").html("&nbsp;");
 	    }
 	    else {
-			document.getElementById("settings-save-button").disabled = true;
+			$("#settings-save-button")[0].disabled = true;
 	        $("#password-match-status").html("Passwords do not match.");
 	    }
 	}
-	$("#settings-save-button").click(function() {
-		document.getElementById("settings-save-button").disabled = true;
+	$("#settings-save-button").on('click', function() {
+		this.disabled = true;
 	});
 </script>
