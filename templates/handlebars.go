@@ -16,9 +16,6 @@ import (
 	"time"
 )
 
-// Ghost always includes a link to jquery in it's footer func. Mimic this.
-var jqueryCodeForFooter = []byte("<script src=\"" + filenames.JqueryFilename + "\"></script>")
-
 // Helper fuctions
 func nullFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	// Check if the helper was defined in a plugin
@@ -369,8 +366,8 @@ func ghost_headFunc(helper *structure.Helper, values *structure.RequestData) []b
 }
 
 func ghost_footFunc(helper *structure.Helper, values *structure.RequestData) []byte {
-	// TODO: This seems to just output a jquery link in ghost. Keep for compatibility?
-	return jqueryCodeForFooter
+	// TODO: customized code injection
+	return []byte{}
 }
 
 func meta_titleFunc(helper *structure.Helper, values *structure.RequestData) []byte {
