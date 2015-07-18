@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"github.com/kabukky/journey/conversion"
 	"github.com/kabukky/journey/database"
-	"github.com/kabukky/journey/filenames"
 	"github.com/kabukky/journey/plugins"
 	"github.com/kabukky/journey/structure"
 	"github.com/kabukky/journey/structure/methods"
