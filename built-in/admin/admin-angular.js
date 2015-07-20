@@ -183,7 +183,7 @@ adminApp.controller('CreateCtrl', function ($scope, $http, $sce, $location, shar
   $scope.change = function() {
     document.getElementById('html-div').innerHTML = '<h1>' + $scope.shared.post.Title + '</h1><br>' + converter.makeHtml($scope.shared.post.Markdown);
     //resize the markdown textarea
-    $('.textarea-autosize').val($scope.shared.post.Markdown).trigger('autosize.resize');
+    $('.textarea-autosize').val($scope.shared.post.Markdown).trigger('input');
   };
   $scope.change();
   $scope.save = function() {
@@ -204,7 +204,7 @@ adminApp.controller('EditCtrl', function ($scope, $routeParams, $http, $sce, $lo
   $scope.change = function() {
     document.getElementById('html-div').innerHTML = '<h1>' + $scope.shared.post.Title + '</h1><br>' + converter.makeHtml($scope.shared.post.Markdown);
     //resize the markdown textarea
-    $('.textarea-autosize').val($scope.shared.post.Markdown).trigger('autosize.resize');
+    $('.textarea-autosize').val($scope.shared.post.Markdown).trigger('input');
   };
   $http.get('/admin/api/post/' + $routeParams.Id).success(function(data) {
     $scope.shared.post = data;
