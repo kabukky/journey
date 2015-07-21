@@ -312,7 +312,7 @@ func featuredFunc(helper *structure.Helper, values *structure.RequestData) []byt
 
 func body_classFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	if values.CurrentTemplate == 1 { // post
-		// TODO: is there anything else that needs to get output here?
+		// TODO: is there anything else that needs to be output here?
 		var buffer bytes.Buffer
 		buffer.WriteString("post-template")
 		// If page
@@ -598,7 +598,7 @@ func urlFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 		buffer.WriteString(values.Posts[values.CurrentPostIndex].Author.Slug)
 		buffer.WriteString("/")
 		return evaluateEscape(buffer.Bytes(), helper.Unescaped)
-	} else if values.CurrentHelperContext == 4 { // author
+	} else if values.CurrentHelperContext == 4 { // navigation
 		buffer.WriteString(values.Blog.NavigationItems[values.CurrentNavigationIndex].Url)
 		return evaluateEscape(buffer.Bytes(), helper.Unescaped)
 	}
