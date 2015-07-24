@@ -175,7 +175,7 @@ adminApp.controller('SettingsCtrl', function ($scope, $http, $timeout, $sce, $lo
 
 adminApp.controller('CreateCtrl', function ($scope, $http, $sce, $location, sharingService){
   //create markdown converter
-  var converter = new showdown.Converter();
+  var converter = new showdown.Converter({extensions: ['footnotes'], ghCodeBlocks: true, simplifiedAutoLink: true, strikethrough: true, tables: true});
   //change the navbar according to controller
   $scope.navbarHtml = $sce.trustAsHtml('<ul class="nav navbar-nav"><li><a href="#/">Content</a></li><li class="active"><a href="#/create/">New Post<span class="sr-only">(current)</span></a></li><li><a href="#/settings/">Settings</a></li><li><a href="logout/" class="logout">( Log Out )</a></li></ul>');
   $scope.shared = sharingService.shared;
@@ -196,7 +196,7 @@ adminApp.controller('CreateCtrl', function ($scope, $http, $sce, $location, shar
 
 adminApp.controller('EditCtrl', function ($scope, $routeParams, $http, $sce, $location, sharingService){
   //create markdown converter
-  var converter = new showdown.Converter();
+  var converter = new showdown.Converter({extensions: ['footnotes'], ghCodeBlocks: true, simplifiedAutoLink: true, strikethrough: true, tables: true});
   //change the navbar according to controller
   $scope.navbarHtml = $sce.trustAsHtml('<ul class="nav navbar-nav"><li><a href="#/">Content</a></li><li><a href="#/create/">New Post</a></li><li><a href="#/settings/">Settings</a></li><li><a href="logout/" class="logout">( Log Out )</a></li></ul>');
   $scope.shared = sharingService.shared;
