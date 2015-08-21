@@ -43,10 +43,10 @@ func RetrievePostBySlug(slug string) (*structure.Post, error) {
 func RetrievePostsByUser(user_id int64, limit int64, offset int64) ([]structure.Post, error) {
 	// Retrieve posts
 	rows, err := readDB.Query(stmtRetrievePostsByUser, user_id, limit, offset)
-	defer rows.Close()
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 	posts, err := extractPosts(rows)
 	if err != nil {
 		return nil, err
@@ -57,10 +57,10 @@ func RetrievePostsByUser(user_id int64, limit int64, offset int64) ([]structure.
 func RetrievePostsByTag(tag_id int64, limit int64, offset int64) ([]structure.Post, error) {
 	// Retrieve posts
 	rows, err := readDB.Query(stmtRetrievePostsByTag, tag_id, limit, offset)
-	defer rows.Close()
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 	posts, err := extractPosts(rows)
 	if err != nil {
 		return nil, err
@@ -71,10 +71,10 @@ func RetrievePostsByTag(tag_id int64, limit int64, offset int64) ([]structure.Po
 func RetrievePostsForIndex(limit int64, offset int64) ([]structure.Post, error) {
 	// Retrieve posts
 	rows, err := readDB.Query(stmtRetrievePostsForIndex, limit, offset)
-	defer rows.Close()
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 	posts, err := extractPosts(rows)
 	if err != nil {
 		return nil, err
@@ -85,10 +85,10 @@ func RetrievePostsForIndex(limit int64, offset int64) ([]structure.Post, error) 
 func RetrievePostsForApi(limit int64, offset int64) ([]structure.Post, error) {
 	// Retrieve posts
 	rows, err := readDB.Query(stmtRetrievePostsForApi, limit, offset)
-	defer rows.Close()
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 	posts, err := extractPosts(rows)
 	if err != nil {
 		return nil, err
@@ -249,10 +249,10 @@ func RetrieveTags(postId int64) ([]structure.Tag, error) {
 	tags := make([]structure.Tag, 0)
 	// Retrieve tags
 	rows, err := readDB.Query(stmtRetrieveTags, postId)
-	defer rows.Close()
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 	for rows.Next() {
 		var tagId int64
 		err := rows.Scan(&tagId)
