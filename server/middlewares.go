@@ -26,10 +26,11 @@ func CheckHost(next http.Handler) http.Handler{
 		if !strings.EqualFold(r.Host, "") {
 			if (strings.EqualFold(r.Host, host) || strings.EqualFold(r.Host, parsed.Host)) {
 				next.ServeHTTP(w, r)
+				return
 			}
-		} else {
-			http.Error(w, http.StatusText(400), 400)
-			return
 		}
+
+		http.Error(w, http.StatusText(400), 400)
+		return
 	})
 }
