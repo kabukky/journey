@@ -17,7 +17,6 @@ import (
 	"os"
 	"runtime"
 	"strings"
-	"journey/server"
 )
 
 func httpsRedirect(w http.ResponseWriter, r *http.Request, _ map[string]string) {
