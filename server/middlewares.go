@@ -23,7 +23,6 @@ func CheckHost(next http.Handler) http.Handler{
 		}
 		host, _, _ := net.SplitHostPort(parsed.Host)
 
-		log.Println("Hh " + r.Host, "ph " + parsed.Host, "h " + host)
 		if !strings.EqualFold(r.Host, "") {
 			if (strings.EqualFold(r.Host, host) || strings.EqualFold(r.Host, parsed.Host)) {
 				next.ServeHTTP(w, r)
