@@ -803,33 +803,34 @@ func userToJson(user *structure.User) *JsonUser {
 
 func InitializeAdmin(router *httptreemux.TreeMux) {
 	// For admin panel
-	router.GET("/admin/", adminHandler)
-	router.GET("/admin/login/", getLoginHandler)
-	router.POST("/admin/login/", postLoginHandler)
-	router.GET("/admin/register/", getRegistrationHandler)
-	router.POST("/admin/register/", postRegistrationHandler)
-	router.GET("/admin/logout/", logoutHandler)
-	router.GET("/admin/*filepath", adminFileHandler)
+	router.GET("/admin/", checkHost(adminHandler))
+	router.GET("/admin/login/", checkHost(getLoginHandler))
+	router.POST("/admin/login/", checkHost(postLoginHandler))
+	router.GET("/admin/register/", checkHost(getRegistrationHandler))
+	router.POST("/admin/register/", checkHost(postRegistrationHandler))
+	router.GET("/admin/logout/", checkHost(logoutHandler))
+	router.GET("/admin/*filepath", checkHost(adminFileHandler))
 
 	// For admin API (no trailing slash)
 	// Posts
-	router.GET("/admin/api/posts/:number", apiPostsHandler)
+	router.GET("/admin/api/posts/:number", checkHost(apiPostsHandler))
 	// Post
-	router.GET("/admin/api/post/:id", getApiPostHandler)
-	router.POST("/admin/api/post", postApiPostHandler)
-	router.PATCH("/admin/api/post", patchApiPostHandler)
-	router.DELETE("/admin/api/post/:id", deleteApiPostHandler)
+	router.GET("/admin/api/post/:id", checkHost(getApiPostHandler))
+	router.POST("/admin/api/post", checkHost(postApiPostHandler))
+	router.PATCH("/admin/api/post", checkHost(patchApiPostHandler))
+	router.DELETE("/admin/api/post/:id", checkHost(deleteApiPostHandler))
 	// Upload
-	router.POST("/admin/api/upload", apiUploadHandler)
+	router.POST("/admin/api/upload", checkHost(apiUploadHandler))
 	// Images
-	router.GET("/admin/api/images/:number", apiImagesHandler)
-	router.DELETE("/admin/api/image", deleteApiImageHandler)
+	router.GET("/admin/api/images/:number", checkHost(apiImagesHandler))
+	router.DELETE("/admin/api/image", checkHost(deleteApiImageHandler))
 	// Blog
-	router.GET("/admin/api/blog", getApiBlogHandler)
-	router.PATCH("/admin/api/blog", patchApiBlogHandler)
+	router.GET("/admin/api/blog", checkHost(getApiBlogHandler))
+	router.PATCH("/admin/api/blog", checkHost(patchApiBlogHandler))
 	// User
-	router.GET("/admin/api/user/:id", getApiUserHandler)
-	router.PATCH("/admin/api/user", patchApiUserHandler)
+	router.GET("/admin/api/user/:id", checkHost(getApiUserHandler))
+	router.PATCH("/admin/api/user", checkHost(patchApiUserHandler))
 	// User id
-	router.GET("/admin/api/userid", getApiUserIdHandler)
+	router.GET("/admin/api/userid", checkHost(getApiUserIdHandler))
+
 }

@@ -148,20 +148,20 @@ func publicHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 
 func InitializeBlog(router *httptreemux.TreeMux) {
 	// For index
-	router.GET("/", indexHandler)
-	router.GET("/:slug/", postHandler)
-	router.GET("/page/:number/", indexHandler)
+	router.GET("/", checkHost(indexHandler))
+	router.GET("/:slug/", checkHost(postHandler))
+	router.GET("/page/:number/", checkHost(indexHandler))
 	// For author
-	router.GET("/author/:slug/", authorHandler)
-	router.GET("/author/:slug/:function/", authorHandler)
-	router.GET("/author/:slug/:function/:number/", authorHandler)
+	router.GET("/author/:slug/", checkHost(authorHandler))
+	router.GET("/author/:slug/:function/", checkHost(authorHandler))
+	router.GET("/author/:slug/:function/:number/", checkHost(authorHandler))
 	// For tag
-	router.GET("/tag/:slug/", tagHandler)
-	router.GET("/tag/:slug/:function/", tagHandler)
-	router.GET("/tag/:slug/:function/:number/", tagHandler)
+	router.GET("/tag/:slug/", checkHost(tagHandler))
+	router.GET("/tag/:slug/:function/", checkHost(tagHandler))
+	router.GET("/tag/:slug/:function/:number/", checkHost(tagHandler))
 	// For serving asset files
-	router.GET("/assets/*filepath", assetsHandler)
-	router.GET("/images/*filepath", imagesHandler)
-	router.GET("/content/images/*filepath", imagesHandler) // This is here to keep compatibility with Ghost
-	router.GET("/public/*filepath", publicHandler)
+	router.GET("/assets/*filepath", checkHost(assetsHandler))
+	router.GET("/images/*filepath", checkHost(imagesHandler))
+	router.GET("/content/images/*filepath", checkHost(imagesHandler)) // This is here to keep compatibility with Ghost
+	router.GET("/public/*filepath", checkHost(publicHandler))
 }

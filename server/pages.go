@@ -22,5 +22,5 @@ func pagesHandler(w http.ResponseWriter, r *http.Request, params map[string]stri
 
 func InitializePages(router *httptreemux.TreeMux) {
 	// For serving standalone projects or pages saved in in content/pages
-	router.GET("/pages/*filepath", pagesHandler)
+	router.GET("/pages/*filepath", checkHost(pagesHandler))
 }
