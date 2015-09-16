@@ -11,11 +11,13 @@ import (
 	"github.com/rmrio/journey/server"
 	"github.com/kabukky/journey/structure/methods"
 	"github.com/kabukky/journey/templates"
+	"github.com/justinas/alice"
 	"log"
 	"net/http"
 	"os"
 	"runtime"
 	"strings"
+	"journey/server"
 )
 
 func httpsRedirect(w http.ResponseWriter, r *http.Request, _ map[string]string) {
@@ -164,7 +166,8 @@ func main() {
 		// Start http server
 		log.Println("Starting server without HTTPS support. Please enable HTTPS in " + filenames.ConfigFilename + " to improve security.")
 		log.Println("Starting http server on port " + httpPort + "...")
-		err := http.ListenAndServe(httpPort, httpRouter)
+		chain := alice.New(server.CheckHost).Then(httpRouter)
+		err := http.ListenAndServe(httpPort, chain)
 		if err != nil {
 			log.Fatal("Error: Couldn't start the HTTP server:", err)
 		}

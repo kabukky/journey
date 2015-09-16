@@ -13,7 +13,7 @@ import (
 // The good practice is to serve requests with correct 'Host' header and return 400 otherwise.
 // See rfc2616 for details.
 
-func checkHost(next http.Handler) http.Handler{
+func CheckHost(next http.Handler) http.Handler{
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
