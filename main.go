@@ -118,14 +118,16 @@ func main() {
 		// Start https server
 		log.Println("Starting https server on port " + httpsPort + "...")
 		go func() {
-			err := http.ListenAndServeTLS(httpsPort, filenames.HttpsCertFilename, filenames.HttpsKeyFilename, httpsRouter)
+			chain := alice.New(server.CheckHost).Then(httpsRouter)
+			err := http.ListenAndServeTLS(httpsPort, filenames.HttpsCertFilename, filenames.HttpsKeyFilename, chain)
 			if err != nil {
 				log.Fatal("Error: Couldn't start the HTTPS server:", err)
 			}
 		}()
 		// Start http server
 		log.Println("Starting http server on port " + httpPort + "...")
-		err := http.ListenAndServe(httpPort, httpRouter)
+		chain := alice.New(server.CheckHost).Then(httpRouter)
+		err := http.ListenAndServe(httpPort, chain)
 		if err != nil {
 			log.Fatal("Error: Couldn't start the HTTP server:", err)
 		}
@@ -144,14 +146,16 @@ func main() {
 		// Start https server
 		log.Println("Starting https server on port " + httpsPort + "...")
 		go func() {
-			err := http.ListenAndServeTLS(httpsPort, filenames.HttpsCertFilename, filenames.HttpsKeyFilename, httpsRouter)
+			chain := alice.New(server.CheckHost).Then(httpsRouter)
+			err := http.ListenAndServeTLS(httpsPort, filenames.HttpsCertFilename, filenames.HttpsKeyFilename, chain)
 			if err != nil {
 				log.Fatal("Error: Couldn't start the HTTPS server:", err)
 			}
 		}()
 		// Start http server
 		log.Println("Starting http server on port " + httpPort + "...")
-		err := http.ListenAndServe(httpPort, httpRouter)
+		chain := alice.New(server.CheckHost).Then(httpRouter)
+		err := http.ListenAndServe(httpPort, chain)
 		if err != nil {
 			log.Fatal("Error: Couldn't start the HTTP server:", err)
 		}
