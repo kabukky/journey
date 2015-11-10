@@ -21,7 +21,7 @@ func UpdateBlog(b *structure.Blog, userId int64) error {
 	if err != nil {
 		return err
 	}
-	err = database.UpdateSettings(b.Title, b.Description, b.Logo, b.Cover, b.PostsPerPage, b.ActiveTheme, navigation, time.Now(), userId)
+	err = database.UpdateSettings(b.Title, b.Description, b.Logo, b.Cover, b.PostsPerPage, b.ActiveTheme, navigation, time.Now().UTC(), userId)
 	if err != nil {
 		return err
 	}
@@ -34,7 +34,7 @@ func UpdateBlog(b *structure.Blog, userId int64) error {
 }
 
 func UpdateActiveTheme(activeTheme string, userId int64) error {
-	err := database.UpdateActiveTheme(activeTheme, time.Now(), userId)
+	err := database.UpdateActiveTheme(activeTheme, time.Now().UTC(), userId)
 	if err != nil {
 		return err
 	}

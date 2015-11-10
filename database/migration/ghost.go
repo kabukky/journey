@@ -315,7 +315,7 @@ func setDefaultTheme(readDB *sql.DB) error {
 		return err
 	}
 	// Update the database with the default theme (promenade)
-	date := time.Now()
+	date := time.Now().UTC()
 	_, err = writeDB.Exec(stmtUpdateGhostTheme, "promenade", date, 1)
 	if err != nil {
 		writeDB.Rollback()
