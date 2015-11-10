@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"github.com/kabukky/journey/configuration"
 	"github.com/kabukky/journey/database"
+	"github.com/kabukky/journey/date"
 	"github.com/kabukky/journey/slug"
 	"github.com/kabukky/journey/structure"
 	"log"
-	"time"
 )
 
 // Global blog - thread safe and accessible by all requests
@@ -21,7 +21,7 @@ func UpdateBlog(b *structure.Blog, userId int64) error {
 	if err != nil {
 		return err
 	}
-	err = database.UpdateSettings(b.Title, b.Description, b.Logo, b.Cover, b.PostsPerPage, b.ActiveTheme, navigation, time.Now().UTC(), userId)
+	err = database.UpdateSettings(b.Title, b.Description, b.Logo, b.Cover, b.PostsPerPage, b.ActiveTheme, navigation, date.GetCurrentTime(), userId)
 	if err != nil {
 		return err
 	}
@@ -34,7 +34,7 @@ func UpdateBlog(b *structure.Blog, userId int64) error {
 }
 
 func UpdateActiveTheme(activeTheme string, userId int64) error {
-	err := database.UpdateActiveTheme(activeTheme, time.Now().UTC(), userId)
+	err := database.UpdateActiveTheme(activeTheme, date.GetCurrentTime(), userId)
 	if err != nil {
 		return err
 	}

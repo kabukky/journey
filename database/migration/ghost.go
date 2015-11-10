@@ -3,6 +3,7 @@ package migration
 import (
 	"database/sql"
 	"errors"
+	"github.com/kabukky/journey/date"
 	"github.com/kabukky/journey/filenames"
 	"github.com/kabukky/journey/helpers"
 	"log"
@@ -158,16 +159,16 @@ func convertPosts(readDB *sql.DB) error {
 		}
 		// Convert dates
 		if createdAt.Valid {
-			date := time.Unix(createdAt.Int64, 0)
-			row.createdAt = &date
+			unixDate := time.Unix(createdAt.Int64, 0)
+			row.createdAt = &unixDate
 		}
 		if updatedAt.Valid {
-			date := time.Unix(updatedAt.Int64, 0)
-			row.updatedAt = &date
+			unixDate := time.Unix(updatedAt.Int64, 0)
+			row.updatedAt = &unixDate
 		}
 		if publishedAt.Valid {
-			date := time.Unix(publishedAt.Int64, 0)
-			row.publishedAt = &date
+			unixDate := time.Unix(publishedAt.Int64, 0)
+			row.publishedAt = &unixDate
 		}
 		allRows = append(allRows, row)
 	}
@@ -222,16 +223,16 @@ func convertUsers(readDB *sql.DB) error {
 		}
 		// Convert dates
 		if lastLogin.Valid {
-			date := time.Unix(lastLogin.Int64, 0)
-			row.lastLogin = &date
+			unixDate := time.Unix(lastLogin.Int64, 0)
+			row.lastLogin = &unixDate
 		}
 		if createdAt.Valid {
-			date := time.Unix(createdAt.Int64, 0)
-			row.createdAt = &date
+			unixDate := time.Unix(createdAt.Int64, 0)
+			row.createdAt = &unixDate
 		}
 		if updatedAt.Valid {
-			date := time.Unix(updatedAt.Int64, 0)
-			row.updatedAt = &date
+			unixDate := time.Unix(updatedAt.Int64, 0)
+			row.updatedAt = &unixDate
 		}
 		allRows = append(allRows, row)
 	}
@@ -276,12 +277,12 @@ func convertDates(readDB *sql.DB, stmtRetrieve string, stmtUpdate string) error 
 		}
 		// Convert dates
 		if createdAt.Valid {
-			date := time.Unix(createdAt.Int64, 0)
-			row.createdAt = &date
+			unixDate := time.Unix(createdAt.Int64, 0)
+			row.createdAt = &unixDate
 		}
 		if updatedAt.Valid {
-			date := time.Unix(updatedAt.Int64, 0)
-			row.updatedAt = &date
+			unixDate := time.Unix(updatedAt.Int64, 0)
+			row.updatedAt = &unixDate
 		}
 		allRows = append(allRows, row)
 	}
@@ -315,8 +316,8 @@ func setDefaultTheme(readDB *sql.DB) error {
 		return err
 	}
 	// Update the database with the default theme (promenade)
-	date := time.Now().UTC()
-	_, err = writeDB.Exec(stmtUpdateGhostTheme, "promenade", date, 1)
+	currentDate := date.GetCurrentTime()
+	_, err = writeDB.Exec(stmtUpdateGhostTheme, "promenade", currentDate, 1)
 	if err != nil {
 		writeDB.Rollback()
 		return err

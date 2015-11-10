@@ -2,9 +2,9 @@ package methods
 
 import (
 	"github.com/kabukky/journey/database"
+	"github.com/kabukky/journey/date"
 	"github.com/kabukky/journey/structure"
 	"log"
-	"time"
 )
 
 func SavePost(p *structure.Post) error {
@@ -15,7 +15,7 @@ func SavePost(p *structure.Post) error {
 		tagId, err := database.RetrieveTagIdBySlug(tag.Slug)
 		if err != nil {
 			// Tag is probably not in database yet
-			tagId, err = database.InsertTag(tag.Name, tag.Slug, time.Now().UTC(), p.Author.Id)
+			tagId, err = database.InsertTag(tag.Name, tag.Slug, date.GetCurrentTime(), p.Author.Id)
 			if err != nil {
 				return err
 			}
@@ -52,7 +52,7 @@ func UpdatePost(p *structure.Post) error {
 		tagId, err := database.RetrieveTagIdBySlug(tag.Slug)
 		if err != nil {
 			// Tag is probably not in database yet
-			tagId, err = database.InsertTag(tag.Name, tag.Slug, time.Now().UTC(), p.Author.Id)
+			tagId, err = database.InsertTag(tag.Name, tag.Slug, date.GetCurrentTime(), p.Author.Id)
 			if err != nil {
 				return err
 			}

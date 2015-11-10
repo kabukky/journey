@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"github.com/kabukky/journey/conversion"
 	"github.com/kabukky/journey/database"
+	"github.com/kabukky/journey/date"
 	"github.com/kabukky/journey/plugins"
 	"github.com/kabukky/journey/structure"
 	"github.com/kabukky/journey/structure/methods"
@@ -12,7 +13,6 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
-	"time"
 )
 
 // Helper fuctions
@@ -669,7 +669,7 @@ func dateFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 			} else if key == "timeago" {
 				if value == "true" {
 					// Compute time ago
-					return evaluateEscape(generateTimeAgo(values.Posts[values.CurrentPostIndex].Date), helper.Unescaped)
+					return evaluateEscape(date.GenerateTimeAgo(values.Posts[values.CurrentPostIndex].Date), helper.Unescaped)
 				}
 			} else if key == "format" {
 				timeFormat = value
@@ -677,10 +677,10 @@ func dateFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 		}
 	}
 	if showPublicationDate {
-		return evaluateEscape(formatDate(timeFormat, values.Posts[values.CurrentPostIndex].Date), helper.Unescaped)
+		return evaluateEscape(date.FormatDate(timeFormat, values.Posts[values.CurrentPostIndex].Date), helper.Unescaped)
 	}
-	date := time.Now().UTC()
-	return evaluateEscape(formatDate(timeFormat, &date), helper.Unescaped)
+	currentDate := date.GetCurrentTime()
+	return evaluateEscape(date.FormatDate(timeFormat, &currentDate), helper.Unescaped)
 }
 
 func atFirstFunc(helper *structure.Helper, values *structure.RequestData) []byte {

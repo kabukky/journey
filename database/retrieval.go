@@ -202,14 +202,14 @@ func RetrieveNumberOfPostsByTag(tag_id int64) (int64, error) {
 }
 
 func retrievePostCreationDateById(post_id int64) (*time.Time, error) {
-	var date time.Time
+	var creationDate time.Time
 	// Retrieve number of posts
 	row := readDB.QueryRow(stmtRetrievePostCreationDateById, post_id)
-	err := row.Scan(&date)
+	err := row.Scan(&creationDate)
 	if err != nil {
-		return &date, err
+		return &creationDate, err
 	}
-	return &date, nil
+	return &creationDate, nil
 }
 
 func RetrieveUser(id int64) (*structure.User, error) {

@@ -117,13 +117,13 @@ func UpdateUser(id int64, name []byte, slug string, email []byte, image []byte, 
 	return writeDB.Commit()
 }
 
-func UpdateLastLogin(date time.Time, userId int64) error {
+func UpdateLastLogin(logInDate time.Time, userId int64) error {
 	writeDB, err := readDB.Begin()
 	if err != nil {
 		writeDB.Rollback()
 		return err
 	}
-	_, err = writeDB.Exec(stmtUpdateLastLogin, date, userId)
+	_, err = writeDB.Exec(stmtUpdateLastLogin, logInDate, userId)
 	if err != nil {
 		writeDB.Rollback()
 		return err

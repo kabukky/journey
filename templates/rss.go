@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"github.com/kabukky/feeds"
 	"github.com/kabukky/journey/database"
+	"github.com/kabukky/journey/date"
 	"github.com/kabukky/journey/structure"
 	"github.com/kabukky/journey/structure/methods"
 	"net/http"
-	"time"
 )
 
 func ShowIndexRss(writer http.ResponseWriter) error {
@@ -64,7 +64,7 @@ func ShowAuthorRss(writer http.ResponseWriter, slug string) error {
 }
 
 func createFeed(values *structure.RequestData) *feeds.Feed {
-	now := time.Now().UTC()
+	now := date.GetCurrentTime()
 	feed := &feeds.Feed{
 		Title:       string(values.Blog.Title),
 		Description: string(values.Blog.Description),

@@ -1,4 +1,4 @@
-package templates
+package date
 
 import (
 	"bytes"
@@ -10,8 +10,12 @@ import (
 
 var marchMayChecker = regexp.MustCompile("M([^a]|$)")
 
-func generateTimeAgo(date *time.Time) []byte {
-	timeAgo := time.Now().UTC().Sub(*date)
+func GetCurrentTime() time.Time {
+	return time.Now().UTC()
+}
+
+func GenerateTimeAgo(date *time.Time) []byte {
+	timeAgo := GetCurrentTime().Sub(*date)
 	if timeAgo.Minutes() < 1 {
 		return []byte("a few seconds ago")
 	}
@@ -69,7 +73,7 @@ func generateTimeAgo(date *time.Time) []byte {
 	return buffer.Bytes()
 }
 
-func formatDate(format string, date *time.Time) []byte {
+func FormatDate(format string, date *time.Time) []byte {
 
 	// Do these first (so they don't accidentally replace something the others insert)
 	if strings.Contains(format, "h") {
