@@ -679,7 +679,7 @@ func dateFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	if showPublicationDate {
 		return evaluateEscape(formatDate(timeFormat, values.Posts[values.CurrentPostIndex].Date), helper.Unescaped)
 	}
-	date := time.Now()
+	date := time.Now().UTC()
 	return evaluateEscape(formatDate(timeFormat, &date), helper.Unescaped)
 }
 

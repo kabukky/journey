@@ -257,7 +257,7 @@ func postApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]str
 		} else {
 			postSlug = slug.Generate(json.Title, "posts")
 		}
-		currentTime := time.Now()
+		currentTime := time.Now().UTC()
 		post := structure.Post{Title: []byte(json.Title), Slug: postSlug, Markdown: []byte(json.Markdown), Html: conversion.GenerateHtmlFromMarkdown([]byte(json.Markdown)), IsFeatured: json.IsFeatured, IsPage: json.IsPage, IsPublished: json.IsPublished, MetaDescription: []byte(json.MetaDescription), Image: []byte(json.Image), Date: &currentTime, Tags: methods.GenerateTagsFromCommaString(json.Tags), Author: &structure.User{Id: userId}}
 		err = methods.SavePost(&post)
 		if err != nil {
@@ -302,7 +302,7 @@ func patchApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 		} else {
 			postSlug = post.Slug
 		}
-		currentTime := time.Now()
+		currentTime := time.Now().UTC()
 		*post = structure.Post{Id: json.Id, Title: []byte(json.Title), Slug: postSlug, Markdown: []byte(json.Markdown), Html: conversion.GenerateHtmlFromMarkdown([]byte(json.Markdown)), IsFeatured: json.IsFeatured, IsPage: json.IsPage, IsPublished: json.IsPublished, MetaDescription: []byte(json.MetaDescription), Image: []byte(json.Image), Date: &currentTime, Tags: methods.GenerateTagsFromCommaString(json.Tags), Author: &structure.User{Id: userId}}
 		err = methods.UpdatePost(post)
 		if err != nil {
@@ -366,12 +366,12 @@ func apiUploadHandler(w http.ResponseWriter, r *http.Request, _ map[string]strin
 				continue
 			}
 			// Folder structure: year/month/randomname
-			filePath := filepath.Join(filenames.ImagesFilepath, time.Now().Format("2006"), time.Now().Format("01"))
+			filePath := filepath.Join(filenames.ImagesFilepath, time.Now().UTC().Format("2006"), time.Now().Format("01"))
 			if os.MkdirAll(filePath, 0777) != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			dst, err := os.Create(filepath.Join(filePath, strconv.FormatInt(time.Now().Unix(), 10)+"_"+uuid.Formatter(uuid.NewV4(), uuid.Clean)+filepath.Ext(part.FileName())))
+			dst, err := os.Create(filepath.Join(filePath, strconv.FormatInt(time.Now().UTC().Unix(), 10)+"_"+uuid.Formatter(uuid.NewV4(), uuid.Clean)+filepath.Ext(part.FileName())))
 			defer dst.Close()
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -683,7 +683,7 @@ func patchApiUserHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			err = database.UpdateUserPassword(user.Id, encryptedPassword, time.Now(), json.Id)
+			err = database.UpdateUserPassword(user.Id, encryptedPassword, time.Now().UTC(), json.Id)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -740,7 +740,7 @@ func logInUser(name string, w http.ResponseWriter) {
 	if err != nil {
 		log.Println("Couldn't get id of logged in user:", err)
 	}
-	err = database.UpdateLastLogin(time.Now(), userId)
+	err = database.UpdateLastLogin(time.Now().UTC(), userId)
 	if err != nil {
 		log.Println("Couldn't update last login date of a user:", err)
 	}

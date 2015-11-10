@@ -64,7 +64,7 @@ func ShowAuthorRss(writer http.ResponseWriter, slug string) error {
 }
 
 func createFeed(values *structure.RequestData) *feeds.Feed {
-	now := time.Now()
+	now := time.Now().UTC()
 	feed := &feeds.Feed{
 		Title:       string(values.Blog.Title),
 		Description: string(values.Blog.Description),

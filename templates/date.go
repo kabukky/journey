@@ -11,7 +11,7 @@ import (
 var marchMayChecker = regexp.MustCompile("M([^a]|$)")
 
 func generateTimeAgo(date *time.Time) []byte {
-	timeAgo := time.Now().Sub(*date)
+	timeAgo := time.Now().UTC().Sub(*date)
 	if timeAgo.Minutes() < 1 {
 		return []byte("a few seconds ago")
 	}
