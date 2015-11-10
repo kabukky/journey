@@ -69,7 +69,7 @@ func createFeed(values *structure.RequestData) *feeds.Feed {
 		Title:       string(values.Blog.Title),
 		Description: string(values.Blog.Description),
 		Link:        &feeds.Link{Href: string(values.Blog.Url)},
-		Created:     now,
+		Updated:     now,
 		Image: &feeds.Image{
 			Url:   string(values.Blog.Url) + string(values.Blog.Logo),
 			Title: string(values.Blog.Title),
