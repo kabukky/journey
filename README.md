@@ -54,3 +54,6 @@ If your issue isn't discussed there, please create a [New Issue](https://github.
 
 ## Building from source
 Please refer to the [Building Journey from source](https://github.com/kabukky/journey/wiki/Building-Journey-from-source) Wiki page for instructions on how to build Journey from source.
+
+## Contributing to Journey
+Pull requests are very much welcome. But please create them on the development branch. The master branch will only be updated for a new release.

@@ -75,6 +75,7 @@ func createFeed(values *structure.RequestData) *feeds.Feed {
 			Title: string(values.Blog.Title),
 			Link:  string(values.Blog.Url),
 		},
+		Url: string(values.Blog.Url) + "/rss/",
 	}
 	for i := 0; i < len(values.Posts); i++ {
 		if values.Posts[i].Id != 0 {
@@ -95,8 +96,7 @@ func createFeed(values *structure.RequestData) *feeds.Feed {
 			image := string(values.Posts[i].Image)
 			if image != "" {
 				item.Image = &feeds.Image{
-					Url:   string(values.Blog.Url) + image,
-					Title: string(values.Posts[i].Title),
+					Url: string(values.Blog.Url) + image,
 				}
 			}
 			feed.Items = append(feed.Items, item)
