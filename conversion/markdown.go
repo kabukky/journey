@@ -11,6 +11,7 @@ const (
 		// We don't want blackfriday.HTML_USE_XHTML
 		blackfriday.HTML_USE_SMARTYPANTS |
 		blackfriday.HTML_SMARTYPANTS_FRACTIONS |
+		blackfriday.HTML_SMARTYPANTS_DASHES |
 		blackfriday.HTML_SMARTYPANTS_LATEX_DASHES |
 		blackfriday.HTML_FOOTNOTE_RETURN_LINKS
 
