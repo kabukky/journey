@@ -30,7 +30,7 @@
 				<p>{{post.Markdown | limitTo: 400}}{{post.Markdown.length > 400 ? '...' : ''}}</p>
 				</td>
 				<td class="post-remove-cell">
-					<a class="text-primary" ng-href="/{{post.IsPublished ? post.Slug : 'p/' + post.Uuid}}/"><h5><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> View</h5></a><br>
+					<a class="text-primary" ng-href="/{{post.IsPublished ? post.Slug : 'p/' + post.Uuid}}/"><h5><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> View</h5></a>
 					<a class="text-danger" ng-click="deletePost(post.Id, post.Title)"><h5><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete</h5></a>
 				</td>
 			</tr>

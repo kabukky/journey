@@ -107,6 +107,15 @@ func tagHandler(w http.ResponseWriter, r *http.Request, params map[string]string
 
 func postHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
 	slug := params["slug"]
+	if slug == "rss" {
+		// Render index rss feed
+		err := templates.ShowIndexRss(w)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		return
+	}
 	uuid := params["uuid"]
 	uuidAsSlug := false
 	if uuid != "" {
@@ -116,15 +125,7 @@ func postHandler(w http.ResponseWriter, r *http.Request, params map[string]strin
 	if slug == "" {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
-	} else if slug == "rss" {
-		// Render index rss feed
-		err := templates.ShowIndexRss(w)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		return
-	}
+	} 
 	// Render post template
 	err := templates.ShowPostTemplate(w, r, slug, uuidAsSlug)
 	if err != nil {

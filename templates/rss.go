@@ -68,12 +68,12 @@ func createFeed(values *structure.RequestData) *feeds.Feed {
 	feed := &feeds.Feed{
 		Title:       string(values.Blog.Title),
 		Description: string(values.Blog.Description),
-		Link:        &feeds.Link{Href: string(values.Blog.Url)},
+		Link:        &feeds.Link{Href: string(values.Blog.Url) + "/"},
 		Updated:     now,
 		Image: &feeds.Image{
 			Url:   string(values.Blog.Url) + string(values.Blog.Logo),
 			Title: string(values.Blog.Title),
-			Link:  string(values.Blog.Url),
+			Link:  string(values.Blog.Url) + "/",
 		},
 		Url: string(values.Blog.Url) + "/rss/",
 	}
@@ -84,6 +84,7 @@ func createFeed(values *structure.RequestData) *feeds.Feed {
 			buffer.Write(values.Blog.Url)
 			buffer.WriteString("/")
 			buffer.WriteString(values.Posts[i].Slug)
+			buffer.WriteString("/")
 			item := &feeds.Item{
 				Title:       string(values.Posts[i].Title),
 				Description: string(values.Posts[i].Html),
