@@ -24,22 +24,28 @@ func newTemplates() *Templates { return &Templates{m: make(map[string]*structure
 // Global compiled templates - thread safe and accessible by all requests
 var compiledTemplates = newTemplates()
 
-func ShowPostTemplate(writer http.ResponseWriter, r *http.Request, slug string) error {
+func ShowPostTemplate(writer http.ResponseWriter, r *http.Request, slug string, uuidAsSlug bool) error {
 	// Read lock templates and global blog
 	compiledTemplates.RLock()
 	defer compiledTemplates.RUnlock()
 	methods.Blog.RLock()
 	defer methods.Blog.RUnlock()
-	post, err := database.RetrievePostBySlug(slug)
+	var err error
+	var post *structure.Post
+	if uuidAsSlug {
+		post, err = database.RetrievePostByUuid(slug)
+	} else {
+		post, err = database.RetrievePostBySlug(slug)
+	}
 	if err != nil {
 		return err
-	} else if !post.IsPublished { // Make sure the post is published before rendering it
+	} else if uuidAsSlug == post.IsPublished { // Before rendering the post, make sure it is (1) accessed with uuid and not published; or (2) accessed with slug and published
 		return errors.New("Post not published.")
 	}
 	requestData := structure.RequestData{Posts: make([]structure.Post, 1), Blog: methods.Blog, CurrentTemplate: 1, CurrentPath: r.URL.Path} // CurrentTemplate = post
 	requestData.Posts[0] = *post
 	// Check if there's a custom page template available for this slug
-	if template, ok := compiledTemplates.m["page-"+slug]; ok {
+	if template, ok := compiledTemplates.m["page-"+post.Slug]; ok {
 		_, err = writer.Write(executeHelper(template, &requestData, 1)) // context = post
 		return err
 	}

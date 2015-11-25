@@ -107,6 +107,12 @@ func tagHandler(w http.ResponseWriter, r *http.Request, params map[string]string
 
 func postHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
 	slug := params["slug"]
+	uuid := params["uuid"]
+	uuidAsSlug := false
+	if uuid != "" {
+		slug = uuid
+		uuidAsSlug = true
+	}
 	if slug == "" {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
@@ -120,7 +126,7 @@ func postHandler(w http.ResponseWriter, r *http.Request, params map[string]strin
 		return
 	}
 	// Render post template
-	err := templates.ShowPostTemplate(w, r, slug)
+	err := templates.ShowPostTemplate(w, r, slug, uuidAsSlug)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -150,6 +156,7 @@ func InitializeBlog(router *httptreemux.TreeMux) {
 	// For index
 	router.GET("/", indexHandler)
 	router.GET("/:slug/", postHandler)
+	router.GET("/p/:uuid/", postHandler)
 	router.GET("/page/:number/", indexHandler)
 	// For author
 	router.GET("/author/:slug/", authorHandler)

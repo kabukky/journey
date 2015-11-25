@@ -25,6 +25,7 @@ import (
 )
 
 type JsonPost struct {
+	Uuid            string
 	Id              int64
 	Title           string
 	Slug            string
@@ -758,6 +759,7 @@ func postsToJson(posts []structure.Post) *[]JsonPost {
 
 func postToJson(post *structure.Post) *JsonPost {
 	var jsonPost JsonPost
+	jsonPost.Uuid = string(post.Uuid)
 	jsonPost.Id = post.Id
 	jsonPost.Title = string(post.Title)
 	jsonPost.Slug = post.Slug

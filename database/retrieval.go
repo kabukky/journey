@@ -14,6 +14,7 @@ const stmtRetrievePostsForIndex = "SELECT id, uuid, title, slug, markdown, html,
 const stmtRetrievePostsForApi = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, meta_description, image, author_id, published_at FROM posts ORDER BY id DESC LIMIT ? OFFSET ?"
 const stmtRetrievePostsByUser = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, meta_description, image, author_id, published_at FROM posts WHERE page = 0 AND status = 'published' AND author_id = ? ORDER BY published_at DESC LIMIT ? OFFSET ?"
 const stmtRetrievePostsByTag = "SELECT posts.id, posts.uuid, posts.title, posts.slug, posts.markdown, posts.html, posts.featured, posts.page, posts.status, posts.meta_description, posts.image, posts.author_id, posts.published_at FROM posts, posts_tags WHERE posts_tags.post_id = posts.id AND posts_tags.tag_id = ? AND page = 0 AND status = 'published' ORDER BY posts.published_at DESC LIMIT ? OFFSET ?"
+const stmtRetrievePostByUuid = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, meta_description, image, author_id, published_at FROM posts WHERE uuid = ?"
 const stmtRetrievePostById = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, meta_description, image, author_id, published_at FROM posts WHERE id = ?"
 const stmtRetrievePostBySlug = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, meta_description, image, author_id, published_at FROM posts WHERE slug = ?"
 const stmtRetrieveUserById = "SELECT id, name, slug, email, image, cover, bio, website, location FROM users WHERE id = ?"
@@ -27,6 +28,12 @@ const stmtRetrieveHashedPasswordByName = "SELECT password FROM users WHERE name 
 const stmtRetrieveUsersCount = "SELECT count(*) FROM users"
 const stmtRetrieveBlog = "SELECT value FROM settings WHERE key = ?"
 const stmtRetrievePostCreationDateById = "SELECT created_at FROM posts WHERE id = ?"
+
+func RetrievePostByUuid(uuid string) (*structure.Post, error) {
+	// Retrieve post
+	row := readDB.QueryRow(stmtRetrievePostByUuid, uuid)
+	return extractPost(row)
+}
 
 func RetrievePostById(id int64) (*structure.Post, error) {
 	// Retrieve post
