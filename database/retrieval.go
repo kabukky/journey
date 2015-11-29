@@ -10,13 +10,15 @@ import (
 const stmtRetrievePostsCount = "SELECT count(*) FROM posts WHERE page = 0 AND status = 'published'"
 const stmtRetrievePostsCountByUser = "SELECT count(*) FROM posts WHERE page = 0 AND status = 'published' AND author_id = ?"
 const stmtRetrievePostsCountByTag = "SELECT count(*) FROM posts, posts_tags WHERE posts_tags.post_id = posts.id AND posts_tags.tag_id = ? AND page = 0 AND status = 'published'"
-const stmtRetrievePostsForIndex = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, meta_description, image, author_id, published_at FROM posts WHERE page = 0 AND status = 'published' ORDER BY published_at DESC LIMIT ? OFFSET ?"
+const stmtRetrievePostsForIndex = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, meta_description, image, author_id, published_at FROM posts WHERE page = 0 AND status = 'published' ORDER BY published_at DESC, id DESC LIMIT ? OFFSET ?"
 const stmtRetrievePostsForApi = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, meta_description, image, author_id, published_at FROM posts ORDER BY id DESC LIMIT ? OFFSET ?"
-const stmtRetrievePostsByUser = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, meta_description, image, author_id, published_at FROM posts WHERE page = 0 AND status = 'published' AND author_id = ? ORDER BY published_at DESC LIMIT ? OFFSET ?"
+const stmtRetrievePostsByUser = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, meta_description, image, author_id, published_at FROM posts WHERE page = 0 AND status = 'published' AND author_id = ? ORDER BY published_at DESC, id DESC LIMIT ? OFFSET ?"
 const stmtRetrievePostsByTag = "SELECT posts.id, posts.uuid, posts.title, posts.slug, posts.markdown, posts.html, posts.featured, posts.page, posts.status, posts.meta_description, posts.image, posts.author_id, posts.published_at FROM posts, posts_tags WHERE posts_tags.post_id = posts.id AND posts_tags.tag_id = ? AND page = 0 AND status = 'published' ORDER BY posts.published_at DESC LIMIT ? OFFSET ?"
 const stmtRetrievePostByUuid = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, meta_description, image, author_id, published_at FROM posts WHERE uuid = ?"
 const stmtRetrievePostById = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, meta_description, image, author_id, published_at FROM posts WHERE id = ?"
 const stmtRetrievePostBySlug = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, meta_description, image, author_id, published_at FROM posts WHERE slug = ?"
+const stmtRetrievePrevPostByPublicationDate = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, meta_description, image, author_id, published_at FROM posts WHERE published_at <= ? AND page = 0 AND status = 'published' AND id <> ? ORDER BY published_at DESC, id DESC LIMIT 1"
+const stmtRetrieveNextPostByPublicationDate = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, meta_description, image, author_id, published_at FROM posts WHERE published_at >= ? AND page = 0 AND status = 'published' AND id <> ? ORDER BY published_at ASC, id ASC LIMIT 1"
 const stmtRetrieveUserById = "SELECT id, name, slug, email, image, cover, bio, website, location FROM users WHERE id = ?"
 const stmtRetrieveUserBySlug = "SELECT id, name, slug, email, image, cover, bio, website, location FROM users WHERE slug = ?"
 const stmtRetrieveUserByName = "SELECT id, name, slug, email, image, cover, bio, website, location FROM users WHERE name = ?"
@@ -44,6 +46,18 @@ func RetrievePostById(id int64) (*structure.Post, error) {
 func RetrievePostBySlug(slug string) (*structure.Post, error) {
 	// Retrieve post
 	row := readDB.QueryRow(stmtRetrievePostBySlug, slug)
+	return extractPost(row)
+}
+
+func RetrievePrevPostByPublicationDate(time *time.Time, id int64) (*structure.Post, error) {
+	// Retrieve post
+	row := readDB.QueryRow(stmtRetrievePrevPostByPublicationDate, time, id)
+	return extractPost(row)
+}
+
+func RetrieveNextPostByPublicationDate(time *time.Time, id int64) (*structure.Post, error) {
+	// Retrieve post
+	row := readDB.QueryRow(stmtRetrieveNextPostByPublicationDate, time, id)
 	return extractPost(row)
 }
 

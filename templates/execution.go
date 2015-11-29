@@ -31,10 +31,10 @@ func ShowPostTemplate(writer http.ResponseWriter, r *http.Request, slug string, 
 	methods.Blog.RLock()
 	defer methods.Blog.RUnlock()
 	var err error
-	var post *structure.Post
-	if uuidAsSlug {
+	var post, prevPost, nextPost *structure.Post
+	if uuidAsSlug { // post preview
 		post, err = database.RetrievePostByUuid(slug)
-	} else {
+	} else { // published post
 		post, err = database.RetrievePostBySlug(slug)
 	}
 	if err != nil {
@@ -42,8 +42,19 @@ func ShowPostTemplate(writer http.ResponseWriter, r *http.Request, slug string, 
 	} else if uuidAsSlug == post.IsPublished { // Before rendering the post, make sure it is (1) accessed with uuid and not published; or (2) accessed with slug and published
 		return errors.New("Post not published.")
 	}
-	requestData := structure.RequestData{Posts: make([]structure.Post, 1), Blog: methods.Blog, CurrentTemplate: 1, CurrentPath: r.URL.Path} // CurrentTemplate = post
+	requestData := structure.RequestData{Posts: make([]structure.Post, 3), Blog: methods.Blog, CurrentTemplate: 1, CurrentPath: r.URL.Path} // CurrentTemplate = post
 	requestData.Posts[0] = *post
+	// If the post is published and not a page, retrieve the previous and the next published post
+	if post.IsPublished && !post.IsPage {
+		prevPost, err = database.RetrievePrevPostByPublicationDate(post.Date, post.Id)
+		if err == nil {
+			requestData.Posts[1] = *prevPost
+		}
+		nextPost, err = database.RetrieveNextPostByPublicationDate(post.Date, post.Id)
+		if err == nil {
+			requestData.Posts[2] = *nextPost
+		}
+	}
 	// Check if there's a custom page template available for this slug
 	if template, ok := compiledTemplates.m["page-"+post.Slug]; ok {
 		_, err = writer.Write(executeHelper(template, &requestData, 1)) // context = post

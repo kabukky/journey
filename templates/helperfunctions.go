@@ -46,6 +46,8 @@ var helperFuctions = map[string]func(*structure.Helper, *structure.RequestData) 
 	"featured":   featuredFunc,
 	"id":         idFunc,
 	"post.id":    idFunc,
+	"prev_post":  prevPostFunc,
+	"next_post":  nextPostFunc,
 
 	// Tag functions
 	"tag.name": tagDotNameFunc,

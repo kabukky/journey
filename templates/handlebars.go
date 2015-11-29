@@ -359,7 +359,25 @@ func ghost_headFunc(helper *structure.Helper, values *structure.RequestData) []b
 	buffer.WriteString("<link rel=\"canonical\" href=\"")
 	buffer.Write(evaluateEscape(values.Blog.Url, helper.Unescaped))
 	buffer.WriteString(values.CurrentPath)
-	buffer.WriteString("\">")
+	buffer.WriteString("\">\n")
+	if values.CurrentTemplate == 1 {
+		if values.Posts[1].Slug != "" {
+			buffer.WriteString("<link rel=\"prev\" href=\"")
+			buffer.Write(evaluateEscape(values.Blog.Url, helper.Unescaped))
+			buffer.WriteString("/") // Assuming "/:slug/" as the URI for posts
+			buffer.WriteString(values.Posts[1].Slug)
+			buffer.WriteString("/")
+			buffer.WriteString("\">\n")
+		}
+		if values.Posts[2].Slug != "" {
+			buffer.WriteString("<link rel=\"next\" href=\"")
+			buffer.Write(evaluateEscape(values.Blog.Url, helper.Unescaped))
+			buffer.WriteString("/") // Assuming "/:slug/" as the URI for posts
+			buffer.WriteString(values.Posts[2].Slug)
+			buffer.WriteString("/")
+			buffer.WriteString("\">\n")
+		}
+	}
 	// TODO: structured data
 	return buffer.Bytes()
 }
@@ -493,6 +511,23 @@ func locationFunc(helper *structure.Helper, values *structure.RequestData) []byt
 }
 
 func postFunc(helper *structure.Helper, values *structure.RequestData) []byte {
+	values.CurrentPostIndex = 0 // the current post
+	return executeHelper(helper, values, 1) // context = post
+}
+
+func prevPostFunc(helper *structure.Helper, values *structure.RequestData) []byte {
+	if values.Posts[1].Id == 0 {
+		return []byte{}
+	}
+	values.CurrentPostIndex = 1 // the previous post
+	return executeHelper(helper, values, 1) // context = post
+}
+
+func nextPostFunc(helper *structure.Helper, values *structure.RequestData) []byte {
+	if values.Posts[2].Id == 0 {
+		return []byte{}
+	}
+	values.CurrentPostIndex = 2 // the next post
 	return executeHelper(helper, values, 1) // context = post
 }
 
