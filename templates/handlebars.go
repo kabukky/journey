@@ -2,6 +2,7 @@ package templates
 
 import (
 	"bytes"
+	"encoding/json"
 	"github.com/kabukky/journey/conversion"
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/date"
@@ -354,31 +355,63 @@ func body_classFunc(helper *structure.Helper, values *structure.RequestData) []b
 
 func ghost_headFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	// SEO stuff:
+	currentUrl := string(evaluateEscape(values.Blog.Url, helper.Unescaped)) + values.CurrentPath
 	// Output canonical url
 	var buffer bytes.Buffer
 	buffer.WriteString("<link rel=\"canonical\" href=\"")
-	buffer.Write(evaluateEscape(values.Blog.Url, helper.Unescaped))
-	buffer.WriteString(values.CurrentPath)
+	buffer.WriteString(currentUrl)
 	buffer.WriteString("\">\n")
-	if values.CurrentTemplate == 1 {
-		if values.Posts[1].Slug != "" {
-			buffer.WriteString("<link rel=\"prev\" href=\"")
-			buffer.Write(evaluateEscape(values.Blog.Url, helper.Unescaped))
-			buffer.WriteString("/") // Assuming "/:slug/" as the URI for posts
-			buffer.WriteString(values.Posts[1].Slug)
-			buffer.WriteString("/")
-			buffer.WriteString("\">\n")
-		}
-		if values.Posts[2].Slug != "" {
-			buffer.WriteString("<link rel=\"next\" href=\"")
-			buffer.Write(evaluateEscape(values.Blog.Url, helper.Unescaped))
-			buffer.WriteString("/") // Assuming "/:slug/" as the URI for posts
-			buffer.WriteString(values.Posts[2].Slug)
-			buffer.WriteString("/")
-			buffer.WriteString("\">\n")
-		}
+	// Output structured data
+	// values.CurrentPostIndex = 0 // current
+	structuredData := map[string]string{
+		"og:site_name": string(evaluateEscape(values.Blog.Title, helper.Unescaped)),
+		"og:type": "website",
+		"og:title": string(meta_titleFunc(helper, values)),
+		"og:description": string(meta_descriptionFunc(helper, values)),
+		"og:url": currentUrl,
+		"og:image": string(imageFunc(helper, values)),
+		"twitter:card": "summary", // summary or summary_large_image
+		"twitter:title": string(meta_titleFunc(helper, values)),
+		"twitter:description": string(meta_descriptionFunc(helper, values)),
+		"twitter:url": currentUrl,
+		"twitter:image:src": string(imageFunc(helper, values)),
 	}
-	// TODO: structured data
+	schema := map[string]string{
+		"@context": "http://schema.org",
+		"@type": "Website",
+		"publisher": string(evaluateEscape(values.Blog.Title, helper.Unescaped)),
+		"headline": string(meta_titleFunc(helper, values)),
+		"url": currentUrl,
+		"image": string(imageFunc(helper, values)),
+		// "keywords": ,
+		"description": string(meta_descriptionFunc(helper, values)),
+	};
+	if values.CurrentTemplate == 1 { // post
+		publicationDate := values.Posts[values.CurrentPostIndex].Date.Format("2006-01-02T15:04:05Z")
+		structuredData["og:type"] = "article"
+		structuredData["article:published_time"] = values.Posts[values.CurrentPostIndex].Date.Format("2006-01-02T15:04:05Z")
+		// structuredData["article:modified_time"]
+		// structuredData["article:tag"]
+		schema["@type"] = "Article"
+		schema["datePublished"] = publicationDate
+		// schema["dateModified"]
+	} else if values.CurrentTemplate == 2 { // tag
+		schema["@type"] = "Series"
+	} else if values.CurrentTemplate == 3 { // author
+		structuredData["og:type"] = "profile"
+		schema["@type"] = "Person"
+	}
+	for key, value := range structuredData {
+		buffer.WriteString("<meta property=\"")
+		buffer.WriteString(key)
+		buffer.WriteString("\" content=\"")
+		buffer.WriteString(value)
+		buffer.WriteString("\">\n")
+	}
+	buffer.WriteString("<script type=\"application/ld+json\">\n")
+	json, _ := json.MarshalIndent(schema, "", "    ")
+	buffer.Write(json)
+	buffer.WriteString("\n</script>\n")
 	return buffer.Bytes()
 }
 
@@ -520,7 +553,10 @@ func prevPostFunc(helper *structure.Helper, values *structure.RequestData) []byt
 		return []byte{}
 	}
 	values.CurrentPostIndex = 1 // the previous post
-	return executeHelper(helper, values, 1) // context = post
+	var buffer bytes.Buffer
+	buffer.Write(executeHelper(helper, values, 1)) // context = post
+	values.CurrentPostIndex = 0 // the current post
+	return buffer.Bytes()
 }
 
 func nextPostFunc(helper *structure.Helper, values *structure.RequestData) []byte {
@@ -528,7 +564,10 @@ func nextPostFunc(helper *structure.Helper, values *structure.RequestData) []byt
 		return []byte{}
 	}
 	values.CurrentPostIndex = 2 // the next post
-	return executeHelper(helper, values, 1) // context = post
+	var buffer bytes.Buffer
+	buffer.Write(executeHelper(helper, values, 1)) // context = post
+	values.CurrentPostIndex = 0 // the current post
+	return buffer.Bytes()
 }
 
 func postsFunc(helper *structure.Helper, values *structure.RequestData) []byte {

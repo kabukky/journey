@@ -42,7 +42,7 @@ func ShowPostTemplate(writer http.ResponseWriter, r *http.Request, slug string, 
 	} else if uuidAsSlug == post.IsPublished { // Before rendering the post, make sure it is (1) accessed with uuid and not published; or (2) accessed with slug and published
 		return errors.New("Post not published.")
 	}
-	requestData := structure.RequestData{Posts: make([]structure.Post, 3), Blog: methods.Blog, CurrentTemplate: 1, CurrentPath: r.URL.Path} // CurrentTemplate = post
+	requestData := structure.RequestData{Posts: make([]structure.Post, 3), Blog: methods.Blog, CurrentPostIndex: 0, CurrentTemplate: 1, CurrentPath: r.URL.Path} // CurrentTemplate = post
 	requestData.Posts[0] = *post
 	// If the post is published and not a page, retrieve the previous and the next published post
 	if post.IsPublished && !post.IsPage {
