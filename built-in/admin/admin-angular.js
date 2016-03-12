@@ -219,20 +219,20 @@ adminApp.controller('EditCtrl', function ($scope, $routeParams, $http, $sce, $lo
 });
 
 //modal for post options and help
-adminApp.controller('EmptyModalCtrl', function ($scope, $modal, $http, sharingService) {
+adminApp.controller('EmptyModalCtrl', function ($scope, $uibModal, $http, sharingService) {
   $scope.shared = sharingService.shared;
   $scope.deleteCover = function() {
     $scope.shared.post.Image = '';
   };
   $scope.open = function (size, callingFrom) {
     if (callingFrom == 'post-options') {
-      var modalInstance = $modal.open({
+      var modalInstance = $uibModal.open({
         templateUrl: 'post-options-modal.tpl',
         controller: 'EmptyModalInstanceCtrl',
         size: size
       });
     } else if (callingFrom == 'post-help') {
-      var modalInstance = $modal.open({
+      var modalInstance = $uibModal.open({
         templateUrl: 'post-help-modal.tpl',
         controller: 'EmptyModalInstanceCtrl',
         size: size
@@ -248,13 +248,13 @@ adminApp.controller('EmptyModalCtrl', function ($scope, $modal, $http, sharingSe
 });
 
 //modal for image selection and upload
-adminApp.controller('ImageModalCtrl', function ($scope, $modal, $http, sharingService, infiniteScrollFactory) {
+adminApp.controller('ImageModalCtrl', function ($scope, $uibModal, $http, sharingService, infiniteScrollFactory) {
   $scope.shared = sharingService.shared;
   $scope.shared.infiniteScrollFactory = new infiniteScrollFactory('/admin/api/images/');
   $scope.shared.infiniteScrollFactory.nextPage();
   $scope.open = function (size, callingFrom) {
     //image modal
-    var modalInstance = $modal.open({
+    var modalInstance = $uibModal.open({
       templateUrl: 'image-modal.tpl',
       controller: 'ImageModalInstanceCtrl',
       size: size
@@ -285,18 +285,18 @@ adminApp.controller('ImageModalCtrl', function ($scope, $modal, $http, sharingSe
 });
 
 //empty modal window instance
-adminApp.controller('EmptyModalInstanceCtrl', function ($scope, $http, $modalInstance, sharingService) {
+adminApp.controller('EmptyModalInstanceCtrl', function ($scope, $http, $uibModalInstance, sharingService) {
   $scope.shared = sharingService.shared;
   $scope.ok = function () {
-    $modalInstance.close();
+    $uibModalInstance.close();
   };
   $scope.cancel = function () {
-    $modalInstance.dismiss('cancel');
+    $uibModalInstance.dismiss('cancel');
   };
 });
 
 //image modal window instance
-adminApp.controller('ImageModalInstanceCtrl', function ($scope, $http, $modalInstance, sharingService) {
+adminApp.controller('ImageModalInstanceCtrl', function ($scope, $http, $uibModalInstance, sharingService) {
   $scope.shared = sharingService.shared;
   $scope.shared.selected = $scope.shared.infiniteScrollFactory.items[0];
   $scope.deleteImage = function (fileName) {
@@ -316,9 +316,9 @@ adminApp.controller('ImageModalInstanceCtrl', function ($scope, $http, $modalIns
     }
   };
   $scope.ok = function () {
-    $modalInstance.close($scope.shared.selected);
+    $uibModalInstance.close($scope.shared.selected);
   };
   $scope.cancel = function () {
-    $modalInstance.dismiss('cancel');
+    $uibModalInstance.dismiss('cancel');
   };
 });
