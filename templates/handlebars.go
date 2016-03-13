@@ -12,6 +12,7 @@ import (
 	"html"
 	"log"
 	"net/url"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -401,11 +402,18 @@ func ghost_headFunc(helper *structure.Helper, values *structure.RequestData) []b
 		structuredData["og:type"] = "profile"
 		schema["@type"] = "Person"
 	}
-	for key, value := range structuredData {
+	structuredDataKeys := make([]string, len(structuredData))
+	i := 0
+	for key, _ := range structuredData {
+		structuredDataKeys[i] = key
+		i++
+	}
+	sort.Strings(structuredDataKeys)
+	for _, key := range structuredDataKeys {
 		buffer.WriteString("<meta property=\"")
 		buffer.WriteString(key)
 		buffer.WriteString("\" content=\"")
-		buffer.WriteString(value)
+		buffer.WriteString(structuredData[key])
 		buffer.WriteString("\">\n")
 	}
 	buffer.WriteString("<script type=\"application/ld+json\">\n")
