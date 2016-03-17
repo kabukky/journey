@@ -312,6 +312,13 @@ func featuredFunc(helper *structure.Helper, values *structure.RequestData) []byt
 	return []byte{}
 }
 
+func publishedFunc(helper *structure.Helper, values *structure.RequestData) []byte {
+	if values.Posts[values.CurrentPostIndex].IsPublished {
+		return []byte{1}
+	}
+	return []byte{}
+}
+
 func body_classFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	if values.CurrentTemplate == 1 { // post
 		// TODO: is there anything else that needs to be output here?
