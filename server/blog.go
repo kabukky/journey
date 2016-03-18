@@ -22,7 +22,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request, params map[string]stri
 		return
 	}
 	page, err := strconv.Atoi(number)
-	if err != nil || page <= 1 {
+	if err != nil || page <= 1 || number[0] == '0' {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
@@ -57,8 +57,8 @@ func authorHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 		return
 	}
 	page, err := strconv.Atoi(number)
-	if err != nil || page <= 1 {
-		http.Redirect(w, r, "/", http.StatusFound)
+	if err != nil || page <= 1 || number[0] == '0' {
+		http.NotFound(w, r)
 		return
 	}
 	// Render author template
@@ -92,8 +92,8 @@ func tagHandler(w http.ResponseWriter, r *http.Request, params map[string]string
 		return
 	}
 	page, err := strconv.Atoi(number)
-	if err != nil || page <= 1 {
-		http.Redirect(w, r, "/", http.StatusFound)
+	if err != nil || page <= 1 || number[0] == '0' {
+		http.NotFound(w, r)
 		return
 	}
 	// Render tag template
