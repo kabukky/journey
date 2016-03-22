@@ -12,6 +12,7 @@ import (
 	"html"
 	"log"
 	"net/url"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -48,6 +49,8 @@ func slugFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	return []byte{}
 }
 
+var pageInUrlRegex = regexp.MustCompile("/page/[0-9]+/$")
+
 func currentFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	if len(values.Blog.NavigationItems) != 0 {
 		url := values.Blog.NavigationItems[values.CurrentNavigationIndex].Url
@@ -55,7 +58,8 @@ func currentFunc(helper *structure.Helper, values *structure.RequestData) []byte
 		if !strings.HasSuffix(url, "/") {
 			url = url + "/"
 		}
-		if values.CurrentPath == url {
+		currentPath := pageInUrlRegex.ReplaceAllString(values.CurrentPath, "/")
+		if currentPath == url {
 			return []byte{1}
 		}
 	}

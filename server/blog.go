@@ -47,6 +47,19 @@ func authorHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 			return
 		}
 		return
+	} else if function == "page" {
+		page, err := strconv.Atoi(number)
+		if err != nil || page <= 1 || number[0] == '0' {
+			http.NotFound(w, r)
+			return
+		}
+		// Render author template
+		err = templates.ShowAuthorTemplate(w, r, slug, page)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		return
 	} else if function == "rss" {
 		// Render author rss feed
 		err := templates.ShowAuthorRss(w, slug)
@@ -55,16 +68,8 @@ func authorHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 			return
 		}
 		return
-	}
-	page, err := strconv.Atoi(number)
-	if err != nil || page <= 1 || number[0] == '0' {
+	} else {
 		http.NotFound(w, r)
-		return
-	}
-	// Render author template
-	err = templates.ShowAuthorTemplate(w, r, slug, page)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	return
@@ -82,6 +87,19 @@ func tagHandler(w http.ResponseWriter, r *http.Request, params map[string]string
 			return
 		}
 		return
+	} else if function == "page" {
+		page, err := strconv.Atoi(number)
+		if err != nil || page <= 1 || number[0] == '0' {
+			http.NotFound(w, r)
+			return
+		}
+		// Render tag template
+		err = templates.ShowTagTemplate(w, r, slug, page)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		return
 	} else if function == "rss" {
 		// Render tag rss feed
 		err := templates.ShowTagRss(w, slug)
@@ -90,16 +108,8 @@ func tagHandler(w http.ResponseWriter, r *http.Request, params map[string]string
 			return
 		}
 		return
-	}
-	page, err := strconv.Atoi(number)
-	if err != nil || page <= 1 || number[0] == '0' {
+	} else {
 		http.NotFound(w, r)
-		return
-	}
-	// Render tag template
-	err = templates.ShowTagTemplate(w, r, slug, page)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	return
