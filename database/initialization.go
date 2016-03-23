@@ -14,6 +14,7 @@ import (
 // Handler for read access
 var readDB *sql.DB
 
+var stmtPragmaUserVersion = `PRAGMA user_version`
 var stmtInitialization = `CREATE TABLE IF NOT EXISTS
 	posts (
 		id					integer NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -50,6 +51,8 @@ var stmtInitialization = `CREATE TABLE IF NOT EXISTS
 		bio					varchar(200),
 		website				text,
 		location			text,
+		twitter				varchar(150),
+		facebook			varchar(150),
 		accessibility		text,
 		status				varchar(150) NOT NULL DEFAULT 'active',
 		language			varchar(6) NOT NULL DEFAULT 'en_US',
@@ -124,6 +127,9 @@ var stmtInitialization = `CREATE TABLE IF NOT EXISTS
 		user_id	integer NOT NULL
 	);
 	`
+var stmtMigration001 = `ALTER TABLE users ADD twitter varchar(150); ALTER TABLE users ADD facebook varchar(150);`
+var stmtUpdatePragmaUserVersion = `PRAGMA user_version = 1`
+const currentSchemaVersion = 1
 
 func Initialize() error {
 	// If journey.db does not exist, look for a Ghost database to convert
@@ -142,11 +148,44 @@ func Initialize() error {
 	if err != nil {
 		return err
 	}
-	currentTime := date.GetCurrentTime()
-	_, err = readDB.Exec(stmtInitialization, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime)
-	// TODO: Is Commit()/Rollback() needed for DB.Exec()?
+	var schemaVersion int
+	err = readDB.QueryRow(stmtPragmaUserVersion).Scan(&schemaVersion)
 	if err != nil {
 		return err
+	}
+	if schemaVersion == 0 {
+		currentTime := date.GetCurrentTime()
+		_, err = readDB.Exec(stmtInitialization, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime)
+		// TODO: Is Commit()/Rollback() needed for DB.Exec()?
+		if err != nil {
+			return err
+		}
+		_, err = readDB.Exec(stmtUpdatePragmaUserVersion)
+		if err != nil {
+			return err
+		}
+	} else if schemaVersion != currentSchemaVersion {
+		writeDB, err := readDB.Begin()
+		if err != nil {
+			writeDB.Rollback()
+			return err
+		}
+		if schemaVersion < 1 {
+			_, err = readDB.Exec(stmtMigration001)
+			if err != nil {
+				writeDB.Rollback()
+				return err
+			}
+		}
+		_, err = writeDB.Exec(stmtUpdatePragmaUserVersion)
+		if err != nil {
+			writeDB.Rollback()
+			return err
+		}
+		err = writeDB.Commit()
+		if err != nil {
+			return err
+		}
 	}
 	err = checkBlogSettings()
 	if err != nil {

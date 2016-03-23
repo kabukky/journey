@@ -562,6 +562,16 @@ func locationFunc(helper *structure.Helper, values *structure.RequestData) []byt
 	return evaluateEscape(values.Posts[values.CurrentPostIndex].Author.Location, helper.Unescaped)
 }
 
+func twitterFunc(helper *structure.Helper, values *structure.RequestData) []byte {
+	// TODO: Error handling if there is no Posts[values.CurrentPostIndex]
+	return evaluateEscape(values.Posts[values.CurrentPostIndex].Author.Twitter, helper.Unescaped)
+}
+
+func facebookFunc(helper *structure.Helper, values *structure.RequestData) []byte {
+	// TODO: Error handling if there is no Posts[values.CurrentPostIndex]
+	return evaluateEscape(values.Posts[values.CurrentPostIndex].Author.Facebook, helper.Unescaped)
+}
+
 func postFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	values.CurrentPostIndex = 0 // the current post
 	return executeHelper(helper, values, 1) // context = post
