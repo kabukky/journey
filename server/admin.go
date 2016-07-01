@@ -376,7 +376,7 @@ func apiUploadHandler(w http.ResponseWriter, r *http.Request, _ map[string]strin
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			dst, err := os.Create(filepath.Join(filePath, strconv.FormatInt(currentDate.Unix(), 10)+"_"+uuid.Formatter(uuid.NewV4(), uuid.Clean)+filepath.Ext(part.FileName())))
+			dst, err := os.Create(filepath.Join(filePath, strconv.FormatInt(currentDate.Unix(), 10)+"_"+uuid.Formatter(uuid.NewV4(), uuid.FormatCanonical)+filepath.Ext(part.FileName())))
 			defer dst.Close()
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
