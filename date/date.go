@@ -100,6 +100,9 @@ func FormatDate(format string, date *time.Time) []byte {
 	if strings.Contains(format, "DD") {
 		format = strings.Replace(format, "DD", replaceDD(date), -1)
 	}
+	if strings.Contains(format, "D") {
+		format = strings.Replace(format, "D", strconv.Itoa(date.Day()), -1)
+	}
 	format = strings.Replace(format, "X", strconv.FormatInt(date.Unix(), 10), -1)
 	// Unix ms ('x') is not used by ghost. Excluding it for now.
 	// format = strings.Replace(format, "x", strconv.FormatInt((date.UnixNano()/1000000), 10), -1)

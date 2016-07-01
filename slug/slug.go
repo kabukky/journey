@@ -8,8 +8,9 @@ import (
 	"unicode"
 )
 
+var hyphensRegex = regexp.MustCompile("-+")
+
 func Generate(input string, table string) string {
-	hyphensRegex := regexp.MustCompile("-+")
 	output := hyphensRegex.ReplaceAllString(strings.Map(func(r rune) rune {
 		switch {
 		case r == ' ', r == '-', r == '/':

@@ -2,6 +2,7 @@ package templates
 
 import (
 	"bytes"
+	"encoding/json"
 	"github.com/kabukky/journey/conversion"
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/date"
@@ -11,6 +12,8 @@ import (
 	"html"
 	"log"
 	"net/url"
+	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -46,6 +49,8 @@ func slugFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	return []byte{}
 }
 
+var pageInUrlRegex = regexp.MustCompile("/page/[0-9]+/$")
+
 func currentFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	if len(values.Blog.NavigationItems) != 0 {
 		url := values.Blog.NavigationItems[values.CurrentNavigationIndex].Url
@@ -53,7 +58,8 @@ func currentFunc(helper *structure.Helper, values *structure.RequestData) []byte
 		if !strings.HasSuffix(url, "/") {
 			url = url + "/"
 		}
-		if values.CurrentPath == url {
+		currentPath := pageInUrlRegex.ReplaceAllString(values.CurrentPath, "/")
+		if currentPath == url {
 			return []byte{1}
 		}
 	}
@@ -310,6 +316,13 @@ func featuredFunc(helper *structure.Helper, values *structure.RequestData) []byt
 	return []byte{}
 }
 
+func publishedFunc(helper *structure.Helper, values *structure.RequestData) []byte {
+	if values.Posts[values.CurrentPostIndex].IsPublished {
+		return []byte{1}
+	}
+	return []byte{}
+}
+
 func body_classFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	if values.CurrentTemplate == 1 { // post
 		// TODO: is there anything else that needs to be output here?
@@ -354,13 +367,70 @@ func body_classFunc(helper *structure.Helper, values *structure.RequestData) []b
 
 func ghost_headFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	// SEO stuff:
+	currentUrl := string(evaluateEscape(values.Blog.Url, helper.Unescaped)) + values.CurrentPath
 	// Output canonical url
 	var buffer bytes.Buffer
 	buffer.WriteString("<link rel=\"canonical\" href=\"")
-	buffer.Write(evaluateEscape(values.Blog.Url, helper.Unescaped))
-	buffer.WriteString(values.CurrentPath)
-	buffer.WriteString("\">")
-	// TODO: structured data
+	buffer.WriteString(currentUrl)
+	buffer.WriteString("\">\n")
+	// Output structured data
+	// values.CurrentPostIndex = 0 // current
+	structuredData := map[string]string{
+		"og:site_name": string(evaluateEscape(values.Blog.Title, helper.Unescaped)),
+		"og:type": "website",
+		"og:title": string(meta_titleFunc(helper, values)),
+		"og:description": string(meta_descriptionFunc(helper, values)),
+		"og:url": currentUrl,
+		"og:image": string(imageFunc(helper, values)),
+		"twitter:card": "summary", // summary or summary_large_image
+		"twitter:title": string(meta_titleFunc(helper, values)),
+		"twitter:description": string(meta_descriptionFunc(helper, values)),
+		"twitter:url": currentUrl,
+		"twitter:image:src": string(imageFunc(helper, values)),
+	}
+	schema := map[string]string{
+		"@context": "http://schema.org",
+		"@type": "Website",
+		"publisher": string(evaluateEscape(values.Blog.Title, helper.Unescaped)),
+		"headline": string(meta_titleFunc(helper, values)),
+		"url": currentUrl,
+		"image": string(imageFunc(helper, values)),
+		// "keywords": ,
+		"description": string(meta_descriptionFunc(helper, values)),
+	};
+	if values.CurrentTemplate == 1 { // post
+		publicationDate := values.Posts[values.CurrentPostIndex].Date.Format("2006-01-02T15:04:05Z")
+		structuredData["og:type"] = "article"
+		structuredData["article:published_time"] = values.Posts[values.CurrentPostIndex].Date.Format("2006-01-02T15:04:05Z")
+		// structuredData["article:modified_time"]
+		// structuredData["article:tag"]
+		schema["@type"] = "Article"
+		schema["datePublished"] = publicationDate
+		// schema["dateModified"]
+	} else if values.CurrentTemplate == 2 { // tag
+		schema["@type"] = "Series"
+	} else if values.CurrentTemplate == 3 { // author
+		structuredData["og:type"] = "profile"
+		schema["@type"] = "Person"
+	}
+	structuredDataKeys := make([]string, len(structuredData))
+	i := 0
+	for key, _ := range structuredData {
+		structuredDataKeys[i] = key
+		i++
+	}
+	sort.Strings(structuredDataKeys)
+	for _, key := range structuredDataKeys {
+		buffer.WriteString("<meta property=\"")
+		buffer.WriteString(key)
+		buffer.WriteString("\" content=\"")
+		buffer.WriteString(structuredData[key])
+		buffer.WriteString("\">\n")
+	}
+	buffer.WriteString("<script type=\"application/ld+json\">\n")
+	json, _ := json.MarshalIndent(schema, "", "    ")
+	buffer.Write(json)
+	buffer.WriteString("\n</script>\n")
 	return buffer.Bytes()
 }
 
@@ -492,8 +562,41 @@ func locationFunc(helper *structure.Helper, values *structure.RequestData) []byt
 	return evaluateEscape(values.Posts[values.CurrentPostIndex].Author.Location, helper.Unescaped)
 }
 
+func twitterFunc(helper *structure.Helper, values *structure.RequestData) []byte {
+	// TODO: Error handling if there is no Posts[values.CurrentPostIndex]
+	return evaluateEscape(values.Posts[values.CurrentPostIndex].Author.Twitter, helper.Unescaped)
+}
+
+func facebookFunc(helper *structure.Helper, values *structure.RequestData) []byte {
+	// TODO: Error handling if there is no Posts[values.CurrentPostIndex]
+	return evaluateEscape(values.Posts[values.CurrentPostIndex].Author.Facebook, helper.Unescaped)
+}
+
 func postFunc(helper *structure.Helper, values *structure.RequestData) []byte {
+	values.CurrentPostIndex = 0 // the current post
 	return executeHelper(helper, values, 1) // context = post
+}
+
+func prevPostFunc(helper *structure.Helper, values *structure.RequestData) []byte {
+	if values.Posts[1].Id == 0 {
+		return []byte{}
+	}
+	values.CurrentPostIndex = 1 // the previous post
+	var buffer bytes.Buffer
+	buffer.Write(executeHelper(helper, values, 1)) // context = post
+	values.CurrentPostIndex = 0 // the current post
+	return buffer.Bytes()
+}
+
+func nextPostFunc(helper *structure.Helper, values *structure.RequestData) []byte {
+	if values.Posts[2].Id == 0 {
+		return []byte{}
+	}
+	values.CurrentPostIndex = 2 // the next post
+	var buffer bytes.Buffer
+	buffer.Write(executeHelper(helper, values, 1)) // context = post
+	values.CurrentPostIndex = 0 // the current post
+	return buffer.Bytes()
 }
 
 func postsFunc(helper *structure.Helper, values *structure.RequestData) []byte {

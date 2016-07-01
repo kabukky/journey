@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/dimfeld/httptreemux"
-	"github.com/kabukky/httpscerts"
 	"github.com/kabukky/journey/configuration"
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/filenames"
@@ -21,17 +20,6 @@ import (
 func httpsRedirect(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	http.Redirect(w, r, configuration.Config.HttpsUrl+r.RequestURI, http.StatusMovedPermanently)
 	return
-}
-
-func checkHttpsCertificates() {
-	// Check https certificates. If they are not available generate temporary ones for testing.
-	if err := httpscerts.Check(filenames.HttpsCertFilename, filenames.HttpsKeyFilename); err != nil {
-		log.Println("Warning: couldn't load https certs. Generating new ones. Replace " + filenames.HttpsCertFilename + " and " + filenames.HttpsKeyFilename + " with your own certificates as soon as possible!")
-		if err := httpscerts.Generate(filenames.HttpsCertFilename, filenames.HttpsKeyFilename, configuration.Config.HttpsUrl); err != nil {
-			log.Fatal("Error: Couldn't create https certificates.")
-			return
-		}
-	}
 }
 
 func main() {
@@ -93,7 +81,7 @@ func main() {
 	// Determine the kind of https support (as set in the config.json)
 	switch configuration.Config.HttpsUsage {
 	case "AdminOnly":
-		checkHttpsCertificates()
+		server.CheckHttpsCertificates()
 		httpRouter := httptreemux.New()
 		httpsRouter := httptreemux.New()
 		// Blog and pages as http
@@ -121,7 +109,7 @@ func main() {
 			log.Fatal("Error: Couldn't start the HTTP server:", err)
 		}
 	case "All":
-		checkHttpsCertificates()
+		server.CheckHttpsCertificates()
 		httpsRouter := httptreemux.New()
 		httpRouter := httptreemux.New()
 		// Blog and pages as https

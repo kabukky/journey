@@ -44,8 +44,11 @@ var helperFuctions = map[string]func(*structure.Helper, *structure.RequestData) 
 	"content":    contentFunc,
 	"post_class": post_classFunc,
 	"featured":   featuredFunc,
+	"published":  publishedFunc,
 	"id":         idFunc,
 	"post.id":    idFunc,
+	"prev_post":  prevPostFunc,
+	"next_post":  nextPostFunc,
 
 	// Tag functions
 	"tag.name": tagDotNameFunc,
@@ -58,6 +61,8 @@ var helperFuctions = map[string]func(*structure.Helper, *structure.RequestData) 
 	"website":         websiteFunc,
 	"cover":           coverFunc,
 	"location":        locationFunc,
+	"twitter":         twitterFunc,
+	"facebook":        facebookFunc,
 	"author.name":     authorDotNameFunc,
 	"author.bio":      bioFunc,
 	"author.email":    emailFunc,
@@ -65,6 +70,8 @@ var helperFuctions = map[string]func(*structure.Helper, *structure.RequestData) 
 	"author.image":    authorDotImageFunc,
 	"author.cover":    coverFunc,
 	"author.location": locationFunc,
+	"author.twitter":  twitterFunc,
+	"author.facebook": facebookFunc,
 
 	// Navigation functions
 	"navigation": navigationFunc,

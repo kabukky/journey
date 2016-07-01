@@ -22,7 +22,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request, params map[string]stri
 		return
 	}
 	page, err := strconv.Atoi(number)
-	if err != nil || page <= 1 {
+	if err != nil || page <= 1 || number[0] == '0' {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
@@ -47,6 +47,19 @@ func authorHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 			return
 		}
 		return
+	} else if function == "page" {
+		page, err := strconv.Atoi(number)
+		if err != nil || page <= 1 || number[0] == '0' {
+			http.NotFound(w, r)
+			return
+		}
+		// Render author template
+		err = templates.ShowAuthorTemplate(w, r, slug, page)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		return
 	} else if function == "rss" {
 		// Render author rss feed
 		err := templates.ShowAuthorRss(w, slug)
@@ -55,16 +68,8 @@ func authorHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 			return
 		}
 		return
-	}
-	page, err := strconv.Atoi(number)
-	if err != nil || page <= 1 {
-		http.Redirect(w, r, "/", http.StatusFound)
-		return
-	}
-	// Render author template
-	err = templates.ShowAuthorTemplate(w, r, slug, page)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	} else {
+		http.NotFound(w, r)
 		return
 	}
 	return
@@ -82,6 +87,19 @@ func tagHandler(w http.ResponseWriter, r *http.Request, params map[string]string
 			return
 		}
 		return
+	} else if function == "page" {
+		page, err := strconv.Atoi(number)
+		if err != nil || page <= 1 || number[0] == '0' {
+			http.NotFound(w, r)
+			return
+		}
+		// Render tag template
+		err = templates.ShowTagTemplate(w, r, slug, page)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		return
 	} else if function == "rss" {
 		// Render tag rss feed
 		err := templates.ShowTagRss(w, slug)
@@ -90,16 +108,8 @@ func tagHandler(w http.ResponseWriter, r *http.Request, params map[string]string
 			return
 		}
 		return
-	}
-	page, err := strconv.Atoi(number)
-	if err != nil || page <= 1 {
-		http.Redirect(w, r, "/", http.StatusFound)
-		return
-	}
-	// Render tag template
-	err = templates.ShowTagTemplate(w, r, slug, page)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	} else {
+		http.NotFound(w, r)
 		return
 	}
 	return
@@ -107,10 +117,7 @@ func tagHandler(w http.ResponseWriter, r *http.Request, params map[string]string
 
 func postHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
 	slug := params["slug"]
-	if slug == "" {
-		http.Redirect(w, r, "/", http.StatusFound)
-		return
-	} else if slug == "rss" {
+	if slug == "rss" {
 		// Render index rss feed
 		err := templates.ShowIndexRss(w)
 		if err != nil {
@@ -119,8 +126,18 @@ func postHandler(w http.ResponseWriter, r *http.Request, params map[string]strin
 		}
 		return
 	}
+	uuid := params["uuid"]
+	uuidAsSlug := false
+	if uuid != "" {
+		slug = uuid
+		uuidAsSlug = true
+	}
+	if slug == "" {
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	} 
 	// Render post template
-	err := templates.ShowPostTemplate(w, r, slug)
+	err := templates.ShowPostTemplate(w, r, slug, uuidAsSlug)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -150,6 +167,7 @@ func InitializeBlog(router *httptreemux.TreeMux) {
 	// For index
 	router.GET("/", indexHandler)
 	router.GET("/:slug/", postHandler)
+	router.GET("/p/:uuid/", postHandler)
 	router.GET("/page/:number/", indexHandler)
 	// For author
 	router.GET("/author/:slug/", authorHandler)

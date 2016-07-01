@@ -45,7 +45,7 @@ img {
     background-color: #f8f8f8;
 }
 
-#post-cover-delete {
+.post-remove-cell a {
     cursor: pointer;
 }
 

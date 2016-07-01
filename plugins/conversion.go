@@ -45,6 +45,8 @@ func convertUser(vm *lua.LState, structureUser *structure.User) *lua.LTable {
 	user.RawSet(lua.LString("bio"), lua.LString(structureUser.Bio))
 	user.RawSet(lua.LString("website"), lua.LString(structureUser.Website))
 	user.RawSet(lua.LString("location"), lua.LString(structureUser.Location))
+	user.RawSet(lua.LString("twitter"), lua.LString(structureUser.Twitter))
+	user.RawSet(lua.LString("facebook"), lua.LString(structureUser.Facebook))
 	user.RawSet(lua.LString("role"), lua.LNumber(structureUser.Role))
 	return user
 }

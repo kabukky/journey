@@ -29,7 +29,7 @@
 			 		<a ng-controller="EmptyModalCtrl" ng-click="open('lg', 'post-help')">
 			 			<span class="glyphicon glyphicon-question-sign markdown-modal-button" aria-hidden="true"></span>
 					</a>
-					<textarea class="textarea-autosize" id="markdown-textarea" rows="15" ng-model="shared.post.Markdown" ng-change="change()">{shared.post.Markdown}</textarea>
+					<textarea class="textarea-autosize" id="markdown-textarea" rows="15" ng-trim="false" ng-model="shared.post.Markdown" ng-change="change()">{shared.post.Markdown}</textarea>
 				</div>
 			</div>
 		</div>
@@ -72,16 +72,24 @@
 	$(document).ready(function(){
 		$(".post-checkbox").bootstrapSwitch();
 		$('#markdown-title-input').focus();
-		$('.textarea-autosize').autosize();
-		$('#post-save-button').on('click', function() {
-			this.disabled = true;
-		});
+		autosize($('.textarea-autosize'));
 		$(document).on('keydown', function(e) {
-			button = $("#post-save-button")[0];
-			if ((e.which == '115' || e.which == '83') && (e.ctrlKey || e.metaKey) && !button.disabled){
-				e.preventDefault();
-				angular.element(button).scope().save();
-				return false;
+			if (e.ctrlKey || e.metaKey){
+				if ((e.which == '115' || e.which == '83')){
+					e.preventDefault();
+					post_save = $("#post-save-button")[0];
+					if (post_save.disabled) return false;
+					post_save.disabled = true;
+					angular.element(post_save).scope().save();
+					return false;
+				} else if ((e.which == '112' || e.which == '80')){
+					e.preventDefault();
+					post_view = $("#post-view-link")[0];
+					if (post_view.disabled) return false;
+					post_view.click();
+					post_view.disabled = true;
+					return false;
+				}
 			}
 			return true;
 		});

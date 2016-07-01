@@ -8,7 +8,7 @@
 			<div class="col-sm-12"><h2>Writing a Post</h2></div>
 		</div>
 		<div class="row">
-			<div class="col-sm-12 lead">
+			<div class="col-sm-12">
 				<p>- <strong>Write</strong> your title and post into the left (on smaller screens: top) text area. This is your edit area. Here you can use Markdown syntax to style your text, add pictures and more. Read more about Markdown in the next section!</p>
 				<p>- To <strong>add tags</strong> to your post, write their names into the bottom left field. Don't forget to seperate them by commas, e.g. "Tag 1, Tag 2, Tag 3" (without quotation marks). Note that it doesn't matter if you add a space after a comma or not.</p>
 				<p>- To make your post appear on your blog, turn on the <strong>Publish</strong> option next to the save button.</p>
@@ -19,7 +19,7 @@
 			<div class="col-sm-12"><h2>Using Markdown</h2></div>
 		</div>
 		<div class="row">
-			<div class="col-sm-12 lead">
+			<div class="col-sm-12">
 				<p>To format your text, you'll use what's called Markdown syntax.</p>
 				<p>Here are some useful formatting options. The Markdown syntax is on top, below that is what it will look like on your blog!</p>
 			</div>
@@ -32,21 +32,21 @@
 			<div class="col-sm-4 help-col">
 				<div class="help-inner-col">
 					# Biggest Heading
-					<hr>
+
 					<h1>Biggest Heading</h1>
 				</div>
 			</div>
  			<div class="col-sm-4 help-col">
 				<div class="help-inner-col">
 					## Second Biggest Heading
-					<hr>
+
 					<h2>Second Biggest Heading</h2>
 				</div>
 			</div>
 			<div class="col-sm-4 help-col">
 				<div class="help-inner-col">
 					### Third Biggest Heading
-					<hr>
+
 					<h3>Third Biggest Heading</h3>
 				</div>
 			</div>
@@ -55,21 +55,21 @@
 			<div class="col-sm-4 help-col">
 				<div class="help-inner-col">
 					#### 4th Biggest Heading
-					<hr>
+
 					<h4>4th Biggest Heading</h4>
 				</div>
 			</div>
 			<div class="col-sm-4 help-col">
 				<div class="help-inner-col">
 					##### 5th Biggest Heading
-					<hr>
+
 					<h5>5th Biggest Heading</h5>
 				</div>
 			</div>
 			<div class="col-sm-4 help-col">
 				<div class="help-inner-col">
 					###### 6th Biggest Heading
-					<hr>
+
 					<h6>6th Biggest Heading</h6>
 				</div>
 			</div>
@@ -84,7 +84,7 @@
 					Paragraphs are simple.<br>
 					<br>
 					Just follow your paragraph with a blank new line.<br>
-					<hr>
+					<br>
 					<p>Paragraphs are simple.</p>
 					<p>Just follow your paragraph with a blank new line.</p>
 				</div>
@@ -98,16 +98,16 @@
 			<div class="col-sm-6">
 				<div class="help-inner-col">
 					[Link to Google](http://www.google.com)
-					<hr>
+					<br>
 					<a target="_blank" href="http://www.google.com">Link to Google</a>
 				</div>
 			</div>
 			<div class="col-sm-6">
 				<div class="help-inner-col">
 					![Image alt text](/public/images/blog-cover.jpg)
-					<hr>
+
 					<img src="/public/images/blog-cover.jpg" alt="Image alt text" title="">
-					<hr>
+					<br>
 					Or use the image upload function by clicking on <span class="glyphicon glyphicon-picture" aria-hidden="true"></span> in the top right corner of your edit area!
 				</div>
 			</div>
@@ -120,7 +120,7 @@
 			<div class="col-sm-12">
 				<div class="help-inner-col">
 					> You can quote text like this.
-					<hr>
+					<br>
 					<blockquote><p>You can quote text like this.</p></blockquote>
 				</div>
 			</div>
@@ -133,21 +133,21 @@
 			<div class="col-sm-4">
 				<div class="help-inner-col">
 					*This text is italic.*
-					<hr>
+					<br>
 					<em>This text is italic.</em>
 				</div>
 			</div>
 			<div class="col-sm-4">
 				<div class="help-inner-col">
 					**This text is bold.**
-					<hr>
+					<br>
 					<strong>This text is bold.</strong>
 				</div>
 			</div>
 			<div class="col-sm-4">
 				<div class="help-inner-col">
 					***This text is italic and bold.***
-					<hr>
+					<br>
 					<strong><em>This text is italic and bold.</em></strong>
 				</div>
 			</div>
@@ -260,7 +260,7 @@ two backticks
 		</div>
 		<!-- Further Docs Link -->
 		<div class="row">
-			<div class="col-sm-12 lead">
+			<div class="col-sm-12">
 				<p>Further Documentation: <a target="_blank" href="http://daringfireball.net/projects/markdown/syntax">Markdown Syntax</a></p>
 			</div>
 		</div>
