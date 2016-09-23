@@ -26,9 +26,9 @@ func InsertPost(title []byte, slug string, markdown []byte, html []byte, feature
 	}
 	var result sql.Result
 	if published {
-		result, err = writeDB.Exec(stmtInsertPost, nil, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), title, slug, markdown, html, featured, isPage, status, image, created_by, created_at, created_by, created_at, created_by, created_at, created_by)
+		result, err = writeDB.Exec(stmtInsertPost, nil, uuid.Formatter(uuid.NewV4(), uuid.FormatCanonical), title, slug, markdown, html, featured, isPage, status, image, created_by, created_at, created_by, created_at, created_by, created_at, created_by)
 	} else {
-		result, err = writeDB.Exec(stmtInsertPost, nil, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), title, slug, markdown, html, featured, isPage, status, image, created_by, created_at, created_by, created_at, created_by, nil, nil)
+		result, err = writeDB.Exec(stmtInsertPost, nil, uuid.Formatter(uuid.NewV4(), uuid.FormatCanonical), title, slug, markdown, html, featured, isPage, status, image, created_by, created_at, created_by, created_at, created_by, nil, nil)
 	}
 	if err != nil {
 		writeDB.Rollback()
@@ -48,7 +48,7 @@ func InsertUser(name []byte, slug string, password string, email []byte, image [
 		writeDB.Rollback()
 		return 0, err
 	}
-	result, err := writeDB.Exec(stmtInsertUser, nil, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), name, slug, password, email, image, cover, created_at, created_by, created_at, created_by)
+	result, err := writeDB.Exec(stmtInsertUser, nil, uuid.Formatter(uuid.NewV4(), uuid.FormatCanonical), name, slug, password, email, image, cover, created_at, created_by, created_at, created_by)
 	if err != nil {
 		writeDB.Rollback()
 		return 0, err
@@ -81,7 +81,7 @@ func InsertTag(name []byte, slug string, created_at time.Time, created_by int64)
 		writeDB.Rollback()
 		return 0, err
 	}
-	result, err := writeDB.Exec(stmtInsertTag, nil, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), name, slug, created_at, created_by, created_at, created_by)
+	result, err := writeDB.Exec(stmtInsertTag, nil, uuid.Formatter(uuid.NewV4(), uuid.FormatCanonical), name, slug, created_at, created_by, created_at, created_by)
 	if err != nil {
 		writeDB.Rollback()
 		return 0, err
@@ -114,7 +114,7 @@ func insertSettingString(key string, value string, setting_type string, created_
 		writeDB.Rollback()
 		return err
 	}
-	_, err = writeDB.Exec(stmtInsertSetting, nil, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), key, value, setting_type, created_at, created_by, created_at, created_by)
+	_, err = writeDB.Exec(stmtInsertSetting, nil, uuid.Formatter(uuid.NewV4(), uuid.FormatCanonical), key, value, setting_type, created_at, created_by, created_at, created_by)
 	if err != nil {
 		writeDB.Rollback()
 		return err
@@ -128,7 +128,7 @@ func insertSettingInt64(key string, value int64, setting_type string, created_at
 		writeDB.Rollback()
 		return err
 	}
-	_, err = writeDB.Exec(stmtInsertSetting, nil, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), key, value, setting_type, created_at, created_by, created_at, created_by)
+	_, err = writeDB.Exec(stmtInsertSetting, nil, uuid.Formatter(uuid.NewV4(), uuid.FormatCanonical), key, value, setting_type, created_at, created_by, created_at, created_by)
 	if err != nil {
 		writeDB.Rollback()
 		return err
