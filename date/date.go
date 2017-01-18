@@ -174,7 +174,8 @@ func FormatDate(format string, date *time.Time) []byte {
 	if strings.Contains(format, "MM") {
 		format = strings.Replace(format, "MM", replaceMM(date), -1)
 	}
-	// Replace M - make sure the Ms in March and May don't get replaced. TODO: Regex could be improved, only recognizes 'M's that are not followed by 'a's.
+	// Replace M - make sure the Ms in March and May don't get replaced.
+	// TODO: Regex could be improved, only recognizes 'M's that are not followed by 'a's.
 	format = marchMayChecker.ReplaceAllString(format, strconv.Itoa(int(date.Month())))
 
 	return []byte(format)
