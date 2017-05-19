@@ -43,6 +43,9 @@ func ShowPostTemplate(writer http.ResponseWriter, r *http.Request, slug string, 
 		return errors.New("Post already published.")
 	} else if !uuidAsSlug && !post.IsPublished {
 		return errors.New("Post not published.")
+	} else if post.Slug != slug {
+		http.Redirect(writer, r, "/"+post.Slug+"/", 301)
+		return nil
 	}
 	requestData := structure.RequestData{Posts: make([]structure.Post, 3), Blog: methods.Blog, CurrentPostIndex: 0, CurrentTemplate: 1, CurrentPath: r.URL.Path} // CurrentTemplate = post
 	requestData.Posts[0] = *post
