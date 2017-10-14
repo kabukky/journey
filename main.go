@@ -1,20 +1,22 @@
 package main
 
 import (
-	"github.com/dimfeld/httptreemux"
-	"github.com/kabukky/journey/configuration"
-	"github.com/kabukky/journey/database"
-	"github.com/kabukky/journey/filenames"
-	"github.com/kabukky/journey/flags"
-	"github.com/kabukky/journey/plugins"
-	"github.com/kabukky/journey/server"
-	"github.com/kabukky/journey/structure/methods"
-	"github.com/kabukky/journey/templates"
 	"log"
 	"net/http"
 	"os"
 	"runtime"
 	"strings"
+
+	"github.com/dimfeld/httptreemux"
+	"github.com/kabukky/journey/configuration"
+	"github.com/kabukky/journey/database"
+	"github.com/kabukky/journey/filenames"
+	"github.com/kabukky/journey/flags"
+	"github.com/kabukky/journey/https"
+	"github.com/kabukky/journey/plugins"
+	"github.com/kabukky/journey/server"
+	"github.com/kabukky/journey/structure/methods"
+	"github.com/kabukky/journey/templates"
 )
 
 func httpsRedirect(w http.ResponseWriter, r *http.Request, _ map[string]string) {
@@ -81,7 +83,6 @@ func main() {
 	// Determine the kind of https support (as set in the config.json)
 	switch configuration.Config.HttpsUsage {
 	case "AdminOnly":
-		server.CheckHttpsCertificates()
 		httpRouter := httptreemux.New()
 		httpsRouter := httptreemux.New()
 		// Blog and pages as http
@@ -99,7 +100,7 @@ func main() {
 		// Start https server
 		log.Println("Starting https server on port " + httpsPort + "...")
 		go func() {
-			if err := http.ListenAndServeTLS(httpsPort, filenames.HttpsCertFilename, filenames.HttpsKeyFilename, httpsRouter); err != nil {
+			if err := https.StartServer(httpsPort, httpsRouter); err != nil {
 				log.Fatal("Error: Couldn't start the HTTPS server:", err)
 			}
 		}()
@@ -109,7 +110,6 @@ func main() {
 			log.Fatal("Error: Couldn't start the HTTP server:", err)
 		}
 	case "All":
-		server.CheckHttpsCertificates()
 		httpsRouter := httptreemux.New()
 		httpRouter := httptreemux.New()
 		// Blog and pages as https
@@ -123,7 +123,7 @@ func main() {
 		// Start https server
 		log.Println("Starting https server on port " + httpsPort + "...")
 		go func() {
-			if err := http.ListenAndServeTLS(httpsPort, filenames.HttpsCertFilename, filenames.HttpsKeyFilename, httpsRouter); err != nil {
+			if err := https.StartServer(httpsPort, httpsRouter); err != nil {
 				log.Fatal("Error: Couldn't start the HTTPS server:", err)
 			}
 		}()
