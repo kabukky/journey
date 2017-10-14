@@ -45,16 +45,16 @@
 			"revisionTime": "2016-05-31T11:12:24Z"
 		},
 		{
+			"checksumSHA1": "zmC8/3V4ls53DJlNTKDZwPSC/dA=",
+			"path": "github.com/satori/go.uuid",
+			"revision": "5bf94b69c6b68ee1b541973bb8e1144db23a194b",
+			"revisionTime": "2017-03-21T23:07:31Z"
+		},
+		{
 			"checksumSHA1": "XXTR/ftEYSqQn4+Y7wNfiJJmq9U=",
 			"path": "github.com/shurcooL/sanitized_anchor_name",
 			"revision": "10ef21a441db47d8b13ebcc5fd2310f636973c77",
 			"revisionTime": "2015-10-28T00:19:15Z"
-		},
-		{
-			"checksumSHA1": "76U6GiRZsKjr9OWohbsdfKPok/E=",
-			"path": "github.com/twinj/uuid",
-			"revision": "89173bcdda19db0eb88aef1e1cb1cb2505561d31",
-			"revisionTime": "2015-10-29T04:44:42Z"
 		},
 		{
 			"checksumSHA1": "FKgdcCHvzR4iZNem3y9Wsgo379g=",

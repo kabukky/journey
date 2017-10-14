@@ -2,13 +2,14 @@ package database
 
 import (
 	"database/sql"
+
 	"github.com/kabukky/journey/database/migration"
 	"github.com/kabukky/journey/date"
 	"github.com/kabukky/journey/filenames"
 	"github.com/kabukky/journey/helpers"
 	"github.com/kabukky/journey/structure"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/twinj/uuid"
+	"github.com/satori/go.uuid"
 )
 
 // Handler for read access
@@ -143,7 +144,7 @@ func Initialize() error {
 		return err
 	}
 	currentTime := date.GetCurrentTime()
-	_, err = readDB.Exec(stmtInitialization, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime)
+	_, err = readDB.Exec(stmtInitialization, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime)
 	// TODO: Is Commit()/Rollback() needed for DB.Exec()?
 	if err != nil {
 		return err
