@@ -1,39 +1,27 @@
 package main
 
 import (
-	"github.com/dimfeld/httptreemux"
-	"github.com/kabukky/httpscerts"
-	"github.com/kabukky/journey/configuration"
-	"github.com/kabukky/journey/database"
-	"github.com/kabukky/journey/filenames"
-	"github.com/kabukky/journey/flags"
-	"github.com/kabukky/journey/plugins"
-	"github.com/kabukky/journey/server"
-	"github.com/kabukky/journey/structure/methods"
-	"github.com/kabukky/journey/templates"
 	"log"
 	"net/http"
 	"os"
 	"runtime"
 	"strings"
+
+	"github.com/dimfeld/httptreemux"
+	"github.com/kabukky/journey/configuration"
+	"github.com/kabukky/journey/database"
+	"github.com/kabukky/journey/filenames"
+	"github.com/kabukky/journey/flags"
+	"github.com/kabukky/journey/https"
+	"github.com/kabukky/journey/plugins"
+	"github.com/kabukky/journey/server"
+	"github.com/kabukky/journey/structure/methods"
+	"github.com/kabukky/journey/templates"
 )
 
 func httpsRedirect(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	http.Redirect(w, r, configuration.Config.HttpsUrl+r.RequestURI, http.StatusMovedPermanently)
 	return
-}
-
-func checkHttpsCertificates() {
-	// Check https certificates. If they are not available generate temporary ones for testing.
-	err := httpscerts.Check(filenames.HttpsCertFilename, filenames.HttpsKeyFilename)
-	if err != nil {
-		log.Println("Warning: couldn't load https certs. Generating new ones. Replace " + filenames.HttpsCertFilename + " and " + filenames.HttpsKeyFilename + " with your own certificates as soon as possible!")
-		err := httpscerts.Generate(filenames.HttpsCertFilename, filenames.HttpsKeyFilename, configuration.Config.HttpsUrl)
-		if err != nil {
-			log.Fatal("Error: Couldn't create https certificates.")
-			return
-		}
-	}
 }
 
 func main() {
@@ -56,29 +44,25 @@ func main() {
 	// Configuration is read from config.json by loading the configuration package
 
 	// Database
-	err = database.Initialize()
-	if err != nil {
+	if err = database.Initialize(); err != nil {
 		log.Fatal("Error: Couldn't initialize database:", err)
 		return
 	}
 
 	// Global blog data
-	err = methods.GenerateBlog()
-	if err != nil {
+	if err = methods.GenerateBlog(); err != nil {
 		log.Fatal("Error: Couldn't generate blog data:", err)
 		return
 	}
 
 	// Templates
-	err = templates.Generate()
-	if err != nil {
+	if err = templates.Generate(); err != nil {
 		log.Fatal("Error: Couldn't compile templates:", err)
 		return
 	}
 
 	// Plugins
-	err = plugins.Load()
-	if err == nil {
+	if err = plugins.Load(); err == nil {
 		// Close LuaPool at the end
 		defer plugins.LuaPool.Shutdown()
 		log.Println("Plugins loaded.")
@@ -99,7 +83,6 @@ func main() {
 	// Determine the kind of https support (as set in the config.json)
 	switch configuration.Config.HttpsUsage {
 	case "AdminOnly":
-		checkHttpsCertificates()
 		httpRouter := httptreemux.New()
 		httpsRouter := httptreemux.New()
 		// Blog and pages as http
@@ -117,19 +100,16 @@ func main() {
 		// Start https server
 		log.Println("Starting https server on port " + httpsPort + "...")
 		go func() {
-			err := http.ListenAndServeTLS(httpsPort, filenames.HttpsCertFilename, filenames.HttpsKeyFilename, httpsRouter)
-			if err != nil {
+			if err := https.StartServer(httpsPort, httpsRouter); err != nil {
 				log.Fatal("Error: Couldn't start the HTTPS server:", err)
 			}
 		}()
 		// Start http server
 		log.Println("Starting http server on port " + httpPort + "...")
-		err := http.ListenAndServe(httpPort, httpRouter)
-		if err != nil {
+		if err := http.ListenAndServe(httpPort, httpRouter); err != nil {
 			log.Fatal("Error: Couldn't start the HTTP server:", err)
 		}
 	case "All":
-		checkHttpsCertificates()
 		httpsRouter := httptreemux.New()
 		httpRouter := httptreemux.New()
 		// Blog and pages as https
@@ -143,15 +123,13 @@ func main() {
 		// Start https server
 		log.Println("Starting https server on port " + httpsPort + "...")
 		go func() {
-			err := http.ListenAndServeTLS(httpsPort, filenames.HttpsCertFilename, filenames.HttpsKeyFilename, httpsRouter)
-			if err != nil {
+			if err := https.StartServer(httpsPort, httpsRouter); err != nil {
 				log.Fatal("Error: Couldn't start the HTTPS server:", err)
 			}
 		}()
 		// Start http server
 		log.Println("Starting http server on port " + httpPort + "...")
-		err := http.ListenAndServe(httpPort, httpRouter)
-		if err != nil {
+		if err := http.ListenAndServe(httpPort, httpRouter); err != nil {
 			log.Fatal("Error: Couldn't start the HTTP server:", err)
 		}
 	default: // This is configuration.HttpsUsage == "None"
@@ -164,8 +142,7 @@ func main() {
 		// Start http server
 		log.Println("Starting server without HTTPS support. Please enable HTTPS in " + filenames.ConfigFilename + " to improve security.")
 		log.Println("Starting http server on port " + httpPort + "...")
-		err := http.ListenAndServe(httpPort, httpRouter)
-		if err != nil {
+		if err := http.ListenAndServe(httpPort, httpRouter); err != nil {
 			log.Fatal("Error: Couldn't start the HTTP server:", err)
 		}
 	}

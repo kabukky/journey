@@ -1,3 +1,5 @@
+// +build !noplugins
+
 package plugins
 
 import (
@@ -28,6 +30,7 @@ func convertPost(vm *lua.LState, structurePost *structure.Post) *lua.LTable {
 	post.RawSet(lua.LString("ispublished"), lua.LBool(structurePost.IsPublished))
 	post.RawSet(lua.LString("date"), lua.LNumber(structurePost.Date.Unix()))
 	post.RawSet(lua.LString("image"), lua.LString(structurePost.Image))
+	post.RawSet(lua.LString("metadescription"), lua.LString(structurePost.MetaDescription))
 	return post
 }
 

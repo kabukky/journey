@@ -2,12 +2,12 @@ package templates
 
 import (
 	"bytes"
-	"github.com/gorilla/feeds"
+	"github.com/kabukky/feeds"
 	"github.com/kabukky/journey/database"
+	"github.com/kabukky/journey/date"
 	"github.com/kabukky/journey/structure"
 	"github.com/kabukky/journey/structure/methods"
 	"net/http"
-	"time"
 )
 
 func ShowIndexRss(writer http.ResponseWriter) error {
@@ -64,12 +64,18 @@ func ShowAuthorRss(writer http.ResponseWriter, slug string) error {
 }
 
 func createFeed(values *structure.RequestData) *feeds.Feed {
-	now := time.Now()
+	now := date.GetCurrentTime()
 	feed := &feeds.Feed{
 		Title:       string(values.Blog.Title),
 		Description: string(values.Blog.Description),
 		Link:        &feeds.Link{Href: string(values.Blog.Url)},
-		Created:     now,
+		Updated:     now,
+		Image: &feeds.Image{
+			Url:   string(values.Blog.Url) + string(values.Blog.Logo),
+			Title: string(values.Blog.Title),
+			Link:  string(values.Blog.Url),
+		},
+		Url: string(values.Blog.Url) + "/rss/",
 	}
 	for i := 0; i < len(values.Posts); i++ {
 		if values.Posts[i].Id != 0 {
@@ -78,14 +84,22 @@ func createFeed(values *structure.RequestData) *feeds.Feed {
 			buffer.Write(values.Blog.Url)
 			buffer.WriteString("/")
 			buffer.WriteString(values.Posts[i].Slug)
-			feed.Items = append(feed.Items, &feeds.Item{
+			item := &feeds.Item{
 				Title:       string(values.Posts[i].Title),
 				Description: string(values.Posts[i].Html),
 				Link:        &feeds.Link{Href: buffer.String()},
 				Id:          string(values.Posts[i].Uuid),
 				Author:      &feeds.Author{Name: string(values.Posts[i].Author.Name), Email: ""},
 				Created:     *values.Posts[i].Date,
-			})
+			}
+			// If the post has a cover image, add it to the item
+			image := string(values.Posts[i].Image)
+			if image != "" {
+				item.Image = &feeds.Image{
+					Url: string(values.Blog.Url) + image,
+				}
+			}
+			feed.Items = append(feed.Items, item)
 		}
 	}
 

@@ -1,13 +1,16 @@
 package server
 
 import (
-	"github.com/dimfeld/httptreemux"
-	"github.com/kabukky/journey/filenames"
-	"github.com/kabukky/journey/structure/methods"
-	"github.com/kabukky/journey/templates"
+	"fmt"
 	"net/http"
 	"path/filepath"
 	"strconv"
+
+	"github.com/dimfeld/httptreemux"
+	"github.com/kabukky/journey/database"
+	"github.com/kabukky/journey/filenames"
+	"github.com/kabukky/journey/structure/methods"
+	"github.com/kabukky/journey/templates"
 )
 
 func indexHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
@@ -22,7 +25,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request, params map[string]stri
 		return
 	}
 	page, err := strconv.Atoi(number)
-	if err != nil {
+	if err != nil || page <= 1 {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
@@ -57,7 +60,7 @@ func authorHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 		return
 	}
 	page, err := strconv.Atoi(number)
-	if err != nil {
+	if err != nil || page <= 1 {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
@@ -92,7 +95,7 @@ func tagHandler(w http.ResponseWriter, r *http.Request, params map[string]string
 		return
 	}
 	page, err := strconv.Atoi(number)
-	if err != nil {
+	if err != nil || page <= 1 {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
 	}
@@ -119,6 +122,7 @@ func postHandler(w http.ResponseWriter, r *http.Request, params map[string]strin
 		}
 		return
 	}
+
 	// Render post template
 	err := templates.ShowPostTemplate(w, r, slug)
 	if err != nil {
@@ -126,6 +130,24 @@ func postHandler(w http.ResponseWriter, r *http.Request, params map[string]strin
 		return
 	}
 	return
+}
+
+func postEditHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	slug := params["slug"]
+
+	if slug == "" {
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
+	// Redirect to edit
+	post, err := database.RetrievePostBySlug(slug)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	url := fmt.Sprintf("/admin/#/edit/%d", post.Id)
+	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
 func assetsHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
@@ -149,6 +171,7 @@ func publicHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 func InitializeBlog(router *httptreemux.TreeMux) {
 	// For index
 	router.GET("/", indexHandler)
+	router.GET("/:slug/edit", postEditHandler)
 	router.GET("/:slug/", postHandler)
 	router.GET("/page/:number/", indexHandler)
 	// For author

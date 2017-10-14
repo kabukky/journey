@@ -6,13 +6,14 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 var (
 	// Determine the path the Journey executable is in - needed to load relative assets
 	ExecutablePath = determineExecutablePath()
 
-	// Determine the path the the assets folder (default: Journey root folder)
+	// Determine the path to the assets folder (default: Journey root folder)
 	AssetPath = determineAssetPath()
 
 	// For assets that are created, changed, our user-provided while running journey
@@ -34,9 +35,6 @@ var (
 	AdminFilepath  = filepath.Join(ExecutablePath, "built-in", "admin")
 	PublicFilepath = filepath.Join(ExecutablePath, "built-in", "public")
 	HbsFilepath    = filepath.Join(ExecutablePath, "built-in", "hbs")
-
-	// For handlebars (this is a url string)
-	JqueryFilename = "/public/jquery/jquery.js"
 
 	// For blog  (this is a url string)
 	// TODO: This is not used at the moment because it is still hard-coded into the create database string
@@ -71,14 +69,22 @@ func createDirectories() error {
 	return nil
 }
 
-func determineAssetPath() string {
-	contentPath := ""
-	if flags.CustomPath != "" {
-		contentPath = flags.CustomPath
-	} else {
-		contentPath = determineExecutablePath()
+func bashPath(contentPath string) string {
+	if strings.HasPrefix(contentPath, "~") {
+		return strings.Replace(contentPath, "~", os.Getenv("HOME"), 1)
 	}
 	return contentPath
+}
+
+func determineAssetPath() string {
+	if flags.CustomPath != "" {
+		contentPath, err := filepath.Abs(bashPath(flags.CustomPath))
+		if err != nil {
+			log.Fatal("Error: Couldn't read from custom path:", err)
+		}
+		return contentPath
+	}
+	return determineExecutablePath()
 }
 
 func determineExecutablePath() string {

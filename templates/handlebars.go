@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"github.com/kabukky/journey/conversion"
 	"github.com/kabukky/journey/database"
-	"github.com/kabukky/journey/filenames"
+	"github.com/kabukky/journey/date"
 	"github.com/kabukky/journey/plugins"
 	"github.com/kabukky/journey/structure"
 	"github.com/kabukky/journey/structure/methods"
@@ -13,11 +13,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
-	"time"
 )
-
-// Ghost always includes a link to jquery in it's footer func. Mimic this.
-var jqueryCodeForFooter = []byte("<script src=\"" + filenames.JqueryFilename + "\"></script>")
 
 // Helper fuctions
 func nullFunc(helper *structure.Helper, values *structure.RequestData) []byte {
@@ -248,8 +244,11 @@ func page_urlFunc(helper *structure.Helper, values *structure.RequestData) []byt
 						//TODO: Error handling if there is no Posts[values.CurrentPostIndex]
 						buffer.WriteString(values.CurrentTag.Slug)
 					}
-					buffer.WriteString("/page/")
-					buffer.WriteString(strconv.Itoa(values.CurrentIndexPage - 1))
+					page := values.CurrentIndexPage - 1
+					if page > 1 {
+						buffer.WriteString("/page/")
+						buffer.WriteString(strconv.Itoa(page))
+					}
 					buffer.WriteString("/")
 				}
 				return buffer.Bytes()
@@ -284,8 +283,11 @@ func page_urlFunc(helper *structure.Helper, values *structure.RequestData) []byt
 					// TODO: Error handling if there is no Posts[values.CurrentPostIndex]
 					buffer.WriteString(values.CurrentTag.Slug)
 				}
-				buffer.WriteString("/page/")
-				buffer.WriteString(strconv.Itoa(values.CurrentIndexPage + 1))
+				page := values.CurrentIndexPage + 1
+				if page > 1 {
+					buffer.WriteString("/page/")
+					buffer.WriteString(strconv.Itoa(page))
+				}
 				buffer.WriteString("/")
 				return buffer.Bytes()
 			}
@@ -310,7 +312,7 @@ func featuredFunc(helper *structure.Helper, values *structure.RequestData) []byt
 
 func body_classFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	if values.CurrentTemplate == 1 { // post
-		// TODO: is there anything else that needs to get output here?
+		// TODO: is there anything else that needs to be output here?
 		var buffer bytes.Buffer
 		buffer.WriteString("post-template")
 		// If page
@@ -351,13 +353,20 @@ func body_classFunc(helper *structure.Helper, values *structure.RequestData) []b
 }
 
 func ghost_headFunc(helper *structure.Helper, values *structure.RequestData) []byte {
-	// TODO: Implement
-	return []byte{}
+	// SEO stuff:
+	// Output canonical url
+	var buffer bytes.Buffer
+	buffer.WriteString("<link rel=\"canonical\" href=\"")
+	buffer.Write(evaluateEscape(values.Blog.Url, helper.Unescaped))
+	buffer.WriteString(values.CurrentPath)
+	buffer.WriteString("\">")
+	// TODO: structured data
+	return buffer.Bytes()
 }
 
 func ghost_footFunc(helper *structure.Helper, values *structure.RequestData) []byte {
-	// TODO: This seems to just output a jquery link in ghost. Keep for compatibility?
-	return jqueryCodeForFooter
+	// TODO: customized code injection
+	return []byte{}
 }
 
 func meta_titleFunc(helper *structure.Helper, values *structure.RequestData) []byte {
@@ -384,7 +393,9 @@ func meta_titleFunc(helper *structure.Helper, values *structure.RequestData) []b
 
 func meta_descriptionFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	// TODO: Finish this
-	if values.CurrentTemplate != 1 { // not post
+	if values.CurrentTemplate == 1 || values.CurrentHelperContext == 1 { // post
+		return evaluateEscape(values.Posts[values.CurrentPostIndex].MetaDescription, helper.Unescaped)
+	} else {
 		return evaluateEscape(values.Blog.Description, helper.Unescaped)
 	}
 	// Nothing on post yet
@@ -587,7 +598,7 @@ func urlFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 		buffer.WriteString(values.Posts[values.CurrentPostIndex].Author.Slug)
 		buffer.WriteString("/")
 		return evaluateEscape(buffer.Bytes(), helper.Unescaped)
-	} else if values.CurrentHelperContext == 4 { // author
+	} else if values.CurrentHelperContext == 4 { // navigation
 		buffer.WriteString(values.Blog.NavigationItems[values.CurrentNavigationIndex].Url)
 		return evaluateEscape(buffer.Bytes(), helper.Unescaped)
 	}
@@ -658,7 +669,7 @@ func dateFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 			} else if key == "timeago" {
 				if value == "true" {
 					// Compute time ago
-					return evaluateEscape(generateTimeAgo(values.Posts[values.CurrentPostIndex].Date), helper.Unescaped)
+					return evaluateEscape(date.GenerateTimeAgo(values.Posts[values.CurrentPostIndex].Date), helper.Unescaped)
 				}
 			} else if key == "format" {
 				timeFormat = value
@@ -666,10 +677,10 @@ func dateFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 		}
 	}
 	if showPublicationDate {
-		return evaluateEscape(formatDate(timeFormat, values.Posts[values.CurrentPostIndex].Date), helper.Unescaped)
+		return evaluateEscape(date.FormatDate(timeFormat, values.Posts[values.CurrentPostIndex].Date), helper.Unescaped)
 	}
-	date := time.Now()
-	return evaluateEscape(formatDate(timeFormat, &date), helper.Unescaped)
+	currentDate := date.GetCurrentTime()
+	return evaluateEscape(date.FormatDate(timeFormat, &currentDate), helper.Unescaped)
 }
 
 func atFirstFunc(helper *structure.Helper, values *structure.RequestData) []byte {
@@ -865,6 +876,7 @@ func atBlogDotTitleFunc(helper *structure.Helper, values *structure.RequestData)
 func atBlogDotUrlFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	var buffer bytes.Buffer
 	buffer.Write(values.Blog.Url)
+	buffer.WriteString("/")
 	return evaluateEscape(buffer.Bytes(), helper.Unescaped)
 }
 

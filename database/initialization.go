@@ -2,13 +2,14 @@ package database
 
 import (
 	"database/sql"
+
 	"github.com/kabukky/journey/database/migration"
+	"github.com/kabukky/journey/date"
 	"github.com/kabukky/journey/filenames"
 	"github.com/kabukky/journey/helpers"
 	"github.com/kabukky/journey/structure"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/twinj/uuid"
-	"time"
+	"github.com/satori/go.uuid"
 )
 
 // Handler for read access
@@ -142,8 +143,8 @@ func Initialize() error {
 	if err != nil {
 		return err
 	}
-	currentTime := time.Now()
-	_, err = readDB.Exec(stmtInitialization, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime, uuid.Formatter(uuid.NewV4(), uuid.CleanHyphen), currentTime, currentTime)
+	currentTime := date.GetCurrentTime()
+	_, err = readDB.Exec(stmtInitialization, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime)
 	// TODO: Is Commit()/Rollback() needed for DB.Exec()?
 	if err != nil {
 		return err
@@ -163,7 +164,7 @@ func checkBlogSettings() error {
 	err := row.Scan(&tempBlog.Title)
 	if err != nil {
 		// Insert title
-		err = insertSettingString("title", "My Blog", "blog", time.Now(), 1)
+		err = insertSettingString("title", "My Blog", "blog", date.GetCurrentTime(), 1)
 		if err != nil {
 			return err
 		}
@@ -173,7 +174,7 @@ func checkBlogSettings() error {
 	err = row.Scan(&tempBlog.Description)
 	if err != nil {
 		// Insert description
-		err = insertSettingString("description", "Just another Blog", "blog", time.Now(), 1)
+		err = insertSettingString("description", "Just another Blog", "blog", date.GetCurrentTime(), 1)
 		if err != nil {
 			return err
 		}
@@ -184,7 +185,7 @@ func checkBlogSettings() error {
 	err = row.Scan(&email)
 	if err != nil {
 		// Insert email
-		err = insertSettingString("email", "", "blog", time.Now(), 1)
+		err = insertSettingString("email", "", "blog", date.GetCurrentTime(), 1)
 		if err != nil {
 			return err
 		}
@@ -194,7 +195,7 @@ func checkBlogSettings() error {
 	err = row.Scan(&tempBlog.Logo)
 	if err != nil {
 		// Insert logo
-		err = insertSettingString("logo", "/public/images/blog-logo.jpg", "blog", time.Now(), 1)
+		err = insertSettingString("logo", "/public/images/blog-logo.jpg", "blog", date.GetCurrentTime(), 1)
 		if err != nil {
 			return err
 		}
@@ -204,7 +205,7 @@ func checkBlogSettings() error {
 	err = row.Scan(&tempBlog.Cover)
 	if err != nil {
 		// Insert cover
-		err = insertSettingString("cover", "/public/images/blog-cover.jpg", "blog", time.Now(), 1)
+		err = insertSettingString("cover", "/public/images/blog-cover.jpg", "blog", date.GetCurrentTime(), 1)
 		if err != nil {
 			return err
 		}
@@ -214,7 +215,7 @@ func checkBlogSettings() error {
 	err = row.Scan(&tempBlog.PostsPerPage)
 	if err != nil {
 		// Insert postsPerPage
-		err = insertSettingInt64("postsPerPage", 5, "blog", time.Now(), 1)
+		err = insertSettingInt64("postsPerPage", 5, "blog", date.GetCurrentTime(), 1)
 		if err != nil {
 			return err
 		}
@@ -224,7 +225,7 @@ func checkBlogSettings() error {
 	err = row.Scan(&tempBlog.ActiveTheme)
 	if err != nil {
 		// Insert activeTheme
-		err = insertSettingString("activeTheme", "promenade", "theme", time.Now(), 1)
+		err = insertSettingString("activeTheme", "promenade", "theme", date.GetCurrentTime(), 1)
 		if err != nil {
 			return err
 		}
@@ -235,7 +236,7 @@ func checkBlogSettings() error {
 	err = row.Scan(&navigation)
 	if err != nil {
 		// Insert navigation
-		err = insertSettingString("navigation", "[{\"label\":\"Home\", \"url\":\"/\"}]", "blog", time.Now(), 1)
+		err = insertSettingString("navigation", "[{\"label\":\"Home\", \"url\":\"/\"}]", "blog", date.GetCurrentTime(), 1)
 		if err != nil {
 			return err
 		}

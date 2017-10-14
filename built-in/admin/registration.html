@@ -4,11 +4,10 @@
     	<meta charset="utf-8">
     	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     	<title>Admin Area</title>
-    	<!-- JQuery JavaScript -->
-    	<script src="/public/jquery/jquery.min.js"></script>
+    	<!-- Zepto JavaScript -->
+    	<script src="/public/zepto/zepto.min.js"></script>
     	<!-- Bootstrap CSS and JavaScript -->
-    	<link rel="stylesheet" href="/public/bootstrap/css/bootstrap.yeti.min.css">
-    	<script src="/public/bootstrap/js/bootstrap.min.js"></script>
+    	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.4/yeti/bootstrap.min.css">
 	</head>
 	<body>
 	  	<div class="container-fluid">
@@ -19,7 +18,7 @@
 			    <div class="form-group">
 			        <label for="name" class="col-sm-2 control-label">User name</label>
 			        <div class="col-sm-4">
-			            <input type="text" class="form-control" id="name" name="name" required>
+			            <input autofocus="autofocus" type="text" class="form-control" id="name" name="name" required>
 			        </div>
 			    </div>
 			    <div class="form-group">
@@ -49,18 +48,18 @@
 	</body>
 	<script>
 		$(document).ready(function() {
-			$("#repeated-password").keyup(validate);
-			$("#password").keyup(validate);
+			$("#repeated-password").on('keyup', validate);
+			$("#password").on('keyup', validate);
 		});
 		function validate() {
 			var password = $("#password").val();
 			var repeatedPassword = $("#repeated-password").val();
 		    if(password == repeatedPassword) {
-				document.getElementById("button-submit").disabled = false;
+				$("#button-submit")[0].disabled = false;
 		    	$("#password-match-status").html("&nbsp;");
 		    }
 		    else {
-				document.getElementById("button-submit").disabled = true;
+				$("#button-submit")[0].disabled = true;
 		        $("#password-match-status").html("Passwords do not match.");
 		    }
 		}

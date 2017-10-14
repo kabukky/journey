@@ -2,17 +2,6 @@ package server
 
 import (
 	"encoding/json"
-	"github.com/dimfeld/httptreemux"
-	"github.com/kabukky/journey/authentication"
-	"github.com/kabukky/journey/configuration"
-	"github.com/kabukky/journey/conversion"
-	"github.com/kabukky/journey/database"
-	"github.com/kabukky/journey/filenames"
-	"github.com/kabukky/journey/slug"
-	"github.com/kabukky/journey/structure"
-	"github.com/kabukky/journey/structure/methods"
-	"github.com/kabukky/journey/templates"
-	"github.com/twinj/uuid"
 	"io"
 	"log"
 	"net/http"
@@ -21,20 +10,34 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/dimfeld/httptreemux"
+	"github.com/kabukky/journey/authentication"
+	"github.com/kabukky/journey/configuration"
+	"github.com/kabukky/journey/conversion"
+	"github.com/kabukky/journey/database"
+	"github.com/kabukky/journey/date"
+	"github.com/kabukky/journey/filenames"
+	"github.com/kabukky/journey/slug"
+	"github.com/kabukky/journey/structure"
+	"github.com/kabukky/journey/structure/methods"
+	"github.com/kabukky/journey/templates"
+	"github.com/satori/go.uuid"
 )
 
 type JsonPost struct {
-	Id          int64
-	Title       string
-	Slug        string
-	Markdown    string
-	Html        string
-	IsFeatured  bool
-	IsPage      bool
-	IsPublished bool
-	Image       string
-	Date        *time.Time
-	Tags        string
+	Id              int64
+	Title           string
+	Slug            string
+	Markdown        string
+	Html            string
+	IsFeatured      bool
+	IsPage          bool
+	IsPublished     bool
+	Image           string
+	MetaDescription string
+	Date            *time.Time
+	Tags            string
 }
 
 type JsonBlog struct {
@@ -256,8 +259,8 @@ func postApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]str
 		} else {
 			postSlug = slug.Generate(json.Title, "posts")
 		}
-		currentTime := time.Now()
-		post := structure.Post{Title: []byte(json.Title), Slug: postSlug, Markdown: []byte(json.Markdown), Html: conversion.GenerateHtmlFromMarkdown([]byte(json.Markdown)), IsFeatured: json.IsFeatured, IsPage: json.IsPage, IsPublished: json.IsPublished, Image: []byte(json.Image), Date: &currentTime, Tags: methods.GenerateTagsFromCommaString(json.Tags), Author: &structure.User{Id: userId}}
+		currentTime := date.GetCurrentTime()
+		post := structure.Post{Title: []byte(json.Title), Slug: postSlug, Markdown: []byte(json.Markdown), Html: conversion.GenerateHtmlFromMarkdown([]byte(json.Markdown)), IsFeatured: json.IsFeatured, IsPage: json.IsPage, IsPublished: json.IsPublished, MetaDescription: []byte(json.MetaDescription), Image: []byte(json.Image), Date: &currentTime, Tags: methods.GenerateTagsFromCommaString(json.Tags), Author: &structure.User{Id: userId}}
 		err = methods.SavePost(&post)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -301,8 +304,8 @@ func patchApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 		} else {
 			postSlug = post.Slug
 		}
-		currentTime := time.Now()
-		*post = structure.Post{Id: json.Id, Title: []byte(json.Title), Slug: postSlug, Markdown: []byte(json.Markdown), Html: conversion.GenerateHtmlFromMarkdown([]byte(json.Markdown)), IsFeatured: json.IsFeatured, IsPage: json.IsPage, IsPublished: json.IsPublished, Image: []byte(json.Image), Date: &currentTime, Tags: methods.GenerateTagsFromCommaString(json.Tags), Author: &structure.User{Id: userId}}
+		currentTime := date.GetCurrentTime()
+		*post = structure.Post{Id: json.Id, Title: []byte(json.Title), Slug: postSlug, Markdown: []byte(json.Markdown), Html: conversion.GenerateHtmlFromMarkdown([]byte(json.Markdown)), IsFeatured: json.IsFeatured, IsPage: json.IsPage, IsPublished: json.IsPublished, MetaDescription: []byte(json.MetaDescription), Image: []byte(json.Image), Date: &currentTime, Tags: methods.GenerateTagsFromCommaString(json.Tags), Author: &structure.User{Id: userId}}
 		err = methods.UpdatePost(post)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -365,12 +368,13 @@ func apiUploadHandler(w http.ResponseWriter, r *http.Request, _ map[string]strin
 				continue
 			}
 			// Folder structure: year/month/randomname
-			filePath := filepath.Join(filenames.ImagesFilepath, time.Now().Format("2006"), time.Now().Format("01"))
+			currentDate := date.GetCurrentTime()
+			filePath := filepath.Join(filenames.ImagesFilepath, currentDate.Format("2006"), currentDate.Format("01"))
 			if os.MkdirAll(filePath, 0777) != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			dst, err := os.Create(filepath.Join(filePath, strconv.FormatInt(time.Now().Unix(), 10)+"_"+uuid.Formatter(uuid.NewV4(), uuid.Clean)+filepath.Ext(part.FileName())))
+			dst, err := os.Create(filepath.Join(filePath, strconv.FormatInt(currentDate.Unix(), 10)+"_"+uuid.NewV4().String()+filepath.Ext(part.FileName())))
 			defer dst.Close()
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -682,7 +686,7 @@ func patchApiUserHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			err = database.UpdateUserPassword(user.Id, encryptedPassword, time.Now(), json.Id)
+			err = database.UpdateUserPassword(user.Id, encryptedPassword, date.GetCurrentTime(), json.Id)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -739,7 +743,7 @@ func logInUser(name string, w http.ResponseWriter) {
 	if err != nil {
 		log.Println("Couldn't get id of logged in user:", err)
 	}
-	err = database.UpdateLastLogin(time.Now(), userId)
+	err = database.UpdateLastLogin(date.GetCurrentTime(), userId)
 	if err != nil {
 		log.Println("Couldn't update last login date of a user:", err)
 	}
@@ -763,6 +767,7 @@ func postToJson(post *structure.Post) *JsonPost {
 	jsonPost.IsFeatured = post.IsFeatured
 	jsonPost.IsPage = post.IsPage
 	jsonPost.IsPublished = post.IsPublished
+	jsonPost.MetaDescription = string(post.MetaDescription)
 	jsonPost.Image = string(post.Image)
 	jsonPost.Date = post.Date
 	tags := make([]string, len(post.Tags))

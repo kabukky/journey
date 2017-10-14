@@ -1,3 +1,5 @@
+// +build !noplugins
+
 package plugins
 
 import (

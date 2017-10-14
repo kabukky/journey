@@ -1,0 +1,121 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "HlNXLdJ+PhwJ5z5YcibD/fKgbV4=",
+			"path": "github.com/dimfeld/httptreemux",
+			"revision": "9cde5e866f4d64dbe14191be9a61ffa583c92bfa",
+			"revisionTime": "2017-01-14T18:27:16Z"
+		},
+		{
+			"checksumSHA1": "SGSXlSU1TFtg5aTlVA9v4Ka86lU=",
+			"path": "github.com/gorilla/securecookie",
+			"revision": "e95799a481bbcc3d01c2ad5178524cb8bec9f370",
+			"revisionTime": "2015-08-20T08:29:58Z"
+		},
+		{
+			"checksumSHA1": "vWIrTn1L+nAiNl1DJIAusXySTIk=",
+			"path": "github.com/kabukky/feeds",
+			"revision": "c7025aca4568efe41d8864cc51e3d193bdc61339",
+			"revisionTime": "2015-11-10T11:43:25Z"
+		},
+		{
+			"checksumSHA1": "pa+ZwMzIv+u+BlL8Q2xgL9cQtJg=",
+			"path": "github.com/kabukky/httpscerts",
+			"revision": "617593d7dcb39c9ed617bb62c5e2056244d02184",
+			"revisionTime": "2015-03-20T12:54:33Z"
+		},
+		{
+			"checksumSHA1": "6nmAJBw2phU9MUmkUnqFvbO5urg=",
+			"path": "github.com/kardianos/osext",
+			"revision": "29ae4ffbc9a6fe9fb2bc5029050ce6996ea1d3bc",
+			"revisionTime": "2015-12-22T15:32:29Z"
+		},
+		{
+			"checksumSHA1": "jAmPL1ZFpCfmrzMRIkA9D+9ivuo=",
+			"path": "github.com/mattn/go-sqlite3",
+			"revision": "7ed900a7c4cc22315a007cc49821cce3baa7be0f",
+			"revisionTime": "2017-01-18T17:20:24Z"
+		},
+		{
+			"checksumSHA1": "b65j8iurSMG0nedIgJiv71D4Ehc=",
+			"path": "github.com/russross/blackfriday",
+			"revision": "1d6b8e9301e720b08a8938b8c25c018285885438",
+			"revisionTime": "2016-05-31T11:12:24Z"
+		},
+		{
+			"checksumSHA1": "zmC8/3V4ls53DJlNTKDZwPSC/dA=",
+			"path": "github.com/satori/go.uuid",
+			"revision": "5bf94b69c6b68ee1b541973bb8e1144db23a194b",
+			"revisionTime": "2017-03-21T23:07:31Z"
+		},
+		{
+			"checksumSHA1": "XXTR/ftEYSqQn4+Y7wNfiJJmq9U=",
+			"path": "github.com/shurcooL/sanitized_anchor_name",
+			"revision": "10ef21a441db47d8b13ebcc5fd2310f636973c77",
+			"revisionTime": "2015-10-28T00:19:15Z"
+		},
+		{
+			"checksumSHA1": "FKgdcCHvzR4iZNem3y9Wsgo379g=",
+			"path": "github.com/yuin/gopher-lua",
+			"revision": "66c871e454fcf10251c61bf8eff02d0978cae75a",
+			"revisionTime": "2017-01-19T02:36:43Z"
+		},
+		{
+			"checksumSHA1": "yNGEI9BMDbGwabUnaHvV9ZZm/a0=",
+			"path": "github.com/yuin/gopher-lua/ast",
+			"revision": "66c871e454fcf10251c61bf8eff02d0978cae75a",
+			"revisionTime": "2017-01-19T02:36:43Z"
+		},
+		{
+			"checksumSHA1": "RzAFlqrwEE/ybIrUhDQeIE8+7pM=",
+			"path": "github.com/yuin/gopher-lua/parse",
+			"revision": "66c871e454fcf10251c61bf8eff02d0978cae75a",
+			"revisionTime": "2017-01-19T02:36:43Z"
+		},
+		{
+			"checksumSHA1": "pOY+AESgLoqczVCXNCvmPtJyUXE=",
+			"path": "github.com/yuin/gopher-lua/pm",
+			"revision": "66c871e454fcf10251c61bf8eff02d0978cae75a",
+			"revisionTime": "2017-01-19T02:36:43Z"
+		},
+		{
+			"checksumSHA1": "4z75fxISOgKOmbS/X+qcTCXdyCs=",
+			"path": "golang.org/x/crypto/acme/autocert",
+			"revision": "9419663f5a44be8b34ca85f08abc5fe1be11f8a3",
+			"revisionTime": "2017-09-30T17:45:11Z"
+		},
+		{
+			"checksumSHA1": "vE43s37+4CJ2CDU6TlOUOYE0K9c=",
+			"path": "golang.org/x/crypto/bcrypt",
+			"revision": "c197bcf24cde29d3f73c7b4ac6fd41f4384e8af6",
+			"revisionTime": "2016-03-17T20:08:20Z"
+		},
+		{
+			"checksumSHA1": "udD2DzUPFZbMVXP0VNADhef4zKk=",
+			"path": "golang.org/x/crypto/blowfish",
+			"revision": "c197bcf24cde29d3f73c7b4ac6fd41f4384e8af6",
+			"revisionTime": "2016-03-17T20:08:20Z"
+		},
+		{
+			"checksumSHA1": "9QKY4bQlbQ/VZZFP8/1WtH4b0mA=",
+			"path": "golang.org/x/net/context",
+			"revision": "4876518f9e71663000c348837735820161a42df7",
+			"revisionTime": "2016-03-22T02:00:46Z"
+		},
+		{
+			"checksumSHA1": "uTQtOqR0ePMMcvuvAIksiIZxhqU=",
+			"path": "golang.org/x/sys/unix",
+			"revision": "d75a52659825e75fff6158388dddc6a5b04f9ba5",
+			"revisionTime": "2016-12-14T18:38:57Z"
+		},
+		{
+			"checksumSHA1": "eIhF+hmL/XZhzTiAwhLD0M65vlY=",
+			"path": "gopkg.in/fsnotify.v1",
+			"revision": "629574ca2a5df945712d3079857300b5e4da0236",
+			"revisionTime": "2016-10-11T02:33:12Z"
+		}
+	],
+	"rootPath": "github.com/kabukky/journey"
+}
