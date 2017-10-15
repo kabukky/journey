@@ -3,12 +3,12 @@ package https
 import (
 	"net/http"
 
+	"github.com/kabukky/journey/configuration"
 	"github.com/kabukky/journey/filenames"
-	"github.com/kabukky/journey/flags"
 )
 
 func StartServer(addr string, handler http.Handler) error {
-	if flags.UseLetsEncrypt {
+	if configuration.Config.UseLetsEncrypt {
 		server := buildLetsEncryptServer(addr, handler)
 		return server.ListenAndServeTLS("", "")
 	} else {
