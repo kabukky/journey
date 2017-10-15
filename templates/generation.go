@@ -3,6 +3,13 @@ package templates
 import (
 	"bytes"
 	"errors"
+	"io/ioutil"
+	"log"
+	"os"
+	"path/filepath"
+	"regexp"
+	"strings"
+
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/filenames"
 	"github.com/kabukky/journey/flags"
@@ -11,12 +18,6 @@ import (
 	"github.com/kabukky/journey/structure"
 	"github.com/kabukky/journey/structure/methods"
 	"github.com/kabukky/journey/watcher"
-	"io/ioutil"
-	"log"
-	"os"
-	"path/filepath"
-	"regexp"
-	"strings"
 )
 
 // For parsing of the theme files
@@ -218,6 +219,8 @@ func compileTheme(themePath string) error {
 	if _, err := os.Stat(themePath); os.IsNotExist(err) {
 		return errors.New("Couldn't find theme files in " + themePath + ": " + err.Error())
 	}
+	// Remove all previous templates
+	compiledTemplates.m = make(map[string]*structure.Helper)
 	err := filepath.Walk(themePath, inspectTemplateFile)
 	if err != nil {
 		return err
@@ -257,6 +260,8 @@ func checkThemes() error {
 	err = compileTheme(currentThemePath)
 	if err == nil {
 		return nil
+	} else {
+		log.Println("Warning: Couldn't compile theme in " + currentThemePath + ": " + err.Error())
 	}
 	// If the currently set theme couldnt be compiled, try the default theme (promenade)
 	err = compileTheme(filepath.Join(filenames.ThemesFilepath, "promenade"))
@@ -267,6 +272,8 @@ func checkThemes() error {
 			return err
 		}
 		return nil
+	} else {
+		log.Println("Warning: Couldn't compile theme in " + currentThemePath + ": " + err.Error())
 	}
 	// If all of that didn't work, try the available themes in order
 	allThemes := GetAllThemes()
@@ -279,6 +286,8 @@ func checkThemes() error {
 				return err
 			}
 			return nil
+		} else {
+			log.Println("Warning: Couldn't compile theme in " + currentThemePath + ": " + err.Error())
 		}
 	}
 	return errors.New("Couldn't find a theme to use in " + filenames.ThemesFilepath)
