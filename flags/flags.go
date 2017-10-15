@@ -6,12 +6,11 @@ import (
 )
 
 var (
-	UseLetsEncrypt = false
-	Log            = ""
-	CustomPath     = ""
-	IsInDevMode    = false
-	HttpPort       = ""
-	HttpsPort      = ""
+	Log         = ""
+	CustomPath  = ""
+	IsInDevMode = false
+	HttpPort    = ""
+	HttpsPort   = ""
 )
 
 func init() {
@@ -23,8 +22,6 @@ func init() {
 }
 
 func parseFlags() {
-	// Check if HTTPS certificates should be automatically generated and renewed using Let's Encypt
-	flag.BoolVar(&UseLetsEncrypt, "letsencrypt", false, "Use this option to automatically generate and renew the HTTPS certificates using Let's Encypt. Example: -letsencrypt")
 	// Check if the log should be output to a file
 	flag.StringVar(&Log, "log", "", "Use this option to save to log output to a file. Note: Journey needs create, read, and write access to that file. Example: -log=path/to/log.txt")
 	// Check if a custom content path has been provided by the user

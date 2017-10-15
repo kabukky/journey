@@ -3,11 +3,12 @@ package configuration
 import (
 	"encoding/json"
 	"errors"
-	"github.com/kabukky/journey/filenames"
 	"io/ioutil"
 	"log"
 	"reflect"
 	"strings"
+
+	"github.com/kabukky/journey/filenames"
 )
 
 // Configuration: settings that are neccesary for server configuration
@@ -17,6 +18,7 @@ type Configuration struct {
 	HttpsUsage       string
 	Url              string
 	HttpsUrl         string
+	UseLetsEncrypt   bool
 }
 
 func NewConfiguration() *Configuration {
