@@ -86,7 +86,13 @@ func makeHelper(tag string, unescaped bool, startPos int, block []byte, children
 
 func findHelper(data []byte, allHelpers []structure.Helper) ([]byte, []structure.Helper) {
 	startPos := bytes.Index(data, openTag)
-	endPos := bytes.Index(data, closeTag)
+	endPos := -1
+	if startPos != -1 {
+		endPos = bytes.Index(data, closeTag)
+		if endPos != -1 {
+			endPos += startPos
+		}
+	}
 	if startPos != -1 && endPos != -1 {
 		openTagLength := len(openTag)
 		closeTagLength := len(closeTag)
