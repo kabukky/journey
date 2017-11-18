@@ -88,7 +88,7 @@ func findHelper(data []byte, allHelpers []structure.Helper) ([]byte, []structure
 	startPos := bytes.Index(data, openTag)
 	endPos := -1
 	if startPos != -1 {
-		endPos = bytes.Index(data, closeTag)
+		endPos = bytes.Index(data[startPos:], closeTag)
 		if endPos != -1 {
 			endPos += startPos
 		}
