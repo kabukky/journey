@@ -26,6 +26,7 @@ import (
 )
 
 type JsonPost struct {
+	Uuid            string
 	Id              int64
 	Title           string
 	Slug            string
@@ -62,6 +63,8 @@ type JsonUser struct {
 	Bio              string
 	Website          string
 	Location         string
+	Twitter          string
+	Facebook         string
 	Password         string
 	PasswordRepeated string
 }
@@ -674,7 +677,7 @@ func patchApiUserHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 				json.Slug = tempUser.Slug
 			}
 		}
-		user := structure.User{Id: json.Id, Name: []byte(json.Name), Slug: json.Slug, Email: []byte(json.Email), Image: []byte(json.Image), Cover: []byte(json.Cover), Bio: []byte(json.Bio), Website: []byte(json.Website), Location: []byte(json.Location)}
+		user := structure.User{Id: json.Id, Name: []byte(json.Name), Slug: json.Slug, Email: []byte(json.Email), Image: []byte(json.Image), Cover: []byte(json.Cover), Bio: []byte(json.Bio), Website: []byte(json.Website), Location: []byte(json.Location), Twitter: []byte(json.Twitter), Facebook: []byte(json.Facebook)}
 		err = methods.UpdateUser(&user, userId)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -759,6 +762,7 @@ func postsToJson(posts []structure.Post) *[]JsonPost {
 
 func postToJson(post *structure.Post) *JsonPost {
 	var jsonPost JsonPost
+	jsonPost.Uuid = string(post.Uuid)
 	jsonPost.Id = post.Id
 	jsonPost.Title = string(post.Title)
 	jsonPost.Slug = post.Slug
@@ -803,6 +807,8 @@ func userToJson(user *structure.User) *JsonUser {
 	jsonUser.Bio = string(user.Bio)
 	jsonUser.Website = string(user.Website)
 	jsonUser.Location = string(user.Location)
+	jsonUser.Twitter = string(user.Twitter)
+	jsonUser.Facebook = string(user.Facebook)
 	return &jsonUser
 }
 

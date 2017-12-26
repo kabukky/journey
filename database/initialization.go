@@ -51,6 +51,8 @@ var stmtInitialization = `CREATE TABLE IF NOT EXISTS
 		bio					varchar(200),
 		website				text,
 		location			text,
+		twitter				varchar(150),
+		facebook			varchar(150),
 		accessibility		text,
 		status				varchar(150) NOT NULL DEFAULT 'active',
 		language			varchar(6) NOT NULL DEFAULT 'en_US',
