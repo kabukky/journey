@@ -19,9 +19,9 @@ const stmtRetrievePostById = "SELECT id, uuid, title, slug, markdown, html, feat
 const stmtRetrievePostBySlug = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, meta_description, image, author_id, published_at FROM posts WHERE slug = ? COLLATE NOCASE"
 const stmtRetrievePrevPostByPublicationDate = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, meta_description, image, author_id, published_at FROM posts WHERE published_at <= ? AND page = 0 AND status = 'published' AND id <> ? ORDER BY published_at DESC, id DESC LIMIT 1"
 const stmtRetrieveNextPostByPublicationDate = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, meta_description, image, author_id, published_at FROM posts WHERE published_at >= ? AND page = 0 AND status = 'published' AND id <> ? ORDER BY published_at ASC, id ASC LIMIT 1"
-const stmtRetrieveUserById = "SELECT id, name, slug, email, image, cover, bio, website, location FROM users WHERE id = ?"
-const stmtRetrieveUserBySlug = "SELECT id, name, slug, email, image, cover, bio, website, location FROM users WHERE slug = ?"
-const stmtRetrieveUserByName = "SELECT id, name, slug, email, image, cover, bio, website, location FROM users WHERE name = ?"
+const stmtRetrieveUserById = "SELECT id, name, slug, email, image, cover, bio, website, location, twitter, facebook FROM users WHERE id = ?"
+const stmtRetrieveUserBySlug = "SELECT id, name, slug, email, image, cover, bio, website, location, twitter, facebook FROM users WHERE slug = ?"
+const stmtRetrieveUserByName = "SELECT id, name, slug, email, image, cover, bio, website, location, twitter, facebook FROM users WHERE name = ?"
 const stmtRetrieveTags = "SELECT tag_id FROM posts_tags WHERE post_id = ?"
 const stmtRetrieveTagById = "SELECT id, name, slug FROM tags WHERE id = ?"
 const stmtRetrieveTagBySlug = "SELECT id, name, slug FROM tags WHERE slug = ?"
@@ -237,7 +237,7 @@ func RetrieveUser(id int64) (*structure.User, error) {
 	user := structure.User{}
 	// Retrieve user
 	row := readDB.QueryRow(stmtRetrieveUserById, id)
-	err := row.Scan(&user.Id, &user.Name, &user.Slug, &user.Email, &user.Image, &user.Cover, &user.Bio, &user.Website, &user.Location)
+	err := row.Scan(&user.Id, &user.Name, &user.Slug, &user.Email, &user.Image, &user.Cover, &user.Bio, &user.Website, &user.Location, &user.Twitter, &user.Facebook)
 	if err != nil {
 		return nil, err
 	}
@@ -248,7 +248,7 @@ func RetrieveUserBySlug(slug string) (*structure.User, error) {
 	user := structure.User{}
 	// Retrieve user
 	row := readDB.QueryRow(stmtRetrieveUserBySlug, slug)
-	err := row.Scan(&user.Id, &user.Name, &user.Slug, &user.Email, &user.Image, &user.Cover, &user.Bio, &user.Website, &user.Location)
+	err := row.Scan(&user.Id, &user.Name, &user.Slug, &user.Email, &user.Image, &user.Cover, &user.Bio, &user.Website, &user.Location, &user.Twitter, &user.Facebook)
 	if err != nil {
 		return nil, err
 	}
@@ -259,7 +259,7 @@ func RetrieveUserByName(name []byte) (*structure.User, error) {
 	user := structure.User{}
 	// Retrieve user
 	row := readDB.QueryRow(stmtRetrieveUserByName, name)
-	err := row.Scan(&user.Id, &user.Name, &user.Slug, &user.Email, &user.Image, &user.Cover, &user.Bio, &user.Website, &user.Location)
+	err := row.Scan(&user.Id, &user.Name, &user.Slug, &user.Email, &user.Image, &user.Cover, &user.Bio, &user.Website, &user.Location, &user.Twitter, &user.Facebook)
 	if err != nil {
 		return nil, err
 	}

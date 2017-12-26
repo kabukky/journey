@@ -61,6 +61,8 @@ var helperFuctions = map[string]func(*structure.Helper, *structure.RequestData) 
 	"website":         websiteFunc,
 	"cover":           coverFunc,
 	"location":        locationFunc,
+	"twitter":         twitterFunc,
+	"facebook":        facebookFunc,
 	"author.name":     authorDotNameFunc,
 	"author.bio":      bioFunc,
 	"author.email":    emailFunc,
@@ -68,6 +70,8 @@ var helperFuctions = map[string]func(*structure.Helper, *structure.RequestData) 
 	"author.image":    authorDotImageFunc,
 	"author.cover":    coverFunc,
 	"author.location": locationFunc,
+	"author.twitter":  twitterFunc,
+	"author.facebook": facebookFunc,
 
 	// Navigation functions
 	"navigation": navigationFunc,
