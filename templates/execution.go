@@ -43,7 +43,7 @@ func ShowPostTemplate(writer http.ResponseWriter, r *http.Request, slug string, 
 		return errors.New("Post already published.")
 	} else if !uuidAsSlug && !post.IsPublished {
 		return errors.New("Post not published.")
-	} else if post.Slug != slug {
+	} else if !uuidAsSlug && post.Slug != slug {
 		http.Redirect(writer, r, "/"+post.Slug+"/", 301)
 		return nil
 	}
