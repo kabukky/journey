@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/dimfeld/httptreemux"
+	"github.com/kabukky/journey/helpers"
 	"github.com/kabukky/journey/filenames"
 	"github.com/kabukky/journey/structure/methods"
 	"github.com/kabukky/journey/templates"
@@ -29,7 +30,8 @@ func indexHandler(w http.ResponseWriter, r *http.Request, params map[string]stri
 	// Render index template
 	err = templates.ShowIndexTemplate(w, r, page)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		// http.Error(w, err.Error(), http.StatusInternalServerError)
+		errorHandler(w, r, http.StatusNotFound)
 		return
 	}
 	return
@@ -43,33 +45,37 @@ func authorHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 		// Render author template (first page)
 		err := templates.ShowAuthorTemplate(w, r, slug, 1)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			// http.Error(w, err.Error(), http.StatusInternalServerError)
+			errorHandler(w, r, http.StatusNotFound)
 			return
 		}
 		return
 	} else if function == "page" {
 		page, err := strconv.Atoi(number)
 		if err != nil || page <= 1 || number[0] == '0' {
-			http.NotFound(w, r)
+			errorHandler(w, r, http.StatusNotFound)
 			return
 		}
 		// Render author template
 		err = templates.ShowAuthorTemplate(w, r, slug, page)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			// http.Error(w, err.Error(), http.StatusInternalServerError)
+			errorHandler(w, r, http.StatusNotFound)
 			return
 		}
 		return
 	} else if function == "rss" {
 		// Render author rss feed
+		w.Header().Set("Cache-Control", "public, max-age=86400") // 1 day
 		err := templates.ShowAuthorRss(w, slug)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			// http.Error(w, err.Error(), http.StatusInternalServerError)
+			errorHandler(w, r, http.StatusNotFound)
 			return
 		}
 		return
 	} else {
-		http.NotFound(w, r)
+		errorHandler(w, r, http.StatusNotFound)
 		return
 	}
 	return
@@ -83,33 +89,37 @@ func tagHandler(w http.ResponseWriter, r *http.Request, params map[string]string
 		// Render tag template (first page)
 		err := templates.ShowTagTemplate(w, r, slug, 1)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			// http.Error(w, err.Error(), http.StatusInternalServerError)
+			errorHandler(w, r, http.StatusNotFound)
 			return
 		}
 		return
 	} else if function == "page" {
 		page, err := strconv.Atoi(number)
 		if err != nil || page <= 1 || number[0] == '0' {
-			http.NotFound(w, r)
+			errorHandler(w, r, http.StatusNotFound)
 			return
 		}
 		// Render tag template
 		err = templates.ShowTagTemplate(w, r, slug, page)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			// http.Error(w, err.Error(), http.StatusInternalServerError)
+			errorHandler(w, r, http.StatusNotFound)
 			return
 		}
 		return
 	} else if function == "rss" {
 		// Render tag rss feed
+		w.Header().Set("Cache-Control", "public, max-age=86400") // 1 day
 		err := templates.ShowTagRss(w, slug)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			// http.Error(w, err.Error(), http.StatusInternalServerError)
+			errorHandler(w, r, http.StatusNotFound)
 			return
 		}
 		return
 	} else {
-		http.NotFound(w, r)
+		errorHandler(w, r, http.StatusNotFound)
 		return
 	}
 	return
@@ -119,6 +129,7 @@ func postHandler(w http.ResponseWriter, r *http.Request, params map[string]strin
 	slug := params["slug"]
 	if slug == "rss" {
 		// Render index rss feed
+		w.Header().Set("Cache-Control", "public, max-age=86400") // 1 day
 		err := templates.ShowIndexRss(w)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -139,7 +150,8 @@ func postHandler(w http.ResponseWriter, r *http.Request, params map[string]strin
 	// Render post template
 	err := templates.ShowPostTemplate(w, r, slug, uuidAsSlug)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		// http.Error(w, err.Error(), http.StatusInternalServerError)
+		errorHandler(w, r, http.StatusNotFound)
 		return
 	}
 	return
@@ -149,23 +161,64 @@ func assetsHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 	// Read lock global blog
 	methods.Blog.RLock()
 	defer methods.Blog.RUnlock()
-	http.ServeFile(w, r, filepath.Join(filenames.ThemesFilepath, methods.Blog.ActiveTheme, "assets", params["filepath"]))
+	path := filepath.Join(filenames.ThemesFilepath, methods.Blog.ActiveTheme, "assets", params["filepath"])
+	if helpers.IsDirectory(path) {
+		errorHandler(w, r, http.StatusNotFound)
+	}
+	w.Header().Set("Cache-Control", "public, max-age=864000") // 10 days
+	http.ServeFile(w, r, path)
 	return
 }
 
 func imagesHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
-	http.ServeFile(w, r, filepath.Join(filenames.ImagesFilepath, params["filepath"]))
+	path := filepath.Join(filenames.ImagesFilepath, params["filepath"])
+	if helpers.IsDirectory(path) {
+		errorHandler(w, r, http.StatusNotFound)
+	}
+	w.Header().Set("Cache-Control", "public, max-age=864000") // 10 days
+	http.ServeFile(w, r, path)
 	return
 }
 
 func publicHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
-	http.ServeFile(w, r, filepath.Join(filenames.PublicFilepath, params["filepath"]))
+	path := filepath.Join(filenames.PublicFilepath, params["filepath"])
+	if helpers.IsDirectory(path) {
+		errorHandler(w, r, http.StatusNotFound)
+	}
+	w.Header().Set("Cache-Control", "public, max-age=864000") // 10 days
+	http.ServeFile(w, r, path)
 	return
+}
+
+func faviconHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	w.Header().Set("Cache-Control", "public, max-age=864000") // 10 days
+	http.ServeFile(w, r, filepath.Join(filenames.ImagesFilepath, "favicon.ico"))
+	return
+}
+
+func robotsHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	// Read lock global blog
+	methods.Blog.RLock()
+	defer methods.Blog.RUnlock()
+	w.Header().Set("Cache-Control", "public, max-age=864000") // 10 days
+	http.ServeFile(w, r, filepath.Join(filenames.ThemesFilepath, methods.Blog.ActiveTheme, "assets", "robots.txt"))
+	return
+}
+
+func errorHandler(w http.ResponseWriter, r *http.Request, status int) {
+	w.WriteHeader(status)
+	err := templates.ShowPostTemplate(w, r, "404", false) // TODO status might not always be 404
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
 }
 
 func InitializeBlog(router *httptreemux.TreeMux) {
 	// For index
 	router.GET("/", indexHandler)
+	router.GET("/favicon.ico", faviconHandler)
+	router.GET("/robots.txt", robotsHandler)
 	router.GET("/:slug/", postHandler)
 	router.GET("/p/:uuid/", postHandler)
 	router.GET("/page/:number/", indexHandler)

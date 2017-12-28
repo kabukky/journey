@@ -171,6 +171,7 @@ func adminFileHandler(w http.ResponseWriter, r *http.Request, params map[string]
 	userName := authentication.GetUserName(r)
 	if userName != "" {
 		// Get arguments (files)
+		w.Header().Set("Cache-Control", "public, max-age=864000") // 10 days
 		http.ServeFile(w, r, filepath.Join(filenames.AdminFilepath, params["filepath"]))
 		return
 	} else {
