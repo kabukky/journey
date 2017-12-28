@@ -83,7 +83,7 @@ func writeXSSHeaders(w http.ResponseWriter) {
 	w.Header().Set("X-Frame-Options", "DENY")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.Header().Set("X-XSS-Protection", "1; mode=block")
-	w.Header().Set("Content-Security-Policy", "default-src 'self' 'unsafe-inline' *.googleapis.com")
+	w.Header().Set("Content-Security-Policy", "default-src 'self' 'unsafe-inline' 'unsafe-eval' *.googleapis.com *.gstatic.com")
 }
 
 // Function to serve the login page
