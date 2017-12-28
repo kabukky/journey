@@ -16,7 +16,7 @@ func pagesHandler(w http.ResponseWriter, r *http.Request, params map[string]stri
 		http.Redirect(w, r, r.RequestURI+"/", 301)
 		return
 	}
-	http.ServeFile(w, r, path)
+	serveFile(w, r, path)
 	return
 }
 

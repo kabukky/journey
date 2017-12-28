@@ -83,7 +83,7 @@ func getLoginHandler(w http.ResponseWriter, r *http.Request, _ map[string]string
 		http.Redirect(w, r, "/admin/register/", 302)
 		return
 	}
-	http.ServeFile(w, r, filepath.Join(filenames.AdminFilepath, "login.html"))
+	serveFile(w, r, filepath.Join(filenames.AdminFilepath, "login.html"))
 	return
 }
 
@@ -105,7 +105,7 @@ func postLoginHandler(w http.ResponseWriter, r *http.Request, _ map[string]strin
 // Function to serve the registration form
 func getRegistrationHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	if database.RetrieveUsersCount() == 0 {
-		http.ServeFile(w, r, filepath.Join(filenames.AdminFilepath, "registration.html"))
+		serveFile(w, r, filepath.Join(filenames.AdminFilepath, "registration.html"))
 		return
 	}
 	http.Redirect(w, r, "/admin/", 302)
@@ -157,7 +157,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	} else {
 		userName := authentication.GetUserName(r)
 		if userName != "" {
-			http.ServeFile(w, r, filepath.Join(filenames.AdminFilepath, "admin.html"))
+			serveFile(w, r, filepath.Join(filenames.AdminFilepath, "admin.html"))
 			return
 		} else {
 			http.Redirect(w, r, "/admin/login/", 302)
@@ -171,8 +171,7 @@ func adminFileHandler(w http.ResponseWriter, r *http.Request, params map[string]
 	userName := authentication.GetUserName(r)
 	if userName != "" {
 		// Get arguments (files)
-		w.Header().Set("Cache-Control", "public, max-age=864000") // 10 days
-		http.ServeFile(w, r, filepath.Join(filenames.AdminFilepath, params["filepath"]))
+		serveFile(w, r, filepath.Join(filenames.AdminFilepath, params["filepath"]))
 		return
 	} else {
 		http.NotFound(w, r)

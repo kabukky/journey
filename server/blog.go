@@ -6,9 +6,11 @@ import (
 	"github.com/kabukky/journey/filenames"
 	"github.com/kabukky/journey/structure/methods"
 	"github.com/kabukky/journey/templates"
+	"github.com/golang/gddo/httputil/header"
 	"net/http"
 	"path/filepath"
 	"strconv"
+	"os"
 )
 
 func indexHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
@@ -162,37 +164,24 @@ func assetsHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 	methods.Blog.RLock()
 	defer methods.Blog.RUnlock()
 	path := filepath.Join(filenames.ThemesFilepath, methods.Blog.ActiveTheme, "assets", params["filepath"])
-	if helpers.IsDirectory(path) {
-		errorHandler(w, r, http.StatusNotFound)
-	}
-	w.Header().Set("Cache-Control", "public, max-age=864000") // 10 days
-	http.ServeFile(w, r, path)
+	serveFile(w, r, path)
 	return
 }
 
 func imagesHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
 	path := filepath.Join(filenames.ImagesFilepath, params["filepath"])
-	if helpers.IsDirectory(path) {
-		errorHandler(w, r, http.StatusNotFound)
-	}
-	w.Header().Set("Cache-Control", "public, max-age=864000") // 10 days
-	http.ServeFile(w, r, path)
+	serveFile(w, r, path)
 	return
 }
 
 func publicHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
 	path := filepath.Join(filenames.PublicFilepath, params["filepath"])
-	if helpers.IsDirectory(path) {
-		errorHandler(w, r, http.StatusNotFound)
-	}
-	w.Header().Set("Cache-Control", "public, max-age=864000") // 10 days
-	http.ServeFile(w, r, path)
+	serveFile(w, r, path)
 	return
 }
 
 func faviconHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
-	w.Header().Set("Cache-Control", "public, max-age=864000") // 10 days
-	http.ServeFile(w, r, filepath.Join(filenames.ImagesFilepath, "favicon.ico"))
+	serveFile(w, r, filepath.Join(filenames.ImagesFilepath, "favicon.ico"))
 	return
 }
 
@@ -200,8 +189,7 @@ func robotsHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 	// Read lock global blog
 	methods.Blog.RLock()
 	defer methods.Blog.RUnlock()
-	w.Header().Set("Cache-Control", "public, max-age=864000") // 10 days
-	http.ServeFile(w, r, filepath.Join(filenames.ThemesFilepath, methods.Blog.ActiveTheme, "assets", "robots.txt"))
+	serveFile(w, r, filepath.Join(filenames.ThemesFilepath, methods.Blog.ActiveTheme, "assets", "robots.txt"))
 	return
 }
 
@@ -235,4 +223,60 @@ func InitializeBlog(router *httptreemux.TreeMux) {
 	router.GET("/images/*filepath", imagesHandler)
 	// router.GET("/content/images/*filepath", imagesHandler) // This is here to keep compatibility with Ghost
 	router.GET("/public/*filepath", publicHandler)
+}
+
+
+// source: https://github.com/lpar/gzipped/
+
+func gzipAcceptable(r *http.Request) bool {
+	for _, aspec := range header.ParseAccept(r.Header, "Accept-Encoding") {
+		if aspec.Value == "gzip" && aspec.Q == 0.0 {
+			return false
+		}
+		if (aspec.Value == "gzip" || aspec.Value == "*") && aspec.Q > 0.0 {
+			return true
+		}
+	}
+	return false
+}
+
+func serveFile(w http.ResponseWriter, r *http.Request, fpath string) {
+	if helpers.IsDirectory(fpath) {
+		errorHandler(w, r, http.StatusNotFound)
+		return
+	}
+	// Try for a compressed version if the client accepts gzip
+	var file http.File
+	var info os.FileInfo
+	var err error
+	var gzip bool
+	if gzipAcceptable(r) {
+		gzpath := fpath + ".gz"
+		info, err = os.Stat(gzpath)
+		if err == nil {
+			gzip = true
+			file, err = os.Open(gzpath)
+		}
+	}
+	// If we didn't manage to open a compressed version, try for uncompressed
+	if !gzip {
+		info, err = os.Stat(fpath)
+		if err == nil {
+			file, err = os.Open(fpath)
+		} else {
+			errorHandler(w, r, http.StatusNotFound)
+			return
+		}
+	}
+	if err != nil {
+		// Doesn't exist compressed or uncompressed
+		errorHandler(w, r, http.StatusNotFound)
+		return
+	}
+	w.Header().Set("Cache-Control", "public, max-age=864000") // 10 days
+	if gzip {
+		w.Header().Set("Content-Encoding", "gzip")
+	}
+	defer file.Close()
+	http.ServeContent(w, r, fpath, info.ModTime(), file)
 }
