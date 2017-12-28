@@ -203,6 +203,14 @@ func errorHandler(w http.ResponseWriter, r *http.Request, status int) {
 }
 
 func InitializeBlog(router *httptreemux.TreeMux) {
+	router.OptionsHandler = func(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, PATCH, DELETE")
+		w.Header().Set("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type, Accept-Encoding")
+		w.Header().Set("Access-Control-Max-Age", "3600")
+		w.WriteHeader(http.StatusNoContent)
+	}
 	// For index
 	router.GET("/", indexHandler)
 	router.GET("/favicon.ico", faviconHandler)
