@@ -77,8 +77,18 @@ type JsonImage struct {
 	Filename string
 }
 
+// Function to write XSS-prevention HTTP headers
+func writeXSSHeaders(w http.ResponseWriter) {
+	w.Header().Set("Strict-Transport-Security", "max-age=31536000") // HSTS
+	w.Header().Set("X-Frame-Options", "DENY")
+	w.Header().Set("X-Content-Type-Options", "nosniff")
+	w.Header().Set("X-XSS-Protection", "1; mode=block")
+	w.Header().Set("Content-Security-Policy", "default-src 'self' 'unsafe-inline' *.googleapis.com")
+}
+
 // Function to serve the login page
 func getLoginHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+	writeXSSHeaders(w)
 	if database.RetrieveUsersCount() == 0 {
 		http.Redirect(w, r, "/admin/register/", 302)
 		return
@@ -89,6 +99,7 @@ func getLoginHandler(w http.ResponseWriter, r *http.Request, _ map[string]string
 
 // Function to receive a login form
 func postLoginHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+	writeXSSHeaders(w)
 	name := r.FormValue("name")
 	password := r.FormValue("password")
 	if name != "" && password != "" {
@@ -104,6 +115,7 @@ func postLoginHandler(w http.ResponseWriter, r *http.Request, _ map[string]strin
 
 // Function to serve the registration form
 func getRegistrationHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+	writeXSSHeaders(w)
 	if database.RetrieveUsersCount() == 0 {
 		serveFile(w, r, filepath.Join(filenames.AdminFilepath, "registration.html"))
 		return
@@ -114,6 +126,7 @@ func getRegistrationHandler(w http.ResponseWriter, r *http.Request, _ map[string
 
 // Function to recieve a registration form.
 func postRegistrationHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+	writeXSSHeaders(w)
 	if database.RetrieveUsersCount() == 0 { // TODO: Or check if authenticated user is admin when adding users from inside the admin area
 		name := r.FormValue("name")
 		email := r.FormValue("email")
@@ -144,6 +157,7 @@ func postRegistrationHandler(w http.ResponseWriter, r *http.Request, _ map[strin
 
 // Function to log out the user. Not used at the moment.
 func logoutHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+	writeXSSHeaders(w)
 	authentication.ClearSession(w)
 	http.Redirect(w, r, "/admin/login/", 302)
 	return
@@ -151,6 +165,7 @@ func logoutHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) 
 
 // Function to route the /admin/ url accordingly. (Is user logged in? Is at least one user registered?)
 func adminHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+	writeXSSHeaders(w)
 	if database.RetrieveUsersCount() == 0 {
 		http.Redirect(w, r, "/admin/register/", 302)
 		return
@@ -168,6 +183,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 
 // Function to serve files belonging to the admin interface.
 func adminFileHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	writeXSSHeaders(w)
 	userName := authentication.GetUserName(r)
 	if userName != "" {
 		// Get arguments (files)
@@ -181,6 +197,7 @@ func adminFileHandler(w http.ResponseWriter, r *http.Request, params map[string]
 
 // API function to get all posts by pages
 func apiPostsHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	writeXSSHeaders(w)
 	userName := authentication.GetUserName(r)
 	if userName != "" {
 		number := params["number"]
@@ -211,6 +228,7 @@ func apiPostsHandler(w http.ResponseWriter, r *http.Request, params map[string]s
 
 // API function to get a post by id
 func getApiPostHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	writeXSSHeaders(w)
 	userName := authentication.GetUserName(r)
 	if userName != "" {
 		id := params["id"]
@@ -241,6 +259,7 @@ func getApiPostHandler(w http.ResponseWriter, r *http.Request, params map[string
 
 // API function to create a post
 func postApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+	writeXSSHeaders(w)
 	userName := authentication.GetUserName(r)
 	if userName != "" {
 		userId, err := getUserId(userName)
@@ -280,6 +299,7 @@ func postApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]str
 
 // API function to update a post.
 func patchApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+	writeXSSHeaders(w)
 	userName := authentication.GetUserName(r)
 	if userName != "" {
 		userId, err := getUserId(userName)
@@ -325,6 +345,7 @@ func patchApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 
 // API function to delete a post by id.
 func deleteApiPostHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	writeXSSHeaders(w)
 	userName := authentication.GetUserName(r)
 	if userName != "" {
 		id := params["id"]
@@ -350,6 +371,7 @@ func deleteApiPostHandler(w http.ResponseWriter, r *http.Request, params map[str
 
 // API function to upload images
 func apiUploadHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+	writeXSSHeaders(w)
 	userName := authentication.GetUserName(r)
 	if userName != "" {
 		// Create multipart reader
@@ -409,6 +431,7 @@ func apiUploadHandler(w http.ResponseWriter, r *http.Request, _ map[string]strin
 
 // API function to get all images by pages
 func apiImagesHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	writeXSSHeaders(w)
 	userName := authentication.GetUserName(r)
 	if userName != "" {
 		number := params["number"]
@@ -464,6 +487,7 @@ func apiImagesHandler(w http.ResponseWriter, r *http.Request, params map[string]
 
 // API function to delete an image by its filename.
 func deleteApiImageHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+	writeXSSHeaders(w)
 	userName := authentication.GetUserName(r)
 	if userName != "" { // TODO: Check if the user has permissions to delete the image
 		// Get the file name from the json data
@@ -498,6 +522,7 @@ func deleteApiImageHandler(w http.ResponseWriter, r *http.Request, _ map[string]
 
 // API function to get blog settings
 func getApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+	writeXSSHeaders(w)
 	userName := authentication.GetUserName(r)
 	if userName != "" {
 		// Read lock the global blog
@@ -520,6 +545,7 @@ func getApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]stri
 
 // API function to update blog settings
 func patchApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+	writeXSSHeaders(w)
 	userName := authentication.GetUserName(r)
 	if userName != "" {
 		userId, err := getUserId(userName)
@@ -581,6 +607,7 @@ func patchApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 
 // API function to get user settings
 func getApiUserHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	writeXSSHeaders(w)
 	userName := authentication.GetUserName(r)
 	if userName != "" {
 		userId, err := getUserId(userName)
@@ -619,6 +646,7 @@ func getApiUserHandler(w http.ResponseWriter, r *http.Request, params map[string
 
 // API function to patch user settings
 func patchApiUserHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+	writeXSSHeaders(w)
 	userName := authentication.GetUserName(r)
 	if userName != "" {
 		userId, err := getUserId(userName)
@@ -710,6 +738,7 @@ func patchApiUserHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 
 // API function to get the id of the currently authenticated user
 func getApiUserIdHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+	writeXSSHeaders(w)
 	userName := authentication.GetUserName(r)
 	if userName != "" {
 		userId, err := getUserId(userName)
