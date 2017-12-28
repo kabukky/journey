@@ -6,8 +6,11 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"encoding/json"
 
 	"github.com/dimfeld/httptreemux"
+	"github.com/thoas/stats"
+	"github.com/kabukky/journey/authentication"
 	"github.com/kabukky/journey/configuration"
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/filenames"
@@ -110,6 +113,7 @@ func main() {
 			log.Fatal("Error: Couldn't start the HTTP server:", err)
 		}
 	case "All":
+		httpsStats := stats.New()
 		httpsRouter := httptreemux.New()
 		httpRouter := httptreemux.New()
 		// Blog and pages as https
@@ -122,8 +126,22 @@ func main() {
 		httpRouter.GET("/*path", httpsRedirect)
 		// Start https server
 		log.Println("Starting https server on port " + httpsPort + "...")
+		httpsRouter.GET("/admin/stats", func(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+			userName := authentication.GetUserName(r)
+			if userName != "" {
+				w.Header().Set("Content-Type", "application/json; charset=utf-8")
+				s, err := json.Marshal(httpsStats.Data())
+				if err != nil {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+				}
+				w.Write(s)
+			} else {
+				http.Error(w, "Not logged in!", http.StatusInternalServerError)
+				return
+			}
+		})
 		go func() {
-			if err := https.StartServer(httpsPort, httpsRouter); err != nil {
+			if err := https.StartServer(httpsPort, httpsStats.Handler(httpsRouter)); err != nil {
 				log.Fatal("Error: Couldn't start the HTTPS server:", err)
 			}
 		}()
