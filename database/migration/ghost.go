@@ -39,7 +39,7 @@ type dateHolder struct {
 	lastLogin   *time.Time
 }
 
-// Function to convert a Ghost database to use with Journey
+// Ghost: Function to convert a Ghost database to use with Journey
 func Ghost() {
 	// Check every file in data directory
 	err := filepath.Walk(filenames.DatabaseFilepath, inspectDatabaseFile)
