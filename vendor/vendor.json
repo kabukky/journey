@@ -27,12 +27,6 @@
 			"revisionTime": "2015-03-20T12:54:33Z"
 		},
 		{
-			"checksumSHA1": "6nmAJBw2phU9MUmkUnqFvbO5urg=",
-			"path": "github.com/kardianos/osext",
-			"revision": "29ae4ffbc9a6fe9fb2bc5029050ce6996ea1d3bc",
-			"revisionTime": "2015-12-22T15:32:29Z"
-		},
-		{
 			"checksumSHA1": "jAmPL1ZFpCfmrzMRIkA9D+9ivuo=",
 			"path": "github.com/mattn/go-sqlite3",
 			"revision": "7ed900a7c4cc22315a007cc49821cce3baa7be0f",
