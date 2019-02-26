@@ -2,7 +2,6 @@ package filenames
 
 import (
 	"github.com/kabukky/journey/flags"
-	"github.com/kardianos/osext"
 	"log"
 	"os"
 	"path/filepath"
@@ -89,9 +88,11 @@ func determineAssetPath() string {
 
 func determineExecutablePath() string {
 	// Get the path this executable is located in
-	executablePath, err := osext.ExecutableFolder()
+	executablePath, err := os.Executable()
 	if err != nil {
 		log.Fatal("Error: Couldn't determine what directory this executable is in:", err)
 	}
+	executablePath = filepath.Clean( executablePath )
+	executablePath = filepath.Dir( executablePath ) 
 	return executablePath
 }
