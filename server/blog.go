@@ -126,6 +126,10 @@ func postHandler(w http.ResponseWriter, r *http.Request, params map[string]strin
 	// Render post template
 	err := templates.ShowPostTemplate(w, r, slug)
 	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
+			http.Error(w, "Got lost?", http.StatusNotFound)
+			return
+		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
