@@ -19,6 +19,10 @@ func indexHandler(w http.ResponseWriter, r *http.Request, params map[string]stri
 		// Render index template (first page)
 		err := templates.ShowIndexTemplate(w, r, 1)
 		if err != nil {
+			if err.Error() == "sql: no rows in result set" {
+				http.Error(w, "Got lost?", http.StatusNotFound)
+				return
+			}
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -32,6 +36,10 @@ func indexHandler(w http.ResponseWriter, r *http.Request, params map[string]stri
 	// Render index template
 	err = templates.ShowIndexTemplate(w, r, page)
 	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
+			http.Error(w, "Got lost?", http.StatusNotFound)
+			return
+		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -46,6 +54,10 @@ func authorHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 		// Render author template (first page)
 		err := templates.ShowAuthorTemplate(w, r, slug, 1)
 		if err != nil {
+			if err.Error() == "sql: no rows in result set" {
+				http.Error(w, "Got lost?", http.StatusNotFound)
+				return
+			}
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -54,6 +66,10 @@ func authorHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 		// Render author rss feed
 		err := templates.ShowAuthorRss(w, slug)
 		if err != nil {
+			if err.Error() == "sql: no rows in result set" {
+				http.Error(w, "Got lost?", http.StatusNotFound)
+				return
+			}
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -67,6 +83,10 @@ func authorHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 	// Render author template
 	err = templates.ShowAuthorTemplate(w, r, slug, page)
 	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
+			http.Error(w, "Got lost?", http.StatusNotFound)
+			return
+		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -81,6 +101,10 @@ func tagHandler(w http.ResponseWriter, r *http.Request, params map[string]string
 		// Render tag template (first page)
 		err := templates.ShowTagTemplate(w, r, slug, 1)
 		if err != nil {
+			if err.Error() == "sql: no rows in result set" {
+				http.Error(w, "Got lost?", http.StatusNotFound)
+				return
+			}
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -89,6 +113,10 @@ func tagHandler(w http.ResponseWriter, r *http.Request, params map[string]string
 		// Render tag rss feed
 		err := templates.ShowTagRss(w, slug)
 		if err != nil {
+			if err.Error() == "sql: no rows in result set" {
+				http.Error(w, "Got lost?", http.StatusNotFound)
+				return
+			}
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -102,6 +130,10 @@ func tagHandler(w http.ResponseWriter, r *http.Request, params map[string]string
 	// Render tag template
 	err = templates.ShowTagTemplate(w, r, slug, page)
 	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
+			http.Error(w, "Got lost?", http.StatusNotFound)
+			return
+		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -117,6 +149,10 @@ func postHandler(w http.ResponseWriter, r *http.Request, params map[string]strin
 		// Render index rss feed
 		err := templates.ShowIndexRss(w)
 		if err != nil {
+			if err.Error() == "sql: no rows in result set" {
+				http.Error(w, "Got lost?", http.StatusNotFound)
+				return
+			}
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -146,6 +182,10 @@ func postEditHandler(w http.ResponseWriter, r *http.Request, params map[string]s
 	// Redirect to edit
 	post, err := database.RetrievePostBySlug(slug)
 	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
+			http.Error(w, "Got lost?", http.StatusNotFound)
+			return
+		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
