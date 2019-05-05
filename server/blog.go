@@ -212,6 +212,16 @@ func publicHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 	return
 }
 
+func staticHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	filePath := filepath.Join(filenames.StaticFilepath, r.URL.Path)
+	if _, err := os.Stat(filePath); err == nil {
+		http.ServeFile(w, r, filePath)
+	} else {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	return
+}
+
 func InitializeBlog(router *httptreemux.TreeMux) {
 	// For index
 	router.GET("/", indexHandler)
@@ -231,4 +241,7 @@ func InitializeBlog(router *httptreemux.TreeMux) {
 	router.GET("/images/*filepath", imagesHandler)
 	router.GET("/content/images/*filepath", imagesHandler) // This is here to keep compatibility with Ghost
 	router.GET("/public/*filepath", publicHandler)
+	// For static files
+	router.GET("/favicon.ico", staticHandler)
+	router.GET("/robots.txt", staticHandler)
 }
