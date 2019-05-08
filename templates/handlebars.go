@@ -2,17 +2,18 @@ package templates
 
 import (
 	"bytes"
+	"html"
+	"log"
+	"net/url"
+	"strconv"
+	"strings"
+
 	"github.com/kabukky/journey/conversion"
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/date"
 	"github.com/kabukky/journey/plugins"
 	"github.com/kabukky/journey/structure"
 	"github.com/kabukky/journey/structure/methods"
-	"html"
-	"log"
-	"net/url"
-	"strconv"
-	"strings"
 )
 
 // Helper fuctions

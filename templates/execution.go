@@ -3,15 +3,16 @@ package templates
 import (
 	"bytes"
 	"errors"
+	"net/http"
+	"path/filepath"
+	"sync"
+
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/filenames"
 	"github.com/kabukky/journey/helpers"
 	"github.com/kabukky/journey/plugins"
 	"github.com/kabukky/journey/structure"
 	"github.com/kabukky/journey/structure/methods"
-	"net/http"
-	"path/filepath"
-	"sync"
 )
 
 type Templates struct {

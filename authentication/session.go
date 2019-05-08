@@ -1,8 +1,9 @@
 package authentication
 
 import (
-	"github.com/gorilla/securecookie"
 	"net/http"
+
+	"github.com/gorilla/securecookie"
 )
 
 var cookieHandler = securecookie.New(

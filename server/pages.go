@@ -1,12 +1,14 @@
 package server
 
 import (
-	"github.com/dimfeld/httptreemux"
-	"github.com/kabukky/journey/filenames"
-	"github.com/kabukky/journey/helpers"
 	"net/http"
 	"path/filepath"
 	"strings"
+
+	"github.com/dimfeld/httptreemux"
+
+	"github.com/kabukky/journey/filenames"
+	"github.com/kabukky/journey/helpers"
 )
 
 func pagesHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
@@ -20,7 +22,7 @@ func pagesHandler(w http.ResponseWriter, r *http.Request, params map[string]stri
 	return
 }
 
+// InitializePages serving standalone projects or pages saved in in content/pages
 func InitializePages(router *httptreemux.TreeMux) {
-	// For serving standalone projects or pages saved in in content/pages
 	router.GET("/pages/*filepath", pagesHandler)
 }

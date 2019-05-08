@@ -2,15 +2,16 @@ package methods
 
 import (
 	"encoding/json"
+	"log"
+
 	"github.com/kabukky/journey/configuration"
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/date"
 	"github.com/kabukky/journey/slug"
 	"github.com/kabukky/journey/structure"
-	"log"
 )
 
-// Global blog - thread safe and accessible by all requests
+// Blog - thread safe and accessible by all requests
 var Blog *structure.Blog
 
 var assetPath = []byte("/assets/")

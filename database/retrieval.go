@@ -3,8 +3,9 @@ package database
 import (
 	"database/sql"
 	"encoding/json"
-	"github.com/kabukky/journey/structure"
 	"time"
+
+	"github.com/kabukky/journey/structure"
 )
 
 const stmtRetrievePostsCount = "SELECT count(*) FROM posts WHERE page = 0 AND status = 'published'"

@@ -3,9 +3,11 @@
 package plugins
 
 import (
-	"github.com/kabukky/journey/structure"
-	"github.com/yuin/gopher-lua"
 	"log"
+
+	"github.com/yuin/gopher-lua"
+
+	"github.com/kabukky/journey/structure"
 )
 
 func Execute(helper *structure.Helper, values *structure.RequestData) ([]byte, error) {

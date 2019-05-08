@@ -3,12 +3,14 @@
 package plugins
 
 import (
-	"github.com/kabukky/journey/structure"
-	"github.com/yuin/gopher-lua"
 	"sync"
+
+	"github.com/yuin/gopher-lua"
+
+	"github.com/kabukky/journey/structure"
 )
 
-// Global LState pool
+// LuaPool LState pool
 var LuaPool *lStatePool
 
 type lStatePool struct {

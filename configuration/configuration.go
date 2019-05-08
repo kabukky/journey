@@ -11,7 +11,7 @@ import (
 	"github.com/kabukky/journey/filenames"
 )
 
-// Configuration: settings that are neccesary for server configuration
+// Configuration - settings that are neccesary for server configuration
 type Configuration struct {
 	HttpHostAndPort  string
 	HttpsHostAndPort string
@@ -40,7 +40,7 @@ func NewConfiguration() *Configuration {
 	return &config
 }
 
-// Global config - thread safe and accessible from all packages
+// Config thread safe and accessible from all packages
 var Config = NewConfiguration()
 
 func (c *Configuration) save() error {
@@ -94,7 +94,7 @@ func (c *Configuration) load() error {
 	for i := 0; i < cReflected.NumField(); i++ {
 		if cReflected.Field(i).Interface() == "" {
 			log.Println("Error: " + filenames.ConfigFilename + " is corrupted. Did you fill out all of the fields?")
-			return errors.New("Error: Configuration corrupted.")
+			return errors.New("error: Configuration corrupted")
 		}
 	}
 	// Save the changed config

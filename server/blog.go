@@ -3,9 +3,9 @@ package server
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strconv"
-	"os"
 
 	"github.com/dimfeld/httptreemux"
 
@@ -224,6 +224,7 @@ func staticHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 	return
 }
 
+// InitializeBlog serving main blog
 func InitializeBlog(router *httptreemux.TreeMux) {
 	// For index
 	router.GET("/", indexHandler)

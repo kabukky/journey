@@ -4,12 +4,14 @@ package plugins
 
 import (
 	"errors"
-	"github.com/kabukky/journey/filenames"
-	"github.com/kabukky/journey/structure"
-	"github.com/yuin/gopher-lua"
 	"log"
 	"os"
 	"path/filepath"
+
+	"github.com/yuin/gopher-lua"
+
+	"github.com/kabukky/journey/filenames"
+	"github.com/kabukky/journey/structure"
 )
 
 func Load() error {

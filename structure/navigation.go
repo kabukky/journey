@@ -1,6 +1,6 @@
 package structure
 
-// Navigation: an entry in the navigation menu
+// Navigation an entry in the navigation menu
 type Navigation struct {
 	Label string `json:"label"`
 	Url   string `json:"url"`

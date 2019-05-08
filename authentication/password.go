@@ -1,8 +1,9 @@
 package authentication
 
 import (
-	"github.com/kabukky/journey/database"
 	"golang.org/x/crypto/bcrypt"
+
+	"github.com/kabukky/journey/database"
 )
 
 func LoginIsCorrect(name string, password string) bool {

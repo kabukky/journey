@@ -2,7 +2,7 @@
 
 package structure
 
-// RequestData: used for template/helper execution. Contains data specific to the incoming request.
+// RequestData used for template/helper execution. Contains data specific to the incoming request.
 type RequestData struct {
 	PluginVMs              map[string]*string // dummy
 	Posts                  []Post

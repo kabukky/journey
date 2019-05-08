@@ -74,7 +74,7 @@ type AtomFeed struct {
 	Rights      string   `xml:"rights,omitempty"` // copyright used
 	Subtitle    string   `xml:"subtitle,omitempty"`
 	Link        *AtomLink
-	Author      *AtomAuthor // required 
+	Author      *AtomAuthor // required
 	Contributor *AtomContributor
 	Entries     []*AtomEntry
 }

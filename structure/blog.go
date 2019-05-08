@@ -4,7 +4,7 @@ import (
 	"sync"
 )
 
-// Blog: settings that are used for template execution
+// Blog settings that are used for template execution
 type Blog struct {
 	sync.RWMutex
 	Url             []byte

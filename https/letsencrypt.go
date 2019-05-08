@@ -6,9 +6,10 @@ import (
 	"net/http"
 	"net/url"
 
+	"golang.org/x/crypto/acme/autocert"
+
 	"github.com/kabukky/journey/configuration"
 	"github.com/kabukky/journey/filenames"
-	"golang.org/x/crypto/acme/autocert"
 )
 
 func buildLetsEncryptServer(addr string, handler http.Handler) *http.Server {

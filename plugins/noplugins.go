@@ -3,12 +3,13 @@
 package plugins
 
 import (
-	"github.com/kabukky/journey/structure"
 	"errors"
 	"sync"
+
+	"github.com/kabukky/journey/structure"
 )
 
-// Global LState pool
+// LuaPool Global LState pool
 var LuaPool *lStatePool
 
 type lStatePool struct {
@@ -30,9 +31,8 @@ func (pl *lStatePool) Get(helper *structure.Helper, values *structure.RequestDat
 	return nil
 }
 
-func (pl *lStatePool) Put(L map[string]*string){
+func (pl *lStatePool) Put(L map[string]*string) {
 }
-
 
 func (pl *lStatePool) Shutdown() {
 }

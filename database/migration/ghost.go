@@ -3,13 +3,14 @@ package migration
 import (
 	"database/sql"
 	"errors"
-	"github.com/kabukky/journey/date"
-	"github.com/kabukky/journey/filenames"
-	"github.com/kabukky/journey/helpers"
 	"log"
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/kabukky/journey/date"
+	"github.com/kabukky/journey/filenames"
+	"github.com/kabukky/journey/helpers"
 )
 
 const stmtRetrieveGhostPosts = "SELECT id, (created_at/1000), (updated_at/1000), (published_at/1000) FROM posts"
@@ -39,7 +40,7 @@ type dateHolder struct {
 	lastLogin   *time.Time
 }
 
-// Function to convert a Ghost database to use with Journey
+// Ghost function to convert a Ghost database to use with Journey
 func Ghost() {
 	// Check every file in data directory
 	err := filepath.Walk(filenames.DatabaseFilepath, inspectDatabaseFile)

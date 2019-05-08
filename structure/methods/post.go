@@ -1,10 +1,11 @@
 package methods
 
 import (
+	"log"
+
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/date"
 	"github.com/kabukky/journey/structure"
-	"log"
 )
 
 func SavePost(p *structure.Post) error {

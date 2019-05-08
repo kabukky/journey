@@ -1,6 +1,6 @@
 package structure
 
-// Helpers are created during parsing of the theme (template files). Helpers should never be altered during template execution (Helpers are shared across all requests).
+// Helper are created during parsing of the theme (template files). Helpers should never be altered during template execution (Helpers are shared across all requests).
 type Helper struct {
 	Name       string
 	Arguments  []Helper
