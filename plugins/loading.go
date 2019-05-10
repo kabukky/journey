@@ -42,7 +42,7 @@ func Load() error {
 		return err
 	}
 	if len(nameMap) == 0 {
-		return errors.New("No plugins were loaded.")
+		return errors.New("no plugins were loaded")
 	}
 	// If plugins were loaded, create LuaPool and assign name map to LuaPool
 	LuaPool = newLuaPool()

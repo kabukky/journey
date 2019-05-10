@@ -52,7 +52,7 @@ func convertUser(vm *lua.LState, structureUser *structure.User) *lua.LTable {
 
 func convertTags(vm *lua.LState, structureTags []structure.Tag) *lua.LTable {
 	table := make([]*lua.LTable, 0)
-	for index, _ := range structureTags {
+	for index := range structureTags {
 		tag := vm.NewTable()
 		tag.RawSet(lua.LString("id"), lua.LNumber(structureTags[index].Id))
 		tag.RawSet(lua.LString("name"), lua.LString(structureTags[index].Name))
@@ -78,7 +78,7 @@ func convertBlog(vm *lua.LState, structureBlog *structure.Blog) *lua.LTable {
 
 func makeTable(vm *lua.LState, tables []*lua.LTable) *lua.LTable {
 	table := vm.NewTable()
-	for index, _ := range tables {
+	for index := range tables {
 		table.Append(tables[index])
 	}
 	return table

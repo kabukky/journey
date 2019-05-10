@@ -29,9 +29,8 @@ var quoteTagChecker = regexp.MustCompile("(.*?)[\"'](.+?)[\"']$")
 func getFunction(name string) func(*structure.Helper, *structure.RequestData) []byte {
 	if helperFuctions[name] != nil {
 		return helperFuctions[name]
-	} else {
-		return helperFuctions["null"]
 	}
+	return helperFuctions["null"]
 }
 
 func createHelper(helperName []byte, unescaped bool, startPos int, block []byte, children []structure.Helper, elseHelper *structure.Helper) *structure.Helper {
@@ -117,9 +116,8 @@ func findHelper(data []byte, allHelpers []structure.Helper) ([]byte, []structure
 		}
 		allHelpers = append(allHelpers, *createHelper(helperName, unescaped, startPos, []byte{}, nil, nil))
 		return findHelper(data, allHelpers)
-	} else {
-		return data, allHelpers
 	}
+	return data, allHelpers
 }
 
 func findBlock(data []byte, helperName []byte, unescaped bool, startPos int) ([]byte, structure.Helper) {
@@ -154,7 +152,7 @@ func findBlock(data []byte, helperName []byte, unescaped bool, startPos int) ([]
 			// Change children, omit else helper
 			elseHelper.Children = children[(index + 1):]
 			// Change Position in children of else helper
-			for indexElse, _ := range elseHelper.Children {
+			for indexElse := range elseHelper.Children {
 				elseHelper.Children[indexElse].Position = elseHelper.Children[indexElse].Position - elseHelper.Position
 			}
 			children = children[:index]
@@ -260,9 +258,8 @@ func checkThemes() error {
 	err = compileTheme(currentThemePath)
 	if err == nil {
 		return nil
-	} else {
-		log.Println("Warning: Couldn't compile theme in " + currentThemePath + ": " + err.Error())
 	}
+	log.Println("Warning: Couldn't compile theme in " + currentThemePath + ": " + err.Error())
 	// If the currently set theme couldnt be compiled, try the default theme (promenade)
 	err = compileTheme(filepath.Join(filenames.ThemesFilepath, "promenade"))
 	if err == nil {
@@ -272,9 +269,8 @@ func checkThemes() error {
 			return err
 		}
 		return nil
-	} else {
-		log.Println("Warning: Couldn't compile theme in " + currentThemePath + ": " + err.Error())
 	}
+	log.Println("Warning: Couldn't compile theme in " + currentThemePath + ": " + err.Error())
 	// If all of that didn't work, try the available themes in order
 	allThemes := GetAllThemes()
 	for _, theme := range allThemes {
@@ -286,9 +282,8 @@ func checkThemes() error {
 				return err
 			}
 			return nil
-		} else {
-			log.Println("Warning: Couldn't compile theme in " + currentThemePath + ": " + err.Error())
 		}
+		log.Println("Warning: Couldn't compile theme in " + currentThemePath + ": " + err.Error())
 	}
 	return errors.New("Couldn't find a theme to use in " + filenames.ThemesFilepath)
 }

@@ -45,7 +45,6 @@ func indexHandler(w http.ResponseWriter, r *http.Request, params map[string]stri
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	return
 }
 
 func authorHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
@@ -92,7 +91,6 @@ func authorHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	return
 }
 
 func tagHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
@@ -139,7 +137,6 @@ func tagHandler(w http.ResponseWriter, r *http.Request, params map[string]string
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	return
 }
 
 func postHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
@@ -171,7 +168,6 @@ func postHandler(w http.ResponseWriter, r *http.Request, params map[string]strin
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	return
 }
 
 func postEditHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
@@ -201,17 +197,14 @@ func assetsHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 	methods.Blog.RLock()
 	defer methods.Blog.RUnlock()
 	http.ServeFile(w, r, filepath.Join(filenames.ThemesFilepath, methods.Blog.ActiveTheme, "assets", params["filepath"]))
-	return
 }
 
 func imagesHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
 	http.ServeFile(w, r, filepath.Join(filenames.ImagesFilepath, params["filepath"]))
-	return
 }
 
 func publicHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
 	http.ServeFile(w, r, filepath.Join(filenames.PublicFilepath, params["filepath"]))
-	return
 }
 
 func staticHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
@@ -221,7 +214,6 @@ func staticHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 	} else {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-	return
 }
 
 // InitializeBlog serving main blog

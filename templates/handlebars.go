@@ -30,11 +30,10 @@ func nullFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 				return []byte{}
 			}
 			return evaluateEscape(pluginResult, helper.Unescaped)
-		} else {
-			// This helper is not implemented in a plugin. Get rid of the Lua VMs
-			plugins.LuaPool.Put(values.PluginVMs)
-			values.PluginVMs = nil
 		}
+		// This helper is not implemented in a plugin. Get rid of the Lua VMs
+		plugins.LuaPool.Put(values.PluginVMs)
+		values.PluginVMs = nil
 	}
 	log.Println("Warning: This helper is not implemented:", helper.Name)
 	return []byte{}
@@ -90,7 +89,7 @@ func contentForFunc(helper *structure.Helper, values *structure.RequestData) []b
 func blockFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	if len(helper.Arguments) != 0 {
 		// Loop through the collected contentFor helpers and execute the appropriate one
-		for index, _ := range values.ContentForHelpers {
+		for index := range values.ContentForHelpers {
 			if len(values.ContentForHelpers[index].Arguments) != 0 {
 				if values.ContentForHelpers[index].Arguments[0].Name == helper.Arguments[0].Name {
 					return executeHelper(&values.ContentForHelpers[index], values, values.CurrentHelperContext)
@@ -328,9 +327,8 @@ func body_classFunc(helper *structure.Helper, values *structure.RequestData) []b
 	} else if values.CurrentTemplate == 0 { // index
 		if values.CurrentIndexPage == 1 {
 			return []byte("home-template")
-		} else {
-			return []byte("paged archive-template")
 		}
+		return []byte("paged archive-template")
 	} else if values.CurrentTemplate == 3 { // author
 		var buffer bytes.Buffer
 		buffer.WriteString("author-template author-")
@@ -396,11 +394,8 @@ func meta_descriptionFunc(helper *structure.Helper, values *structure.RequestDat
 	// TODO: Finish this
 	if values.CurrentTemplate == 1 || values.CurrentHelperContext == 1 { // post
 		return evaluateEscape(values.Posts[values.CurrentPostIndex].MetaDescription, helper.Unescaped)
-	} else {
-		return evaluateEscape(values.Blog.Description, helper.Unescaped)
 	}
-	// Nothing on post yet
-	return []byte{}
+	return evaluateEscape(values.Blog.Description, helper.Unescaped)
 }
 
 func bodyFunc(helper *structure.Helper, values *structure.RequestData) []byte {
@@ -781,17 +776,15 @@ func nameFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 func tagDotNameFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	if len(values.CurrentTag.Name) != 0 {
 		return evaluateEscape(values.CurrentTag.Name, helper.Unescaped)
-	} else {
-		return evaluateEscape(values.Posts[values.CurrentPostIndex].Tags[values.CurrentTagIndex].Name, helper.Unescaped)
 	}
+	return evaluateEscape(values.Posts[values.CurrentPostIndex].Tags[values.CurrentTagIndex].Name, helper.Unescaped)
 }
 
 func tagDotSlugFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	if values.CurrentTag.Slug != "" {
 		return evaluateEscape([]byte(values.CurrentTag.Slug), helper.Unescaped)
-	} else {
-		return evaluateEscape([]byte(values.Posts[values.CurrentPostIndex].Tags[values.CurrentTagIndex].Slug), helper.Unescaped)
 	}
+	return evaluateEscape([]byte(values.Posts[values.CurrentPostIndex].Tags[values.CurrentTagIndex].Slug), helper.Unescaped)
 }
 
 func idFunc(helper *structure.Helper, values *structure.RequestData) []byte {
@@ -813,7 +806,7 @@ func foreachFunc(helper *structure.Helper, values *structure.RequestData) []byte
 		switch helper.Arguments[0].Name {
 		case "posts":
 			var buffer bytes.Buffer
-			for index, _ := range values.Posts {
+			for index := range values.Posts {
 				//if values.Posts[index].Id != 0 { // If post is not empty (Commented out for now. This was only neccessary in previous versions, when the array length was always the postsPerPage length)
 				values.CurrentPostIndex = index
 				buffer.Write(executeHelper(helper, values, 1)) // context = post
@@ -822,7 +815,7 @@ func foreachFunc(helper *structure.Helper, values *structure.RequestData) []byte
 			return buffer.Bytes()
 		case "tags":
 			var buffer bytes.Buffer
-			for index, _ := range values.Posts[values.CurrentPostIndex].Tags {
+			for index := range values.Posts[values.CurrentPostIndex].Tags {
 				//if values.Posts[values.CurrentPostIndex].Tags[index].Id != 0 { // If tag is not empty (Commented out for now. Not neccessary.)
 				values.CurrentTagIndex = index
 				buffer.Write(executeHelper(helper, values, 2)) // context = tag
@@ -831,7 +824,7 @@ func foreachFunc(helper *structure.Helper, values *structure.RequestData) []byte
 			return buffer.Bytes()
 		case "navigation":
 			var buffer bytes.Buffer
-			for index, _ := range values.Blog.NavigationItems {
+			for index := range values.Blog.NavigationItems {
 				values.CurrentNavigationIndex = index
 				buffer.Write(executeHelper(helper, values, 4)) // context = navigation
 			}
@@ -848,13 +841,10 @@ func ifFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 		if len(helper.Arguments[0].Function(&helper.Arguments[0], values)) != 0 {
 			// If the evaluation is true, execute the if helper
 			return executeHelper(helper, values, values.CurrentHelperContext)
-		} else {
-			// Else execute the else helper which is always at the last index of the if helper Arguments
-			if helper.Arguments[len(helper.Arguments)-1].Name == "else" {
-				if len(helper.Arguments[len(helper.Arguments)-1].Children) != 0 {
-				}
-				return executeHelper(&helper.Arguments[len(helper.Arguments)-1], values, values.CurrentHelperContext)
-			}
+		}
+		// Else execute the else helper which is always at the last index of the if helper Arguments
+		if helper.Arguments[len(helper.Arguments)-1].Name == "else" {
+			return executeHelper(&helper.Arguments[len(helper.Arguments)-1], values, values.CurrentHelperContext)
 		}
 	}
 	return []byte{}

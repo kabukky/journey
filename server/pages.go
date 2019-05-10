@@ -19,7 +19,6 @@ func pagesHandler(w http.ResponseWriter, r *http.Request, params map[string]stri
 		return
 	}
 	http.ServeFile(w, r, path)
-	return
 }
 
 // InitializePages serving standalone projects or pages saved in in content/pages

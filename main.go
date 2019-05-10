@@ -21,7 +21,6 @@ import (
 
 func httpsRedirect(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	http.Redirect(w, r, configuration.Config.HttpsUrl+r.RequestURI, http.StatusMovedPermanently)
-	return
 }
 
 func main() {
