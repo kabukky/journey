@@ -20,6 +20,7 @@ import (
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/date"
 	"github.com/kabukky/journey/filenames"
+	"github.com/kabukky/journey/helpers"
 	"github.com/kabukky/journey/slug"
 	"github.com/kabukky/journey/structure"
 	"github.com/kabukky/journey/structure/methods"
@@ -160,11 +161,16 @@ func adminHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 func adminFileHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
 	userName := authentication.GetUserName(r)
 	if userName != "" {
+		path := filepath.Join(filenames.AdminFilepath, params["filepath"])
+		if !helpers.FileExists(path) {
+			http.Error(w, "Still lost?", http.StatusNotFound)
+			return
+		}
 		// Get arguments (files)
-		http.ServeFile(w, r, filepath.Join(filenames.AdminFilepath, params["filepath"]))
+		http.ServeFile(w, r, path)
 		return
 	}
-	http.NotFound(w, r)
+	http.Error(w, "Still lost?", http.StatusNotFound)
 }
 
 // API function to get all posts by pages

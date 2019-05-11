@@ -239,4 +239,9 @@ func InitializeBlog(router *httptreemux.TreeMux) {
 	// For static files
 	router.GET("/favicon.ico", staticHandler)
 	router.GET("/robots.txt", staticHandler)
+
+	// 404
+	router.NotFoundHandler = func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "Got lost again?", http.StatusNotFound)
+	}
 }

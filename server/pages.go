@@ -18,7 +18,12 @@ func pagesHandler(w http.ResponseWriter, r *http.Request, params map[string]stri
 		http.Redirect(w, r, r.RequestURI+"/", 301)
 		return
 	}
+	if !helpers.FileExists(path) {
+		http.Error(w, "Still lost?", http.StatusNotFound)
+		return
+	}
 	http.ServeFile(w, r, path)
+
 }
 
 // InitializePages serving standalone projects or pages saved in in content/pages
