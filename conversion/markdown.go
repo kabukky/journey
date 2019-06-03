@@ -9,23 +9,25 @@ import (
 const (
 	htmlFlags = 0 |
 		// We don't want blackfriday.HTML_USE_XHTML
-		blackfriday.HTML_USE_SMARTYPANTS |
-		blackfriday.HTML_SMARTYPANTS_FRACTIONS |
-		blackfriday.HTML_SMARTYPANTS_LATEX_DASHES |
-		blackfriday.HTML_FOOTNOTE_RETURN_LINKS
+		blackfriday.Smartypants |
+		blackfriday.SmartypantsFractions |
+		blackfriday.SmartypantsLatexDashes |
+		blackfriday.FootnoteReturnLinks
 
 	extensions = 0 |
-		blackfriday.EXTENSION_TABLES |
-		blackfriday.EXTENSION_FENCED_CODE |
-		blackfriday.EXTENSION_AUTOLINK |
-		blackfriday.EXTENSION_STRIKETHROUGH |
-		blackfriday.EXTENSION_SPACE_HEADERS |
-		blackfriday.EXTENSION_HEADER_IDS |
-		blackfriday.EXTENSION_BACKSLASH_LINE_BREAK |
-		blackfriday.EXTENSION_FOOTNOTES
+		blackfriday.Tables |
+		blackfriday.FencedCode |
+		blackfriday.Autolink |
+		blackfriday.Strikethrough |
+		blackfriday.SpaceHeadings |
+		blackfriday.HeadingIDs |
+		blackfriday.BackslashLineBreak |
+		blackfriday.Footnotes
 )
 
 func GenerateHtmlFromMarkdown(input []byte) []byte {
-	renderer := blackfriday.HtmlRenderer(htmlFlags, "", "")
-	return blackfriday.Markdown(input, renderer, extensions)
+	renderParameters := blackfriday.HTMLRendererParameters{}
+	renderParameters.Flags = htmlFlags
+	renderer := blackfriday.NewHTMLRenderer(renderParameters)
+	return blackfriday.Run(input, blackfriday.WithRenderer(renderer), blackfriday.WithExtensions(extensions))
 }
