@@ -17,6 +17,6 @@ require (
 	golang.org/x/net v0.0.0-20190603091049-60506f45cf65
 	golang.org/x/sys v0.0.0-20190602015325-4c4f7f33c9ed
 	golang.org/x/text v0.3.2 // indirect
-	golang.org/x/tools v0.0.0-20190603193455-b012c1979805 // indirect
+	golang.org/x/tools v0.0.0-20190603231351-8aaa1484dc10 // indirect
 	gopkg.in/fsnotify.v1 v1.4.7
 )
