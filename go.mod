@@ -13,10 +13,10 @@ require (
 	github.com/satori/go.uuid v1.2.0
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/yuin/gopher-lua v0.0.0-20190514113301-1cd887cd7036
-	golang.org/x/crypto v0.0.0-20190605123033-f99c8df09eb5
-	golang.org/x/net v0.0.0-20190611141213-3f473d35a33a
-	golang.org/x/sys v0.0.0-20190610200419-93c9922d18ae
+	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4
+	golang.org/x/net v0.0.0-20190628185345-da137c7871d7
+	golang.org/x/sys v0.0.0-20190626221950-04f50cda93cb
 	golang.org/x/text v0.3.2 // indirect
-	golang.org/x/tools v0.0.0-20190611164126-1d0142ba474a // indirect
+	golang.org/x/tools v0.0.0-20190703212419-2214986f1668 // indirect
 	gopkg.in/fsnotify.v1 v1.4.7
 )
