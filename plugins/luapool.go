@@ -28,7 +28,7 @@ func (pl *lStatePool) Get(helper *structure.Helper, values *structure.RequestDat
 		// Since these are new lua states, do the lua file.
 		for key, value := range x {
 			setUpVm(value, helper, values, LuaPool.files[key])
-			value.DoFile(LuaPool.files[key])
+			_ = value.DoFile(LuaPool.files[key])
 		}
 		return x
 	}

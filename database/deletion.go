@@ -6,12 +6,12 @@ const stmtDeletePostById = "DELETE FROM posts WHERE id = ?"
 func DeletePostTagsForPostId(post_id int64) error {
 	writeDB, err := readDB.Begin()
 	if err != nil {
-		writeDB.Rollback()
+		_ = writeDB.Rollback()
 		return err
 	}
 	_, err = writeDB.Exec(stmtDeletePostTagsByPostId, post_id)
 	if err != nil {
-		writeDB.Rollback()
+		_ = writeDB.Rollback()
 		return err
 	}
 	return writeDB.Commit()
@@ -20,12 +20,12 @@ func DeletePostTagsForPostId(post_id int64) error {
 func DeletePostById(id int64) error {
 	writeDB, err := readDB.Begin()
 	if err != nil {
-		writeDB.Rollback()
+		_ = writeDB.Rollback()
 		return err
 	}
 	_, err = writeDB.Exec(stmtDeletePostById, id)
 	if err != nil {
-		writeDB.Rollback()
+		_ = writeDB.Rollback()
 		return err
 	}
 	return writeDB.Commit()

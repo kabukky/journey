@@ -22,7 +22,7 @@ func UpdatePost(id int64, title []byte, slug string, markdown []byte, html []byt
 	}
 	writeDB, err := readDB.Begin()
 	if err != nil {
-		writeDB.Rollback()
+		_ = writeDB.Rollback()
 		return err
 	}
 	// If the updated post is published for the first time, add publication date and user
@@ -32,7 +32,7 @@ func UpdatePost(id int64, title []byte, slug string, markdown []byte, html []byt
 		_, err = writeDB.Exec(stmtUpdatePost, title, slug, markdown, html, featured, isPage, status, meta_description, image, updated_at, updated_by, id)
 	}
 	if err != nil {
-		writeDB.Rollback()
+		_ = writeDB.Rollback()
 		return err
 	}
 	return writeDB.Commit()
@@ -41,49 +41,49 @@ func UpdatePost(id int64, title []byte, slug string, markdown []byte, html []byt
 func UpdateSettings(title []byte, description []byte, logo []byte, cover []byte, postsPerPage int64, activeTheme string, navigation []byte, updated_at time.Time, updated_by int64) error {
 	writeDB, err := readDB.Begin()
 	if err != nil {
-		writeDB.Rollback()
+		_ = writeDB.Rollback()
 		return err
 	}
 	// Title
 	_, err = writeDB.Exec(stmtUpdateSettings, title, updated_at, updated_by, "title")
 	if err != nil {
-		writeDB.Rollback()
+		_ = writeDB.Rollback()
 		return err
 	}
 	// Description
 	_, err = writeDB.Exec(stmtUpdateSettings, description, updated_at, updated_by, "description")
 	if err != nil {
-		writeDB.Rollback()
+		_ = writeDB.Rollback()
 		return err
 	}
 	// Logo
 	_, err = writeDB.Exec(stmtUpdateSettings, logo, updated_at, updated_by, "logo")
 	if err != nil {
-		writeDB.Rollback()
+		_ = writeDB.Rollback()
 		return err
 	}
 	// Cover
 	_, err = writeDB.Exec(stmtUpdateSettings, cover, updated_at, updated_by, "cover")
 	if err != nil {
-		writeDB.Rollback()
+		_ = writeDB.Rollback()
 		return err
 	}
 	// PostsPerPage
 	_, err = writeDB.Exec(stmtUpdateSettings, postsPerPage, updated_at, updated_by, "postsPerPage")
 	if err != nil {
-		writeDB.Rollback()
+		_ = writeDB.Rollback()
 		return err
 	}
 	// ActiveTheme
 	_, err = writeDB.Exec(stmtUpdateSettings, activeTheme, updated_at, updated_by, "activeTheme")
 	if err != nil {
-		writeDB.Rollback()
+		_ = writeDB.Rollback()
 		return err
 	}
 	// Navigation
 	_, err = writeDB.Exec(stmtUpdateSettings, navigation, updated_at, updated_by, "navigation")
 	if err != nil {
-		writeDB.Rollback()
+		_ = writeDB.Rollback()
 		return err
 	}
 	return writeDB.Commit()
@@ -92,12 +92,12 @@ func UpdateSettings(title []byte, description []byte, logo []byte, cover []byte,
 func UpdateActiveTheme(activeTheme string, updated_at time.Time, updated_by int64) error {
 	writeDB, err := readDB.Begin()
 	if err != nil {
-		writeDB.Rollback()
+		_ = writeDB.Rollback()
 		return err
 	}
 	_, err = writeDB.Exec(stmtUpdateSettings, activeTheme, updated_at, updated_by, "activeTheme")
 	if err != nil {
-		writeDB.Rollback()
+		_ = writeDB.Rollback()
 		return err
 	}
 	return writeDB.Commit()
@@ -106,12 +106,12 @@ func UpdateActiveTheme(activeTheme string, updated_at time.Time, updated_by int6
 func UpdateUser(id int64, name []byte, slug string, email []byte, image []byte, cover []byte, bio []byte, website []byte, location []byte, updated_at time.Time, updated_by int64) error {
 	writeDB, err := readDB.Begin()
 	if err != nil {
-		writeDB.Rollback()
+		_ = writeDB.Rollback()
 		return err
 	}
 	_, err = writeDB.Exec(stmtUpdateUser, name, slug, email, image, cover, bio, website, location, updated_at, updated_by, id)
 	if err != nil {
-		writeDB.Rollback()
+		_ = writeDB.Rollback()
 		return err
 	}
 	return writeDB.Commit()
@@ -120,12 +120,12 @@ func UpdateUser(id int64, name []byte, slug string, email []byte, image []byte, 
 func UpdateLastLogin(logInDate time.Time, userId int64) error {
 	writeDB, err := readDB.Begin()
 	if err != nil {
-		writeDB.Rollback()
+		_ = writeDB.Rollback()
 		return err
 	}
 	_, err = writeDB.Exec(stmtUpdateLastLogin, logInDate, userId)
 	if err != nil {
-		writeDB.Rollback()
+		_ = writeDB.Rollback()
 		return err
 	}
 	return writeDB.Commit()
@@ -134,12 +134,12 @@ func UpdateLastLogin(logInDate time.Time, userId int64) error {
 func UpdateUserPassword(id int64, password string, updated_at time.Time, updated_by int64) error {
 	writeDB, err := readDB.Begin()
 	if err != nil {
-		writeDB.Rollback()
+		_ = writeDB.Rollback()
 		return err
 	}
 	_, err = writeDB.Exec(stmtUpdateUserPassword, password, updated_at, updated_by, id)
 	if err != nil {
-		writeDB.Rollback()
+		_ = writeDB.Rollback()
 		return err
 	}
 	return writeDB.Commit()
