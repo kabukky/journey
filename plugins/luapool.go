@@ -42,7 +42,7 @@ func (pl *lStatePool) Get(helper *structure.Helper, values *structure.RequestDat
 }
 
 func (pl *lStatePool) New() map[string]*lua.LState {
-	stateMap := make(map[string]*lua.LState, 0)
+	stateMap := make(map[string]*lua.LState)
 	for key := range LuaPool.files {
 		L := lua.NewState()
 		stateMap[key] = L

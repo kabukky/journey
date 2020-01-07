@@ -6,7 +6,7 @@ import (
 )
 
 var tagChecker = regexp.MustCompile("<.*?>")
-var whitespaceChecker = regexp.MustCompile("\\s{2,}")
+var whitespaceChecker = regexp.MustCompile(`\s{2,}`)
 
 func StripTagsFromHtml(input []byte) []byte {
 	output := tagChecker.ReplaceAll(input, []byte{})

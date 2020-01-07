@@ -94,7 +94,6 @@ func findHelper(data []byte, allHelpers []structure.Helper) ([]byte, []structure
 		// Check if helper calls for unescaped text (e.g. three brackets - {{{title}}})
 		if bytes.HasPrefix(helperName, []byte("{")) {
 			unescaped = true
-			openTagLength++ //not necessary
 			closeTagLength++
 			helperName = helperName[len([]byte("{")):]
 		}
@@ -123,7 +122,6 @@ func findHelper(data []byte, allHelpers []structure.Helper) ([]byte, []structure
 func findBlock(data []byte, helperName []byte, unescaped bool, startPos int) ([]byte, structure.Helper) {
 	arguments := bytes.Fields(helperName)
 	tag := arguments[0] // Get only the first tag (e.g. 'if' in 'if @blog.cover')
-	arguments = arguments[1:]
 	closeParts := []string{"{{2,3}\\s*/", string(tag), ".?}{2,3}"}
 	openParts := []string{"{{2,3}\\s*#", string(tag), ".+?}{2,3}"}
 	closeRegex := regexp.MustCompile(strings.Join(closeParts, ""))

@@ -401,7 +401,7 @@ func apiImagesHandler(w http.ResponseWriter, r *http.Request, params map[string]
 		}
 		images := make([]string, 0)
 		// Walk all files in images folder
-		err = filepath.Walk(filenames.ImagesFilepath, func(filePath string, info os.FileInfo, err error) error {
+		_ = filepath.Walk(filenames.ImagesFilepath, func(filePath string, info os.FileInfo, err error) error {
 			if !info.IsDir() && (strings.EqualFold(filepath.Ext(filePath), ".jpg") || strings.EqualFold(filepath.Ext(filePath), ".jpeg") || strings.EqualFold(filepath.Ext(filePath), ".gif") || strings.EqualFold(filepath.Ext(filePath), ".png") || strings.EqualFold(filepath.Ext(filePath), ".svg")) {
 				// Rewrite to file path on server
 				filePath = strings.Replace(filePath, filenames.ImagesFilepath, "/images", 1)

@@ -13,10 +13,7 @@ func LoginIsCorrect(name string, password string) bool {
 		return false
 	}
 	err = bcrypt.CompareHashAndPassword(hashedPassword, []byte(password))
-	if err != nil {
-		return false
-	}
-	return true
+	return err == nil
 }
 
 func EncryptPassword(password string) (string, error) {

@@ -19,9 +19,5 @@ func IsDirectory(path string) bool {
 
 func FileExists(path string) bool {
 	_, err := os.Stat(path)
-	if err != nil {
-		// We could check with os.IsNotExist(err) here, but since os.Stat threw an error, we likely can't use the file anyway.
-		return false
-	}
-	return true
+	return err == nil
 }

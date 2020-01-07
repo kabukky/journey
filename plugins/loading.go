@@ -18,7 +18,7 @@ func Load() error {
 	// Reset LuaPool for a fresh start
 	LuaPool = nil
 	// Make map
-	nameMap := make(map[string]string, 0)
+	nameMap := make(map[string]string)
 	err := filepath.Walk(filenames.PluginsFilepath, func(filePath string, info os.FileInfo, err error) error {
 		if !info.IsDir() && filepath.Ext(filePath) == ".lua" {
 			// Check if the lua file is a plugin entry point by executing it
