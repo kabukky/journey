@@ -1,6 +1,7 @@
 package server
 
 import (
+	"log"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -20,6 +21,7 @@ func pagesHandler(w http.ResponseWriter, r *http.Request, params map[string]stri
 	}
 	if !helpers.FileExists(path) {
 		http.Error(w, "Still lost?", http.StatusNotFound)
+		log.Println("404:", r.URL)
 		return
 	}
 	http.ServeFile(w, r, path)

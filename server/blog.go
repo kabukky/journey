@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -23,9 +24,11 @@ func indexHandler(w http.ResponseWriter, r *http.Request, params map[string]stri
 		if err != nil {
 			if err.Error() == "sql: no rows in result set" {
 				http.Error(w, "Got lost?", http.StatusNotFound)
+				log.Println("404:", r.URL)
 				return
 			}
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		return
@@ -40,9 +43,11 @@ func indexHandler(w http.ResponseWriter, r *http.Request, params map[string]stri
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
 			http.Error(w, "Got lost?", http.StatusNotFound)
+			log.Println("404:", r.URL)
 			return
 		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println("503:", r.URL)
 		return
 	}
 }
@@ -57,9 +62,11 @@ func authorHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 		if err != nil {
 			if err.Error() == "sql: no rows in result set" {
 				http.Error(w, "Got lost?", http.StatusNotFound)
+				log.Println("404:", r.URL)
 				return
 			}
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		return
@@ -69,9 +76,11 @@ func authorHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 		if err != nil {
 			if err.Error() == "sql: no rows in result set" {
 				http.Error(w, "Got lost?", http.StatusNotFound)
+				log.Println("404:", r.URL)
 				return
 			}
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		return
@@ -86,9 +95,11 @@ func authorHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
 			http.Error(w, "Got lost?", http.StatusNotFound)
+			log.Println("404:", r.URL)
 			return
 		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println("503:", r.URL)
 		return
 	}
 }
@@ -103,9 +114,11 @@ func tagHandler(w http.ResponseWriter, r *http.Request, params map[string]string
 		if err != nil {
 			if err.Error() == "sql: no rows in result set" {
 				http.Error(w, "Got lost?", http.StatusNotFound)
+				log.Println("404:", r.URL)
 				return
 			}
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		return
@@ -115,9 +128,11 @@ func tagHandler(w http.ResponseWriter, r *http.Request, params map[string]string
 		if err != nil {
 			if err.Error() == "sql: no rows in result set" {
 				http.Error(w, "Got lost?", http.StatusNotFound)
+				log.Println("404:", r.URL)
 				return
 			}
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		return
@@ -132,9 +147,11 @@ func tagHandler(w http.ResponseWriter, r *http.Request, params map[string]string
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
 			http.Error(w, "Got lost?", http.StatusNotFound)
+			log.Println("404:", r.URL)
 			return
 		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println("503:", r.URL)
 		return
 	}
 }
@@ -150,9 +167,11 @@ func postHandler(w http.ResponseWriter, r *http.Request, params map[string]strin
 		if err != nil {
 			if err.Error() == "sql: no rows in result set" {
 				http.Error(w, "Got lost?", http.StatusNotFound)
+				log.Println("404:", r.URL)
 				return
 			}
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		return
@@ -163,9 +182,11 @@ func postHandler(w http.ResponseWriter, r *http.Request, params map[string]strin
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
 			http.Error(w, "Got lost?", http.StatusNotFound)
+			log.Println("404:", r.URL)
 			return
 		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println("503:", r.URL)
 		return
 	}
 }
@@ -182,9 +203,11 @@ func postEditHandler(w http.ResponseWriter, r *http.Request, params map[string]s
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
 			http.Error(w, "Got lost?", http.StatusNotFound)
+			log.Println("404:", r.URL)
 			return
 		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println("503:", r.URL)
 		return
 	}
 
@@ -213,6 +236,7 @@ func staticHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 		http.ServeFile(w, r, filePath)
 	} else {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println("503:", r.URL)
 	}
 }
 
@@ -243,5 +267,6 @@ func InitializeBlog(router *httptreemux.TreeMux) {
 	// 404
 	router.NotFoundHandler = func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Got lost again?", http.StatusNotFound)
+		log.Println("404:", r.URL)
 	}
 }

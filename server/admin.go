@@ -118,12 +118,14 @@ func postRegistrationHandler(w http.ResponseWriter, r *http.Request, _ map[strin
 			hashedPassword, err := authentication.EncryptPassword(password)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
+				log.Println("503:", r.URL)
 				return
 			}
 			user := structure.User{Name: []byte(name), Slug: slug.Generate(name, "users"), Email: []byte(email), Image: []byte(filenames.DefaultUserImageFilename), Cover: []byte(filenames.DefaultUserCoverFilename), Role: 4}
 			err = methods.SaveUser(&user, hashedPassword, 1)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
+				log.Println("503:", r.URL)
 				return
 			}
 			http.Redirect(w, r, "/admin/", 302)
@@ -135,6 +137,7 @@ func postRegistrationHandler(w http.ResponseWriter, r *http.Request, _ map[strin
 
 	// TODO: Handle creation of other users (not just the first one)
 	http.Error(w, "Not implemented yet.", http.StatusInternalServerError)
+	log.Println("503:", r.URL)
 }
 
 // Function to log out the user. Not used at the moment.
@@ -164,6 +167,7 @@ func adminFileHandler(w http.ResponseWriter, r *http.Request, params map[string]
 		path := filepath.Join(filenames.AdminFilepath, params["filepath"])
 		if !helpers.FileExists(path) {
 			http.Error(w, "Still lost?", http.StatusNotFound)
+			log.Println("404:", r.URL)
 			return
 		}
 		// Get arguments (files)
@@ -171,6 +175,7 @@ func adminFileHandler(w http.ResponseWriter, r *http.Request, params map[string]
 		return
 	}
 	http.Error(w, "Still lost?", http.StatusNotFound)
+	log.Println("404:", r.URL)
 }
 
 // API function to get all posts by pages
@@ -181,17 +186,20 @@ func apiPostsHandler(w http.ResponseWriter, r *http.Request, params map[string]s
 		page, err := strconv.Atoi(number)
 		if err != nil || page < 1 {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		postsPerPage := int64(15)
 		posts, err := database.RetrievePostsForApi(postsPerPage, ((int64(page) - 1) * postsPerPage))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		json, err := json.Marshal(postsToJson(posts))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
@@ -199,6 +207,7 @@ func apiPostsHandler(w http.ResponseWriter, r *http.Request, params map[string]s
 		return
 	}
 	http.Error(w, "Not logged in!", http.StatusInternalServerError)
+	log.Println("503:", r.URL)
 }
 
 // API function to get a post by id
@@ -210,16 +219,19 @@ func getApiPostHandler(w http.ResponseWriter, r *http.Request, params map[string
 		postId, err := strconv.ParseInt(id, 10, 64)
 		if err != nil || postId < 1 {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		post, err := database.RetrievePostById(postId)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		json, err := json.Marshal(postToJson(post))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
@@ -227,6 +239,7 @@ func getApiPostHandler(w http.ResponseWriter, r *http.Request, params map[string
 		return
 	}
 	http.Error(w, "Not logged in!", http.StatusInternalServerError)
+	log.Println("503:", r.URL)
 }
 
 // API function to create a post
@@ -236,6 +249,7 @@ func postApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]str
 		userId, err := getUserId(userName)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		// Create post
@@ -244,6 +258,7 @@ func postApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]str
 		err = decoder.Decode(&json)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		var postSlug string
@@ -257,6 +272,7 @@ func postApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]str
 		err = methods.SavePost(&post)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		w.WriteHeader(http.StatusOK)
@@ -264,6 +280,7 @@ func postApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]str
 		return
 	}
 	http.Error(w, "Not logged in!", http.StatusInternalServerError)
+	log.Println("503:", r.URL)
 }
 
 // API function to update a post.
@@ -273,6 +290,7 @@ func patchApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 		userId, err := getUserId(userName)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		// Update post
@@ -281,6 +299,7 @@ func patchApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 		err = decoder.Decode(&json)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		var postSlug string
@@ -288,6 +307,7 @@ func patchApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 		post, err := database.RetrievePostById(json.Id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		if json.Slug != post.Slug { // Check if user has submitted a custom slug
@@ -300,6 +320,7 @@ func patchApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 		err = methods.UpdatePost(post)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		w.WriteHeader(http.StatusOK)
@@ -307,6 +328,7 @@ func patchApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 		return
 	}
 	http.Error(w, "Not logged in!", http.StatusInternalServerError)
+	log.Println("503:", r.URL)
 }
 
 // API function to delete a post by id.
@@ -318,11 +340,13 @@ func deleteApiPostHandler(w http.ResponseWriter, r *http.Request, params map[str
 		postId, err := strconv.ParseInt(id, 10, 64)
 		if err != nil || postId < 1 {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		err = methods.DeletePost(postId)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		w.WriteHeader(http.StatusOK)
@@ -340,6 +364,7 @@ func apiUploadHandler(w http.ResponseWriter, r *http.Request, _ map[string]strin
 		reader, err := r.MultipartReader()
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		// Slice to hold all paths to the files
@@ -359,12 +384,14 @@ func apiUploadHandler(w http.ResponseWriter, r *http.Request, _ map[string]strin
 			filePath := filepath.Join(filenames.ImagesFilepath, currentDate.Format("2006"), currentDate.Format("01"))
 			if os.MkdirAll(filePath, 0777) != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
+				log.Println("503:", r.URL)
 				return
 			}
 			dst, err := os.Create(filepath.Join(filePath, strconv.FormatInt(currentDate.Unix(), 10)+"_"+uuid.NewV4().String()+filepath.Ext(part.FileName())))
 			defer dst.Close()
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
+				log.Println("503:", r.URL)
 				return
 			}
 			if _, err := io.Copy(dst, part); err != nil {
@@ -380,6 +407,7 @@ func apiUploadHandler(w http.ResponseWriter, r *http.Request, _ map[string]strin
 		json, err := json.Marshal(allFilePaths)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
@@ -387,6 +415,7 @@ func apiUploadHandler(w http.ResponseWriter, r *http.Request, _ map[string]strin
 		return
 	}
 	http.Error(w, "Not logged in!", http.StatusInternalServerError)
+	log.Println("503:", r.URL)
 }
 
 // API function to get all images by pages
@@ -397,6 +426,7 @@ func apiImagesHandler(w http.ResponseWriter, r *http.Request, params map[string]
 		page, err := strconv.Atoi(number)
 		if err != nil || page < 1 {
 			http.Error(w, "Not a valid api function!", http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		images := make([]string, 0)
@@ -433,6 +463,7 @@ func apiImagesHandler(w http.ResponseWriter, r *http.Request, params map[string]
 		json, err := json.Marshal(images[start:end])
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
@@ -440,6 +471,7 @@ func apiImagesHandler(w http.ResponseWriter, r *http.Request, params map[string]
 		return
 	}
 	http.Error(w, "Not logged in!", http.StatusInternalServerError)
+	log.Println("503:", r.URL)
 }
 
 // API function to delete an image by its filename.
@@ -452,6 +484,7 @@ func deleteApiImageHandler(w http.ResponseWriter, r *http.Request, _ map[string]
 		err := decoder.Decode(&json)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		err = filepath.Walk(filenames.ImagesFilepath, func(filePath string, info os.FileInfo, err error) error {
@@ -465,6 +498,7 @@ func deleteApiImageHandler(w http.ResponseWriter, r *http.Request, _ map[string]
 		})
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		w.WriteHeader(http.StatusOK)
@@ -472,6 +506,7 @@ func deleteApiImageHandler(w http.ResponseWriter, r *http.Request, _ map[string]
 		return
 	}
 	http.Error(w, "Not logged in!", http.StatusInternalServerError)
+	log.Println("503:", r.URL)
 }
 
 // API function to get blog settings
@@ -485,6 +520,7 @@ func getApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]stri
 		json, err := json.Marshal(blogJson)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
@@ -492,6 +528,7 @@ func getApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]stri
 		return
 	}
 	http.Error(w, "Not logged in!", http.StatusInternalServerError)
+	log.Println("503:", r.URL)
 }
 
 // API function to update blog settings
@@ -501,6 +538,7 @@ func patchApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 		userId, err := getUserId(userName)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		decoder := json.NewDecoder(r.Body)
@@ -508,6 +546,7 @@ func patchApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 		err = decoder.Decode(&json)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		// Make sure postPerPage is over 0
@@ -528,6 +567,7 @@ func patchApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 		blog, err := database.RetrieveBlog()
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		tempBlog := structure.Blog{Url: []byte(configuration.Config.Url), Title: []byte(json.Title), Description: []byte(json.Description), Logo: []byte(json.Logo), Cover: []byte(json.Cover), AssetPath: []byte("/assets/"), PostCount: blog.PostCount, PostsPerPage: json.PostsPerPage, ActiveTheme: json.ActiveTheme, NavigationItems: json.NavigationItems}
@@ -539,11 +579,13 @@ func patchApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 				// If there's an error while generating the new templates, the whole program must be stopped.
 				log.Fatal("Fatal error: Template data couldn't be generated from theme files: " + err.Error())
 				http.Error(w, err.Error(), http.StatusInternalServerError)
+				log.Println("503:", r.URL)
 				return
 			}
 		}
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		w.WriteHeader(http.StatusOK)
@@ -551,6 +593,7 @@ func patchApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 		return
 	}
 	http.Error(w, "Not logged in!", http.StatusInternalServerError)
+	log.Println("503:", r.URL)
 }
 
 // API function to get user settings
@@ -560,12 +603,14 @@ func getApiUserHandler(w http.ResponseWriter, r *http.Request, params map[string
 		userId, err := getUserId(userName)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		id := params["id"]
 		userIdToGet, err := strconv.ParseInt(id, 10, 64)
 		if err != nil || userIdToGet < 1 {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		} else if userIdToGet != userId { // Make sure the authenticated user is only accessing his/her own data. TODO: Make sure the user is admin when multiple users have been introduced
 			http.Error(w, "You don't have permission to access this data.", http.StatusForbidden)
@@ -574,12 +619,14 @@ func getApiUserHandler(w http.ResponseWriter, r *http.Request, params map[string
 		user, err := database.RetrieveUser(userIdToGet)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		userJson := userToJson(user)
 		json, err := json.Marshal(userJson)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
@@ -587,6 +634,7 @@ func getApiUserHandler(w http.ResponseWriter, r *http.Request, params map[string
 		return
 	}
 	http.Error(w, "Not logged in!", http.StatusInternalServerError)
+	log.Println("503:", r.URL)
 }
 
 // API function to patch user settings
@@ -596,6 +644,7 @@ func patchApiUserHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 		userId, err := getUserId(userName)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		decoder := json.NewDecoder(r.Body)
@@ -603,20 +652,24 @@ func patchApiUserHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 		err = decoder.Decode(&json)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		// Make sure user id is over 0
 		if json.Id < 1 {
 			http.Error(w, "Wrong user id.", http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		} else if userId != json.Id { // Make sure the authenticated user is only changing his/her own data. TODO: Make sure the user is admin when multiple users have been introduced
 			http.Error(w, "You don't have permission to change this data.", http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		// Get old user data to compare
 		tempUser, err := database.RetrieveUser(json.Id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		// Make sure user email is provided
@@ -653,17 +706,20 @@ func patchApiUserHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 		err = methods.UpdateUser(&user, userId)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		if json.Password != "" && (json.Password == json.PasswordRepeated) { // Update password if a new one was submitted
 			encryptedPassword, err := authentication.EncryptPassword(json.Password)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
+				log.Println("503:", r.URL)
 				return
 			}
 			err = database.UpdateUserPassword(user.Id, encryptedPassword, date.GetCurrentTime(), json.Id)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
+				log.Println("503:", r.URL)
 				return
 			}
 		}
@@ -676,6 +732,7 @@ func patchApiUserHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 		return
 	}
 	http.Error(w, "Not logged in!", http.StatusInternalServerError)
+	log.Println("503:", r.URL)
 }
 
 // API function to get the id of the currently authenticated user
@@ -685,12 +742,14 @@ func getApiUserIdHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 		userId, err := getUserId(userName)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		jsonUserId := JsonUserId{Id: userId}
 		json, err := json.Marshal(jsonUserId)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println("503:", r.URL)
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
@@ -698,6 +757,7 @@ func getApiUserIdHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 		return
 	}
 	http.Error(w, "Not logged in!", http.StatusInternalServerError)
+	log.Println("503:", r.URL)
 }
 
 func getUserId(userName string) (int64, error) {
