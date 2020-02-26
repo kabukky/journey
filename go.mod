@@ -1,6 +1,6 @@
 module github.com/kabukky/journey
 
-go 1.13
+go 1.14
 
 require (
 	github.com/dimfeld/httptreemux v5.0.1+incompatible
@@ -14,9 +14,9 @@ require (
 	github.com/satori/go.uuid v1.2.0
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/yuin/gopher-lua v0.0.0-20191220021717-ab39c6098bdb
-	golang.org/x/crypto v0.0.0-20200206161412-a0c6ece9d31a
-	golang.org/x/net v0.0.0-20200202094626-16171245cfb2 // indirect
-	golang.org/x/sys v0.0.0-20200202164722-d101bd2416d5 // indirect
+	golang.org/x/crypto v0.0.0-20200221231518-2aa609cf4a9d
+	golang.org/x/net v0.0.0-20200226121028-0de0cce0169b // indirect
+	golang.org/x/sys v0.0.0-20200223170610-d5e6a3e2c0ae // indirect
 	golang.org/x/text v0.3.2 // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/fsnotify.v1 v1.4.7
