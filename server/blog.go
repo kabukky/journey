@@ -23,8 +23,12 @@ func indexHandler(w http.ResponseWriter, r *http.Request, params map[string]stri
 		err := templates.ShowIndexTemplate(w, r, 1)
 		if err != nil {
 			if err.Error() == "sql: no rows in result set" {
-				http.Error(w, "Got lost?", http.StatusNotFound)
-				log.Println("404:", r.URL)
+				w.WriteHeader(http.StatusNotFound)
+				e404 := templates.ShowPostTemplate(w, r, "404")
+				if e404 != nil {
+					http.Error(w, "Nobody here but us chickens!", http.StatusNotFound)
+					log.Println("404:", r.URL)
+				}
 				return
 			}
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -42,8 +46,12 @@ func indexHandler(w http.ResponseWriter, r *http.Request, params map[string]stri
 	err = templates.ShowIndexTemplate(w, r, page)
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
-			http.Error(w, "Got lost?", http.StatusNotFound)
-			log.Println("404:", r.URL)
+			w.WriteHeader(http.StatusNotFound)
+			e404 := templates.ShowPostTemplate(w, r, "404")
+			if e404 != nil {
+				http.Error(w, "Nobody here but us chickens!", http.StatusNotFound)
+				log.Println("404:", r.URL)
+			}
 			return
 		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -61,8 +69,12 @@ func authorHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 		err := templates.ShowAuthorTemplate(w, r, slug, 1)
 		if err != nil {
 			if err.Error() == "sql: no rows in result set" {
-				http.Error(w, "Got lost?", http.StatusNotFound)
-				log.Println("404:", r.URL)
+				w.WriteHeader(http.StatusNotFound)
+				e404 := templates.ShowPostTemplate(w, r, "404")
+				if e404 != nil {
+					http.Error(w, "Nobody here but us chickens!", http.StatusNotFound)
+					log.Println("404:", r.URL)
+				}
 				return
 			}
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -75,8 +87,12 @@ func authorHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 		err := templates.ShowAuthorRss(w, slug)
 		if err != nil {
 			if err.Error() == "sql: no rows in result set" {
-				http.Error(w, "Got lost?", http.StatusNotFound)
-				log.Println("404:", r.URL)
+				w.WriteHeader(http.StatusNotFound)
+				e404 := templates.ShowPostTemplate(w, r, "404")
+				if e404 != nil {
+					http.Error(w, "Nobody here but us chickens!", http.StatusNotFound)
+					log.Println("404:", r.URL)
+				}
 				return
 			}
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -94,8 +110,12 @@ func authorHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 	err = templates.ShowAuthorTemplate(w, r, slug, page)
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
-			http.Error(w, "Got lost?", http.StatusNotFound)
-			log.Println("404:", r.URL)
+			w.WriteHeader(http.StatusNotFound)
+			e404 := templates.ShowPostTemplate(w, r, "404")
+			if e404 != nil {
+				http.Error(w, "Nobody here but us chickens!", http.StatusNotFound)
+				log.Println("404:", r.URL)
+			}
 			return
 		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -113,8 +133,12 @@ func tagHandler(w http.ResponseWriter, r *http.Request, params map[string]string
 		err := templates.ShowTagTemplate(w, r, slug, 1)
 		if err != nil {
 			if err.Error() == "sql: no rows in result set" {
-				http.Error(w, "Got lost?", http.StatusNotFound)
-				log.Println("404:", r.URL)
+				w.WriteHeader(http.StatusNotFound)
+				e404 := templates.ShowPostTemplate(w, r, "404")
+				if e404 != nil {
+					http.Error(w, "Nobody here but us chickens!", http.StatusNotFound)
+					log.Println("404:", r.URL)
+				}
 				return
 			}
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -127,8 +151,12 @@ func tagHandler(w http.ResponseWriter, r *http.Request, params map[string]string
 		err := templates.ShowTagRss(w, slug)
 		if err != nil {
 			if err.Error() == "sql: no rows in result set" {
-				http.Error(w, "Got lost?", http.StatusNotFound)
-				log.Println("404:", r.URL)
+				w.WriteHeader(http.StatusNotFound)
+				e404 := templates.ShowPostTemplate(w, r, "404")
+				if e404 != nil {
+					http.Error(w, "Nobody here but us chickens!", http.StatusNotFound)
+					log.Println("404:", r.URL)
+				}
 				return
 			}
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -146,8 +174,12 @@ func tagHandler(w http.ResponseWriter, r *http.Request, params map[string]string
 	err = templates.ShowTagTemplate(w, r, slug, page)
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
-			http.Error(w, "Got lost?", http.StatusNotFound)
-			log.Println("404:", r.URL)
+			w.WriteHeader(http.StatusNotFound)
+			e404 := templates.ShowPostTemplate(w, r, "404")
+			if e404 != nil {
+				http.Error(w, "Nobody here but us chickens!", http.StatusNotFound)
+				log.Println("404:", r.URL)
+			}
 			return
 		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -166,8 +198,12 @@ func postHandler(w http.ResponseWriter, r *http.Request, params map[string]strin
 		err := templates.ShowIndexRss(w)
 		if err != nil {
 			if err.Error() == "sql: no rows in result set" {
-				http.Error(w, "Got lost?", http.StatusNotFound)
-				log.Println("404:", r.URL)
+				w.WriteHeader(http.StatusNotFound)
+				e404 := templates.ShowPostTemplate(w, r, "404")
+				if e404 != nil {
+					http.Error(w, "Nobody here but us chickens!", http.StatusNotFound)
+					log.Println("404:", r.URL)
+				}
 				return
 			}
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -181,8 +217,12 @@ func postHandler(w http.ResponseWriter, r *http.Request, params map[string]strin
 	err := templates.ShowPostTemplate(w, r, slug)
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
-			http.Error(w, "Got lost?", http.StatusNotFound)
-			log.Println("404:", r.URL)
+			w.WriteHeader(http.StatusNotFound)
+			e404 := templates.ShowPostTemplate(w, r, "404")
+			if e404 != nil {
+				http.Error(w, "Nobody here but us chickens!", http.StatusNotFound)
+				log.Println("404:", r.URL)
+			}
 			return
 		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -202,8 +242,12 @@ func postEditHandler(w http.ResponseWriter, r *http.Request, params map[string]s
 	post, err := database.RetrievePostBySlug(slug)
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
-			http.Error(w, "Got lost?", http.StatusNotFound)
-			log.Println("404:", r.URL)
+			w.WriteHeader(http.StatusNotFound)
+			e404 := templates.ShowPostTemplate(w, r, "404")
+			if e404 != nil {
+				http.Error(w, "Nobody here but us chickens!", http.StatusNotFound)
+				log.Println("404:", r.URL)
+			}
 			return
 		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -266,7 +310,11 @@ func InitializeBlog(router *httptreemux.TreeMux) {
 
 	// 404
 	router.NotFoundHandler = func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, "Got lost again?", http.StatusNotFound)
-		log.Println("404:", r.URL)
+		w.WriteHeader(http.StatusNotFound)
+		e404 := templates.ShowPostTemplate(w, r, "404")
+		if e404 != nil {
+			http.Error(w, "Nobody here but us chickens!", http.StatusNotFound)
+			log.Println("404:", r.URL)
+		}
 	}
 }

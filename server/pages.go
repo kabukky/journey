@@ -10,6 +10,7 @@ import (
 
 	"github.com/kabukky/journey/filenames"
 	"github.com/kabukky/journey/helpers"
+	"github.com/kabukky/journey/templates"
 )
 
 func pagesHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
@@ -20,8 +21,11 @@ func pagesHandler(w http.ResponseWriter, r *http.Request, params map[string]stri
 		return
 	}
 	if !helpers.FileExists(path) {
-		http.Error(w, "Still lost?", http.StatusNotFound)
-		log.Println("404:", r.URL)
+		e404 := templates.ShowPostTemplate(w, r, "404")
+		if e404 != nil {
+			http.Error(w, "Nobody here but us chickens!", http.StatusNotFound)
+			log.Println("404:", r.URL)
+		}
 		return
 	}
 	http.ServeFile(w, r, path)

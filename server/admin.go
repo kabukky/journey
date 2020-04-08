@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/dimfeld/httptreemux"
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 
 	"github.com/kabukky/journey/authentication"
 	"github.com/kabukky/journey/configuration"
@@ -166,15 +166,24 @@ func adminFileHandler(w http.ResponseWriter, r *http.Request, params map[string]
 	if userName != "" {
 		path := filepath.Join(filenames.AdminFilepath, params["filepath"])
 		if !helpers.FileExists(path) {
-			http.Error(w, "Still lost?", http.StatusNotFound)
-			log.Println("404:", r.URL)
+			w.WriteHeader(http.StatusNotFound)
+			e404 := templates.ShowPostTemplate(w, r, "404")
+			if e404 != nil {
+				http.Error(w, "Nobody here but us chickens!", http.StatusNotFound)
+				log.Println("404:", r.URL)
+			}
 			return
 		}
 		// Get arguments (files)
 		http.ServeFile(w, r, path)
 		return
 	}
-	http.Error(w, "Still lost?", http.StatusNotFound)
+	w.WriteHeader(http.StatusNotFound)
+	e404 := templates.ShowPostTemplate(w, r, "404")
+	if e404 != nil {
+		http.Error(w, "Nobody here but us chickens!", http.StatusNotFound)
+		log.Println("404:", r.URL)
+	}
 	log.Println("404:", r.URL)
 }
 
