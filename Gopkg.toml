@@ -64,3 +64,8 @@
 [[constraint]]
   name = "gopkg.in/fsnotify.v1"
   version = "1.4.2"
+
+
+[[constraint]]
+  name = "github.com/crewjam/saml"
+  version = "0.4.0"

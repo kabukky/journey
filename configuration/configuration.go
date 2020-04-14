@@ -2,8 +2,9 @@ package configuration
 
 import (
 	"encoding/json"
-	"errors"
 	"io/ioutil"
+	"fmt"
+	"os"
 	"log"
 	"reflect"
 	"strings"
@@ -19,13 +20,20 @@ type Configuration struct {
 	Url              string
 	HttpsUrl         string
 	UseLetsEncrypt   bool
+	SAMLCert	 string
+	SAMLKey          string
+	SAMLIDPUrl	 string
 }
 
 func NewConfiguration() *Configuration {
 	var config Configuration
 	err := config.load()
 	if err != nil {
-		log.Println("Warning: couldn't load " + filenames.ConfigFilename + ", creating new config file.")
+		if !os.IsNotExist(err) {
+			log.Fatalf("Error reading configuration file %s: %s",
+				filenames.ConfigFilename, err)
+		}
+		log.Printf("%s does not exist; creating new config file", filenames.ConfigFilename)
 		err = config.create()
 		if err != nil {
 			log.Fatal("Fatal error: Couldn't create configuration.")
@@ -92,9 +100,9 @@ func (c *Configuration) load() error {
 	// Check if all fields are filled out
 	cReflected := reflect.ValueOf(*c)
 	for i := 0; i < cReflected.NumField(); i++ {
-		if cReflected.Field(i).Interface() == "" {
-			log.Println("Error: " + filenames.ConfigFilename + " is corrupted. Did you fill out all of the fields?")
-			return errors.New("Error: Configuration corrupted.")
+		if cReflected.Field(i).Interface() == "" &&
+		   !strings.HasPrefix(cReflected.Type().Field(i).Name, "SAML") {
+			return fmt.Errorf("Error: file %s missing required field %s", filenames.ConfigFilename, cReflected.Type().Field(i).Name)
 		}
 	}
 	// Save the changed config

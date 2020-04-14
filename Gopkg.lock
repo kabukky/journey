@@ -2,6 +2,30 @@
 
 
 [[projects]]
+  name = "github.com/beevik/etree"
+  packages = ["."]
+  revision = "8aee6516be3b1163bb6450c35c50e4969e3a3aa8"
+  version = "v1.1.0"
+
+[[projects]]
+  name = "github.com/crewjam/httperr"
+  packages = ["."]
+  revision = "a946449404da08114d235a71dd46eedd5c68af07"
+  version = "v0.1.0"
+
+[[projects]]
+  name = "github.com/crewjam/saml"
+  packages = [".","logger","samlsp","xmlenc"]
+  revision = "1e8b902bc9ab6e31505b87e89e5428913ead2387"
+  version = "v0.4.0"
+
+[[projects]]
+  name = "github.com/dgrijalva/jwt-go"
+  packages = ["."]
+  revision = "06ea1031745cb8b3dab3f6a236daf2b0aa468b7e"
+  version = "v3.2.0"
+
+[[projects]]
   name = "github.com/dimfeld/httptreemux"
   packages = ["."]
   revision = "8cc36ee10f84b82d0742ffcab770815c7d3f9ad7"
@@ -12,6 +36,12 @@
   packages = ["."]
   revision = "667fe4e3466a040b780561fe9b51a83a3753eefc"
   version = "v1.1"
+
+[[projects]]
+  name = "github.com/jonboulle/clockwork"
+  packages = ["."]
+  revision = "2eee05ed794112d45db504eb05aa693efd2b8b09"
+  version = "v0.1.0"
 
 [[projects]]
   branch = "master"
@@ -38,6 +68,18 @@
   version = "v1.4.0"
 
 [[projects]]
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  revision = "614d223910a179a466c1767a985424175c39b465"
+  version = "v0.9.1"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/russellhaering/goxmldsig"
+  packages = [".","etreeutils","types"]
+  revision = "7acd5e4a6ef74fe1b082c20f119556adf70c3944"
+
+[[projects]]
   name = "github.com/russross/blackfriday"
   packages = ["."]
   revision = "4048872b16cc0fc2c5fd9eacf0ed2c2fedaa0c8c"
@@ -58,7 +100,7 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
-  packages = ["acme","acme/autocert","bcrypt","blowfish"]
+  packages = ["acme","acme/autocert","bcrypt","blowfish","ripemd160"]
   revision = "d585fd2cc9195196078f516b69daff6744ef5e84"
 
 [[projects]]
@@ -82,6 +124,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d793438dcb1bbcdb8fce48392841627c9949f5cd490828fa9d6322cd256b5cd5"
+  inputs-digest = "ca85eb7b31fd1462b5b08708d84646d272bed2acf452a9a4f9a7556275fc61a1"
   solver-name = "gps-cdcl"
   solver-version = 1

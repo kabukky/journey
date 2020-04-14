@@ -4,5 +4,8 @@
 	"HttpsUsage":"None",
 	"Url":"http://127.0.0.1:8084",
 	"HttpsUrl":"https://127.0.0.1:8085",
-	"UseLetsEncrypt":false
+	"UseLetsEncrypt":false,
+	"SAMLCert":"",
+	"SAMLKey":"",
+	"SAMLIDPUrl":""
 }

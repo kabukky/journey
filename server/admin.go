@@ -1,16 +1,24 @@
 package server
 
 import (
+	"context"
+	"crypto/rsa"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/crewjam/saml"
+	"github.com/crewjam/saml/samlsp"
 	"github.com/dimfeld/httptreemux"
 	"github.com/kabukky/journey/authentication"
 	"github.com/kabukky/journey/configuration"
@@ -24,6 +32,8 @@ import (
 	"github.com/kabukky/journey/templates"
 	"github.com/satori/go.uuid"
 )
+
+var sessionHandler authentication.SessionHandler
 
 type JsonPost struct {
 	Id              int64
@@ -141,7 +151,7 @@ func postRegistrationHandler(w http.ResponseWriter, r *http.Request, _ map[strin
 
 // Function to log out the user. Not used at the moment.
 func logoutHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
-	authentication.ClearSession(w)
+	sessionHandler.ClearSession(w, r)
 	http.Redirect(w, r, "/admin/login/", 302)
 	return
 }
@@ -152,7 +162,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 		http.Redirect(w, r, "/admin/register/", 302)
 		return
 	} else {
-		userName := authentication.GetUserName(r)
+		userName := sessionHandler.GetUserName(r)
 		if userName != "" {
 			http.ServeFile(w, r, filepath.Join(filenames.AdminFilepath, "admin.html"))
 			return
@@ -165,7 +175,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 
 // Function to serve files belonging to the admin interface.
 func adminFileHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
-	userName := authentication.GetUserName(r)
+	userName := sessionHandler.GetUserName(r)
 	if userName != "" {
 		// Get arguments (files)
 		http.ServeFile(w, r, filepath.Join(filenames.AdminFilepath, params["filepath"]))
@@ -178,7 +188,7 @@ func adminFileHandler(w http.ResponseWriter, r *http.Request, params map[string]
 
 // API function to get all posts by pages
 func apiPostsHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
-	userName := authentication.GetUserName(r)
+	userName := sessionHandler.GetUserName(r)
 	if userName != "" {
 		number := params["number"]
 		page, err := strconv.Atoi(number)
@@ -208,7 +218,7 @@ func apiPostsHandler(w http.ResponseWriter, r *http.Request, params map[string]s
 
 // API function to get a post by id
 func getApiPostHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
-	userName := authentication.GetUserName(r)
+	userName := sessionHandler.GetUserName(r)
 	if userName != "" {
 		id := params["id"]
 		// Get post
@@ -238,7 +248,7 @@ func getApiPostHandler(w http.ResponseWriter, r *http.Request, params map[string
 
 // API function to create a post
 func postApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
-	userName := authentication.GetUserName(r)
+	userName := sessionHandler.GetUserName(r)
 	if userName != "" {
 		userId, err := getUserId(userName)
 		if err != nil {
@@ -277,7 +287,7 @@ func postApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]str
 
 // API function to update a post.
 func patchApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
-	userName := authentication.GetUserName(r)
+	userName := sessionHandler.GetUserName(r)
 	if userName != "" {
 		userId, err := getUserId(userName)
 		if err != nil {
@@ -322,7 +332,7 @@ func patchApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 
 // API function to delete a post by id.
 func deleteApiPostHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
-	userName := authentication.GetUserName(r)
+	userName := sessionHandler.GetUserName(r)
 	if userName != "" {
 		id := params["id"]
 		// Delete post
@@ -347,7 +357,7 @@ func deleteApiPostHandler(w http.ResponseWriter, r *http.Request, params map[str
 
 // API function to upload images
 func apiUploadHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
-	userName := authentication.GetUserName(r)
+	userName := sessionHandler.GetUserName(r)
 	if userName != "" {
 		// Create multipart reader
 		reader, err := r.MultipartReader()
@@ -406,7 +416,7 @@ func apiUploadHandler(w http.ResponseWriter, r *http.Request, _ map[string]strin
 
 // API function to get all images by pages
 func apiImagesHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
-	userName := authentication.GetUserName(r)
+	userName := sessionHandler.GetUserName(r)
 	if userName != "" {
 		number := params["number"]
 		page, err := strconv.Atoi(number)
@@ -461,7 +471,7 @@ func apiImagesHandler(w http.ResponseWriter, r *http.Request, params map[string]
 
 // API function to delete an image by its filename.
 func deleteApiImageHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
-	userName := authentication.GetUserName(r)
+	userName := sessionHandler.GetUserName(r)
 	if userName != "" { // TODO: Check if the user has permissions to delete the image
 		// Get the file name from the json data
 		decoder := json.NewDecoder(r.Body)
@@ -495,238 +505,212 @@ func deleteApiImageHandler(w http.ResponseWriter, r *http.Request, _ map[string]
 
 // API function to get blog settings
 func getApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
-	userName := authentication.GetUserName(r)
-	if userName != "" {
-		// Read lock the global blog
-		methods.Blog.RLock()
-		defer methods.Blog.RUnlock()
-		blogJson := blogToJson(methods.Blog)
-		json, err := json.Marshal(blogJson)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(json)
-		return
-	} else {
-		http.Error(w, "Not logged in!", http.StatusInternalServerError)
+	// Read lock the global blog
+	methods.Blog.RLock()
+	defer methods.Blog.RUnlock()
+	blogJson := blogToJson(methods.Blog)
+	json, err := json.Marshal(blogJson)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(json)
+	return
 }
 
 // API function to update blog settings
 func patchApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
-	userName := authentication.GetUserName(r)
-	if userName != "" {
-		userId, err := getUserId(userName)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		decoder := json.NewDecoder(r.Body)
-		var json JsonBlog
-		err = decoder.Decode(&json)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		// Make sure postPerPage is over 0
-		if json.PostsPerPage < 1 {
-			json.PostsPerPage = 1
-		}
-		// Remove blog url in front of navigation urls
-		for index, _ := range json.NavigationItems {
-			if strings.HasPrefix(json.NavigationItems[index].Url, json.Url) {
-				json.NavigationItems[index].Url = strings.Replace(json.NavigationItems[index].Url, json.Url, "", 1)
-				// If we removed the blog url, there should be a / in front of the url
-				if !strings.HasPrefix(json.NavigationItems[index].Url, "/") {
-					json.NavigationItems[index].Url = "/" + json.NavigationItems[index].Url
-				}
-			}
-		}
-		// Retrieve old blog settings for comparison
-		blog, err := database.RetrieveBlog()
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		tempBlog := structure.Blog{Url: []byte(configuration.Config.Url), Title: []byte(json.Title), Description: []byte(json.Description), Logo: []byte(json.Logo), Cover: []byte(json.Cover), AssetPath: []byte("/assets/"), PostCount: blog.PostCount, PostsPerPage: json.PostsPerPage, ActiveTheme: json.ActiveTheme, NavigationItems: json.NavigationItems}
-		err = methods.UpdateBlog(&tempBlog, userId)
-		// Check if active theme setting has been changed, if so, generate templates from new theme
-		if tempBlog.ActiveTheme != blog.ActiveTheme {
-			err = templates.Generate()
-			if err != nil {
-				// If there's an error while generating the new templates, the whole program must be stopped.
-				log.Fatal("Fatal error: Template data couldn't be generated from theme files: " + err.Error())
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-		}
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("Blog settings updated!"))
-		return
-	} else {
-		http.Error(w, "Not logged in!", http.StatusInternalServerError)
+	userName := sessionHandler.GetUserName(r)
+	userId, err := getUserId(userName)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	decoder := json.NewDecoder(r.Body)
+	var json JsonBlog
+	err = decoder.Decode(&json)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	// Make sure postPerPage is over 0
+	if json.PostsPerPage < 1 {
+		json.PostsPerPage = 1
+	}
+	// Remove blog url in front of navigation urls
+	for index, _ := range json.NavigationItems {
+		if strings.HasPrefix(json.NavigationItems[index].Url, json.Url) {
+			json.NavigationItems[index].Url = strings.Replace(json.NavigationItems[index].Url, json.Url, "", 1)
+			// If we removed the blog url, there should be a / in front of the url
+			if !strings.HasPrefix(json.NavigationItems[index].Url, "/") {
+				json.NavigationItems[index].Url = "/" + json.NavigationItems[index].Url
+			}
+		}
+	}
+	// Retrieve old blog settings for comparison
+	blog, err := database.RetrieveBlog()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	tempBlog := structure.Blog{Url: []byte(configuration.Config.Url), Title: []byte(json.Title), Description: []byte(json.Description), Logo: []byte(json.Logo), Cover: []byte(json.Cover), AssetPath: []byte("/assets/"), PostCount: blog.PostCount, PostsPerPage: json.PostsPerPage, ActiveTheme: json.ActiveTheme, NavigationItems: json.NavigationItems}
+	err = methods.UpdateBlog(&tempBlog, userId)
+	// Check if active theme setting has been changed, if so, generate templates from new theme
+	if tempBlog.ActiveTheme != blog.ActiveTheme {
+		err = templates.Generate()
+		if err != nil {
+			// If there's an error while generating the new templates, the whole program must be stopped.
+			log.Fatal("Fatal error: Template data couldn't be generated from theme files: " + err.Error())
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Blog settings updated!"))
+	return
 }
 
 // API function to get user settings
 func getApiUserHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
-	userName := authentication.GetUserName(r)
-	if userName != "" {
-		userId, err := getUserId(userName)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		id := params["id"]
-		userIdToGet, err := strconv.ParseInt(id, 10, 64)
-		if err != nil || userIdToGet < 1 {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		} else if userIdToGet != userId { // Make sure the authenticated user is only accessing his/her own data. TODO: Make sure the user is admin when multiple users have been introduced
-			http.Error(w, "You don't have permission to access this data.", http.StatusForbidden)
-			return
-		}
-		user, err := database.RetrieveUser(userIdToGet)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		userJson := userToJson(user)
-		json, err := json.Marshal(userJson)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(json)
-		return
-	} else {
-		http.Error(w, "Not logged in!", http.StatusInternalServerError)
+	userName := sessionHandler.GetUserName(r)
+	userId, err := getUserId(userName)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	id := params["id"]
+	userIdToGet, err := strconv.ParseInt(id, 10, 64)
+	if err != nil || userIdToGet < 1 {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	} else if userIdToGet != userId { // Make sure the authenticated user is only accessing his/her own data. TODO: Make sure the user is admin when multiple users have been introduced
+		http.Error(w, "You don't have permission to access this data.", http.StatusForbidden)
+		return
+	}
+	user, err := database.RetrieveUser(userIdToGet)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	userJson := userToJson(user)
+	json, err := json.Marshal(userJson)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(json)
+	return
 }
 
 // API function to patch user settings
 func patchApiUserHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
-	userName := authentication.GetUserName(r)
-	if userName != "" {
-		userId, err := getUserId(userName)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		decoder := json.NewDecoder(r.Body)
-		var json JsonUser
-		err = decoder.Decode(&json)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		// Make sure user id is over 0
-		if json.Id < 1 {
-			http.Error(w, "Wrong user id.", http.StatusInternalServerError)
-			return
-		} else if userId != json.Id { // Make sure the authenticated user is only changing his/her own data. TODO: Make sure the user is admin when multiple users have been introduced
-			http.Error(w, "You don't have permission to change this data.", http.StatusInternalServerError)
-			return
-		}
-		// Get old user data to compare
-		tempUser, err := database.RetrieveUser(json.Id)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		// Make sure user email is provided
-		if json.Email == "" {
-			json.Email = string(tempUser.Email)
-		}
-		// Make sure user name is provided
-		if json.Name == "" {
-			json.Name = string(tempUser.Name)
-		}
-		// Make sure user slug is provided
-		if json.Slug == "" {
-			json.Slug = tempUser.Slug
-		}
-		// Check if new name is already taken
-		if json.Name != string(tempUser.Name) {
-			_, err = database.RetrieveUserByName([]byte(json.Name))
-			if err == nil {
-				// The new user name is already taken. Assign the old name.
-				// TODO: Return error that will be displayed in the admin interface.
-				json.Name = string(tempUser.Name)
-			}
-		}
-		// Check if new slug is already taken
-		if json.Slug != tempUser.Slug {
-			_, err = database.RetrieveUserBySlug(json.Slug)
-			if err == nil {
-				// The new user slug is already taken. Assign the old slug.
-				// TODO: Return error that will be displayed in the admin interface.
-				json.Slug = tempUser.Slug
-			}
-		}
-		user := structure.User{Id: json.Id, Name: []byte(json.Name), Slug: json.Slug, Email: []byte(json.Email), Image: []byte(json.Image), Cover: []byte(json.Cover), Bio: []byte(json.Bio), Website: []byte(json.Website), Location: []byte(json.Location)}
-		err = methods.UpdateUser(&user, userId)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		if json.Password != "" && (json.Password == json.PasswordRepeated) { // Update password if a new one was submitted
-			encryptedPassword, err := authentication.EncryptPassword(json.Password)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-			err = database.UpdateUserPassword(user.Id, encryptedPassword, date.GetCurrentTime(), json.Id)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-		}
-		// Check if the user name was changed. If so, update the session cookie to the new user name.
-		if json.Name != string(tempUser.Name) {
-			logInUser(json.Name, w)
-		}
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("User settings updated!"))
-		return
-	} else {
-		http.Error(w, "Not logged in!", http.StatusInternalServerError)
+	userName := sessionHandler.GetUserName(r)
+	userId, err := getUserId(userName)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	decoder := json.NewDecoder(r.Body)
+	var json JsonUser
+	err = decoder.Decode(&json)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	// Make sure user id is over 0
+	if json.Id < 1 {
+		http.Error(w, "Wrong user id.", http.StatusInternalServerError)
+		return
+	} else if userId != json.Id { // Make sure the authenticated user is only changing his/her own data. TODO: Make sure the user is admin when multiple users have been introduced
+		http.Error(w, "You don't have permission to change this data.", http.StatusInternalServerError)
+		return
+	}
+	// Get old user data to compare
+	tempUser, err := database.RetrieveUser(json.Id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	// Make sure user email is provided
+	if json.Email == "" {
+		json.Email = string(tempUser.Email)
+	}
+	// Make sure user name is provided
+	if json.Name == "" {
+		json.Name = string(tempUser.Name)
+	}
+	// Make sure user slug is provided
+	if json.Slug == "" {
+		json.Slug = tempUser.Slug
+	}
+	// Check if new name is already taken
+	if json.Name != string(tempUser.Name) {
+		_, err = database.RetrieveUserByName([]byte(json.Name))
+		if err == nil {
+			// The new user name is already taken. Assign the old name.
+			// TODO: Return error that will be displayed in the admin interface.
+			json.Name = string(tempUser.Name)
+		}
+	}
+	// Check if new slug is already taken
+	if json.Slug != tempUser.Slug {
+		_, err = database.RetrieveUserBySlug(json.Slug)
+		if err == nil {
+			// The new user slug is already taken. Assign the old slug.
+			// TODO: Return error that will be displayed in the admin interface.
+			json.Slug = tempUser.Slug
+		}
+	}
+	user := structure.User{Id: json.Id, Name: []byte(json.Name), Slug: json.Slug, Email: []byte(json.Email), Image: []byte(json.Image), Cover: []byte(json.Cover), Bio: []byte(json.Bio), Website: []byte(json.Website), Location: []byte(json.Location)}
+	err = methods.UpdateUser(&user, userId)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if json.Password != "" && (json.Password == json.PasswordRepeated) { // Update password if a new one was submitted
+		encryptedPassword, err := authentication.EncryptPassword(json.Password)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		err = database.UpdateUserPassword(user.Id, encryptedPassword, date.GetCurrentTime(), json.Id)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+	// Check if the user name was changed. If so, update the session cookie to the new user name.
+	if json.Name != string(tempUser.Name) {
+		logInUser(json.Name, w)
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("User settings updated!"))
+	return
 }
 
 // API function to get the id of the currently authenticated user
 func getApiUserIdHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
-	userName := authentication.GetUserName(r)
-	if userName != "" {
-		userId, err := getUserId(userName)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		jsonUserId := JsonUserId{Id: userId}
-		json, err := json.Marshal(jsonUserId)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(json)
-		return
-	} else {
-		http.Error(w, "Not logged in!", http.StatusInternalServerError)
+	userName := sessionHandler.GetUserName(r)
+	userId, err := getUserId(userName)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	jsonUserId := JsonUserId{Id: userId}
+	json, err := json.Marshal(jsonUserId)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(json)
+	return
 }
 
 func getUserId(userName string) (int64, error) {
@@ -738,7 +722,7 @@ func getUserId(userName string) (int64, error) {
 }
 
 func logInUser(name string, w http.ResponseWriter) {
-	authentication.SetSession(name, w)
+	sessionHandler.SetSession(name, w)
 	userId, err := getUserId(name)
 	if err != nil {
 		log.Println("Couldn't get id of logged in user:", err)
@@ -807,8 +791,62 @@ func userToJson(user *structure.User) *JsonUser {
 }
 
 func InitializeAdmin(router *httptreemux.TreeMux) {
+	if configuration.Config.SAMLCert != "" {
+		keyPair, err := tls.LoadX509KeyPair(configuration.Config.SAMLCert,
+			configuration.Config.SAMLKey)
+		if err != nil {
+			panic(err)
+		}
+		keyPair.Leaf, err = x509.ParseCertificate(keyPair.Certificate[0])
+		if err != nil {
+			panic(err)
+		}
+		rootURL, err := url.Parse(configuration.Config.HttpsUrl)
+		if err != nil {
+			panic(err)
+		}
+		var metadata *saml.EntityDescriptor
+		if strings.HasPrefix(configuration.Config.SAMLIDPUrl, "https://") {
+			idpMetadataURL, err := url.Parse(configuration.Config.SAMLIDPUrl)
+			if err != nil {
+				panic(err)
+			}
+			metadata, err = samlsp.FetchMetadata(context.TODO(), http.DefaultClient, *idpMetadataURL)
+			if err != nil {
+				panic(err)
+			}
+		} else if strings.HasPrefix(configuration.Config.SAMLIDPUrl, "/") {
+			data, err := ioutil.ReadFile(configuration.Config.SAMLIDPUrl)
+			if err != nil {
+				panic(err)
+			}
+			metadata, err = samlsp.ParseMetadata(data)
+		}
+		samlSP, err := samlsp.New(samlsp.Options{
+			URL:         *rootURL,
+			Key:         keyPair.PrivateKey.(*rsa.PrivateKey),
+			Certificate: keyPair.Leaf,
+			IDPMetadata: metadata,
+		})
+
+		if err != nil {
+			log.Fatalf("Error initializing saml: %s", err)
+		}
+
+		log.Println("setting up /saml/ handler")
+		router.GET("/saml/*all", httptreemux.HandlerFunc(func(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+			samlSP.ServeHTTP(w, r)
+		}))
+		router.POST("/saml/*all", httptreemux.HandlerFunc(func(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+			samlSP.ServeHTTP(w, r)
+		}))
+		sessionHandler = &authentication.SAMLSession{samlSP}
+	} else {
+		sessionHandler = &authentication.UsernamePasswordSession{}
+	}
+	router.GET("/admin/", sessionHandler.RequireSession(adminHandler))
+
 	// For admin panel
-	router.GET("/admin/", adminHandler)
 	router.GET("/admin/login/", getLoginHandler)
 	router.POST("/admin/login/", postLoginHandler)
 	router.GET("/admin/register/", getRegistrationHandler)
@@ -818,23 +856,23 @@ func InitializeAdmin(router *httptreemux.TreeMux) {
 
 	// For admin API (no trailing slash)
 	// Posts
-	router.GET("/admin/api/posts/:number", apiPostsHandler)
+	router.GET("/admin/api/posts/:number", sessionHandler.RequireSession(apiPostsHandler))
 	// Post
-	router.GET("/admin/api/post/:id", getApiPostHandler)
-	router.POST("/admin/api/post", postApiPostHandler)
-	router.PATCH("/admin/api/post", patchApiPostHandler)
-	router.DELETE("/admin/api/post/:id", deleteApiPostHandler)
+	router.GET("/admin/api/post/:id", sessionHandler.RequireSession(getApiPostHandler))
+	router.POST("/admin/api/post", sessionHandler.RequireSession(postApiPostHandler))
+	router.PATCH("/admin/api/post", sessionHandler.RequireSession(patchApiPostHandler))
+	router.DELETE("/admin/api/post/:id", sessionHandler.RequireSession(deleteApiPostHandler))
 	// Upload
-	router.POST("/admin/api/upload", apiUploadHandler)
+	router.POST("/admin/api/upload", sessionHandler.RequireSession(apiUploadHandler))
 	// Images
-	router.GET("/admin/api/images/:number", apiImagesHandler)
-	router.DELETE("/admin/api/image", deleteApiImageHandler)
+	router.GET("/admin/api/images/:number", sessionHandler.RequireSession(apiImagesHandler))
+	router.DELETE("/admin/api/image", sessionHandler.RequireSession(deleteApiImageHandler))
 	// Blog
-	router.GET("/admin/api/blog", getApiBlogHandler)
-	router.PATCH("/admin/api/blog", patchApiBlogHandler)
+	router.GET("/admin/api/blog", sessionHandler.RequireSession(getApiBlogHandler))
+	router.PATCH("/admin/api/blog", sessionHandler.RequireSession(patchApiBlogHandler))
 	// User
-	router.GET("/admin/api/user/:id", getApiUserHandler)
-	router.PATCH("/admin/api/user", patchApiUserHandler)
+	router.GET("/admin/api/user/:id", sessionHandler.RequireSession(getApiUserHandler))
+	router.PATCH("/admin/api/user", sessionHandler.RequireSession(patchApiUserHandler))
 	// User id
-	router.GET("/admin/api/userid", getApiUserIdHandler)
+	router.GET("/admin/api/userid", sessionHandler.RequireSession(getApiUserIdHandler))
 }
