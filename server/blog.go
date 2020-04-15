@@ -159,7 +159,12 @@ func assetsHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 }
 
 func imagesHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
-	http.ServeFile(w, r, filepath.Join(filenames.ImagesFilepath, params["filepath"]))
+	if path, ok := params["filepath"]; ok {
+		http.ServeFile(w, r, filepath.Join(filenames.ImagesFilepath, path))
+	} else {
+		// special, top level files like favicon.ico, robots.txt, etc.
+		http.ServeFile(w, r, filepath.Join(filenames.ImagesFilepath, r.URL.Path))
+	}
 	return
 }
 
@@ -184,6 +189,9 @@ func InitializeBlog(router *httptreemux.TreeMux) {
 	router.GET("/tag/:slug/:function/:number/", tagHandler)
 	// For serving asset files
 	router.GET("/assets/*filepath", assetsHandler)
+	router.GET("/favicon.ico", imagesHandler)
+	router.GET("/robots.txt", imagesHandler)
+	router.GET("/sitemap.xml", imagesHandler)
 	router.GET("/images/*filepath", imagesHandler)
 	router.GET("/content/images/*filepath", imagesHandler) // This is here to keep compatibility with Ghost
 	router.GET("/public/*filepath", publicHandler)

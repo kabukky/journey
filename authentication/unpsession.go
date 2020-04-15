@@ -36,7 +36,7 @@ func (s *UsernamePasswordSession) GetUserName(request *http.Request) (userName s
 	return userName
 }
 
-func (s *UsernamePasswordSession) ClearSession(response http.ResponseWriter, _ *http.Request) {
+func (s *UsernamePasswordSession) ClearSession(response http.ResponseWriter, request *http.Request) {
 	cookie := &http.Cookie{
 		Name:   "session",
 		Value:  "",
@@ -44,6 +44,7 @@ func (s *UsernamePasswordSession) ClearSession(response http.ResponseWriter, _ *
 		MaxAge: -1,
 	}
 	http.SetCookie(response, cookie)
+	http.Redirect(response, request, "/admin/login/", 302)
 }
 
 func (s *UsernamePasswordSession) RequireSession(callback func(http.ResponseWriter, *http.Request, map[string]string)) func(http.ResponseWriter, *http.Request, map[string]string) {

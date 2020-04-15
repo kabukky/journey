@@ -152,7 +152,6 @@ func postRegistrationHandler(w http.ResponseWriter, r *http.Request, _ map[strin
 // Function to log out the user. Not used at the moment.
 func logoutHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	sessionHandler.ClearSession(w, r)
-	http.Redirect(w, r, "/admin/login/", 302)
 	return
 }
 
@@ -852,7 +851,7 @@ func InitializeAdmin(router *httptreemux.TreeMux) {
 	router.GET("/admin/register/", getRegistrationHandler)
 	router.POST("/admin/register/", postRegistrationHandler)
 	router.GET("/admin/logout/", logoutHandler)
-	router.GET("/admin/*filepath", adminFileHandler)
+	router.GET("/admin/*filepath", sessionHandler.RequireSession(adminFileHandler))
 
 	// For admin API (no trailing slash)
 	// Posts

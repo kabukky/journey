@@ -1,8 +1,8 @@
 package authentication
 
 import (
-	"net/http"
 	"github.com/crewjam/saml/samlsp"
+	"net/http"
 )
 
 type SAMLSession struct {
@@ -22,6 +22,7 @@ func (_ *SAMLSession) GetUserName(request *http.Request) string {
 }
 func (s *SAMLSession) ClearSession(response http.ResponseWriter, request *http.Request) {
 	s.Session.DeleteSession(response, request)
+	http.Redirect(response, request, "/admin", 302)
 }
 func (s *SAMLSession) RequireSession(callback func(http.ResponseWriter, *http.Request, map[string]string)) func(http.ResponseWriter, *http.Request, map[string]string) {
 	return func(w http.ResponseWriter, r *http.Request, m map[string]string) {
