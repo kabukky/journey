@@ -177,16 +177,16 @@ func InitializeBlog(router *httptreemux.TreeMux) {
 	// For index
 	router.GET("/", indexHandler)
 	router.GET("/:slug/edit", postEditHandler)
-	router.GET("/:slug/", postHandler)
-	router.GET("/page/:number/", indexHandler)
+	router.GET("/:slug", postHandler)
+	router.GET("/page/:number", indexHandler)
 	// For author
-	router.GET("/author/:slug/", authorHandler)
-	router.GET("/author/:slug/:function/", authorHandler)
-	router.GET("/author/:slug/:function/:number/", authorHandler)
+	router.GET("/author/:slug", authorHandler)
+	router.GET("/author/:slug/:function", authorHandler)
+	router.GET("/author/:slug/:function/:number", authorHandler)
 	// For tag
-	router.GET("/tag/:slug/", tagHandler)
-	router.GET("/tag/:slug/:function/", tagHandler)
-	router.GET("/tag/:slug/:function/:number/", tagHandler)
+	router.GET("/tag/:slug", tagHandler)
+	router.GET("/tag/:slug/:function", tagHandler)
+	router.GET("/tag/:slug/:function/:number", tagHandler)
 	// For serving asset files
 	router.GET("/assets/*filepath", assetsHandler)
 	router.GET("/favicon.ico", imagesHandler)

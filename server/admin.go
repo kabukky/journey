@@ -87,7 +87,7 @@ type JsonImage struct {
 // Function to serve the login page
 func getLoginHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	if database.RetrieveUsersCount() == 0 {
-		http.Redirect(w, r, "/admin/register/", 302)
+		http.Redirect(w, r, "/admin/register", http.StatusFound)
 		return
 	}
 	http.ServeFile(w, r, filepath.Join(filenames.AdminFilepath, "login.html"))
@@ -105,7 +105,7 @@ func postLoginHandler(w http.ResponseWriter, r *http.Request, _ map[string]strin
 			log.Println("Failed login attempt for user " + name)
 		}
 	}
-	http.Redirect(w, r, "/admin/", 302)
+	http.Redirect(w, r, "/admin", http.StatusFound)
 	return
 }
 
@@ -115,7 +115,7 @@ func getRegistrationHandler(w http.ResponseWriter, r *http.Request, _ map[string
 		http.ServeFile(w, r, filepath.Join(filenames.AdminFilepath, "registration.html"))
 		return
 	}
-	http.Redirect(w, r, "/admin/", 302)
+	http.Redirect(w, r, "/admin", http.StatusFound)
 	return
 }
 
@@ -137,10 +137,10 @@ func postRegistrationHandler(w http.ResponseWriter, r *http.Request, _ map[strin
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			http.Redirect(w, r, "/admin/", 302)
+			http.Redirect(w, r, "/admin", http.StatusFound)
 			return
 		}
-		http.Redirect(w, r, "/admin/", 302)
+		http.Redirect(w, r, "/admin", http.StatusFound)
 		return
 	} else {
 		// TODO: Handle creation of other users (not just the first one)
@@ -158,7 +158,7 @@ func logoutHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) 
 // Function to route the /admin/ url accordingly. (Is user logged in? Is at least one user registered?)
 func adminHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	if database.RetrieveUsersCount() == 0 {
-		http.Redirect(w, r, "/admin/register/", 302)
+		http.Redirect(w, r, "/admin/register", http.StatusFound)
 		return
 	} else {
 		userName := sessionHandler.GetUserName(r)
@@ -166,7 +166,7 @@ func adminHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 			http.ServeFile(w, r, filepath.Join(filenames.AdminFilepath, "admin.html"))
 			return
 		} else {
-			http.Redirect(w, r, "/admin/login/", 302)
+			http.Redirect(w, r, "/admin/login", http.StatusFound)
 			return
 		}
 	}
@@ -843,14 +843,14 @@ func InitializeAdmin(router *httptreemux.TreeMux) {
 	} else {
 		sessionHandler = &authentication.UsernamePasswordSession{}
 	}
-	router.GET("/admin/", sessionHandler.RequireSession(adminHandler))
+	router.GET("/admin", sessionHandler.RequireSession(adminHandler))
 
 	// For admin panel
-	router.GET("/admin/login/", getLoginHandler)
-	router.POST("/admin/login/", postLoginHandler)
-	router.GET("/admin/register/", getRegistrationHandler)
-	router.POST("/admin/register/", postRegistrationHandler)
-	router.GET("/admin/logout/", logoutHandler)
+	router.GET("/admin/login", getLoginHandler)
+	router.POST("/admin/login", postLoginHandler)
+	router.GET("/admin/register", getRegistrationHandler)
+	router.POST("/admin/register", postRegistrationHandler)
+	router.GET("/admin/logout", logoutHandler)
 	router.GET("/admin/*filepath", sessionHandler.RequireSession(adminFileHandler))
 
 	// For admin API (no trailing slash)

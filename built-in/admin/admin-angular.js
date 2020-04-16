@@ -6,19 +6,19 @@ var adminApp = angular.module('adminApp', ['ngRoute', 'frapontillo.bootstrap-swi
 adminApp.config(function($routeProvider) {
   $routeProvider.
     when('/', {
-      templateUrl: 'content.html',
+      templateUrl: '/admin/content.html',
       controller: 'ContentCtrl'
     }).
     when('/edit/:Id', {
-      templateUrl: 'post.html',
+      templateUrl: '/admin/post.html',
       controller: 'EditCtrl'
     }).
     when('/create/', {
-      templateUrl: 'post.html',
+      templateUrl: '/admin/post.html',
       controller: 'CreateCtrl'
     }).
     when('/settings/', {
-      templateUrl: 'settings.html',
+      templateUrl: '/admin/settings.html',
       controller: 'SettingsCtrl'
     }).
     otherwise({

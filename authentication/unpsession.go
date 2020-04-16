@@ -1,8 +1,9 @@
 package authentication
 
 import (
-	"github.com/gorilla/securecookie"
 	"net/http"
+
+	"github.com/gorilla/securecookie"
 )
 
 var cookieHandler = securecookie.New(
@@ -20,7 +21,7 @@ func (s *UsernamePasswordSession) SetSession(userName string, response http.Resp
 		cookie := &http.Cookie{
 			Name:  "session",
 			Value: encoded,
-			Path:  "/admin/",
+			Path:  "/admin",
 		}
 		http.SetCookie(response, cookie)
 	}
@@ -40,11 +41,11 @@ func (s *UsernamePasswordSession) ClearSession(response http.ResponseWriter, req
 	cookie := &http.Cookie{
 		Name:   "session",
 		Value:  "",
-		Path:   "/admin/",
+		Path:   "/admin",
 		MaxAge: -1,
 	}
 	http.SetCookie(response, cookie)
-	http.Redirect(response, request, "/admin/login/", 302)
+	http.Redirect(response, request, "/admin/login", http.StatusFound)
 }
 
 func (s *UsernamePasswordSession) RequireSession(callback func(http.ResponseWriter, *http.Request, map[string]string)) func(http.ResponseWriter, *http.Request, map[string]string) {
@@ -53,7 +54,7 @@ func (s *UsernamePasswordSession) RequireSession(callback func(http.ResponseWrit
 			callback(w, r, m)
 		} else {
 			if r.URL.Path == "/admin" || r.URL.Path == "/admin/" {
-				http.Redirect(w, r, "/admin/login/", 302)
+				http.Redirect(w, r, "/admin/login", http.StatusFound)
 			} else {
 				http.Error(w, "Not logged in", http.StatusForbidden)
 			}
