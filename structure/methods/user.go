@@ -18,8 +18,8 @@ func SaveUser(u *structure.User, hashedPassword string, createdBy int64) error {
 	return nil
 }
 
-func UpdateUser(u *structure.User, updatedById int64) error {
-	err := database.UpdateUser(u.Id, u.Name, u.Slug, u.Email, u.Image, u.Cover, u.Bio, u.Website, u.Location, date.GetCurrentTime(), updatedById)
+func UpdateUser(u *structure.User, updatedByID int64) error {
+	err := database.UpdateUser(u.ID, u.Name, u.Slug, u.Email, u.Image, u.Cover, u.Bio, u.Website, u.Location, date.GetCurrentTime(), updatedByID)
 	if err != nil {
 		return err
 	}

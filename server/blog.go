@@ -146,7 +146,7 @@ func postEditHandler(w http.ResponseWriter, r *http.Request, params map[string]s
 		return
 	}
 
-	url := fmt.Sprintf("/admin/#/edit/%d", post.Id)
+	url := fmt.Sprintf("/admin/#/edit/%d", post.ID)
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
@@ -173,6 +173,7 @@ func publicHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 	return
 }
 
+// InitializeBlog initializes all the non-admin non-post handlers
 func InitializeBlog(router *httptreemux.TreeMux) {
 	// For index
 	router.GET("/", indexHandler)

@@ -10,9 +10,12 @@ var cookieHandler = securecookie.New(
 	securecookie.GenerateRandomKey(64),
 	securecookie.GenerateRandomKey(32))
 
+// UsernamePasswordSession is an implementation of sessions
+// using cookies and database users
 type UsernamePasswordSession struct {
 }
 
+// SetSession sets the session information.
 func (s *UsernamePasswordSession) SetSession(userName string, response http.ResponseWriter) {
 	value := map[string]string{
 		"name": userName,
@@ -27,6 +30,8 @@ func (s *UsernamePasswordSession) SetSession(userName string, response http.Resp
 	}
 }
 
+// GetUserName gets the name of the current user from the session,
+// or returns "" if there is no session
 func (s *UsernamePasswordSession) GetUserName(request *http.Request) (userName string) {
 	if cookie, err := request.Cookie("session"); err == nil {
 		cookieValue := make(map[string]string)
@@ -37,6 +42,7 @@ func (s *UsernamePasswordSession) GetUserName(request *http.Request) (userName s
 	return userName
 }
 
+// ClearSession wipes the session cookie
 func (s *UsernamePasswordSession) ClearSession(response http.ResponseWriter, request *http.Request) {
 	cookie := &http.Cookie{
 		Name:   "session",
@@ -48,6 +54,8 @@ func (s *UsernamePasswordSession) ClearSession(response http.ResponseWriter, req
 	http.Redirect(response, request, "/admin/login", http.StatusFound)
 }
 
+// RequireSession is a function wrapper that requires a session. It will
+// redirect to the login page if there isn't one.
 func (s *UsernamePasswordSession) RequireSession(callback func(http.ResponseWriter, *http.Request, map[string]string)) func(http.ResponseWriter, *http.Request, map[string]string) {
 	return func(w http.ResponseWriter, r *http.Request, m map[string]string) {
 		if s.GetUserName(r) != "" {

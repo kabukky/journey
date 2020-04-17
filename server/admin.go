@@ -30,17 +30,18 @@ import (
 	"github.com/kabukky/journey/structure"
 	"github.com/kabukky/journey/structure/methods"
 	"github.com/kabukky/journey/templates"
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 )
 
 var sessionHandler authentication.SessionHandler
 
-type JsonPost struct {
-	Id              int64
+// JSONPost is a JSON representation of a post
+type JSONPost struct {
+	ID              int64 `json:"id"`
 	Title           string
 	Slug            string
 	Markdown        string
-	Html            string
+	HTML            string `json:"html"`
 	IsFeatured      bool
 	IsPage          bool
 	IsPublished     bool
@@ -50,8 +51,10 @@ type JsonPost struct {
 	Tags            string
 }
 
-type JsonBlog struct {
-	Url             string
+// JSONBlog is a JSON representation of the whole blog
+// mostly metadata
+type JSONBlog struct {
+	URL             string `json:"url"`
 	Title           string
 	Description     string
 	Logo            string
@@ -62,8 +65,9 @@ type JsonBlog struct {
 	NavigationItems []structure.Navigation
 }
 
-type JsonUser struct {
-	Id               int64
+// JSONUser is for users managed by the blog
+type JSONUser struct {
+	ID               int64
 	Name             string
 	Slug             string
 	Email            string
@@ -76,11 +80,13 @@ type JsonUser struct {
 	PasswordRepeated string
 }
 
-type JsonUserId struct {
-	Id int64
+// JSONUserID is the ID for the user
+type JSONUserID struct {
+	ID int64 `json:"id"`
 }
 
-type JsonImage struct {
+// JSONImage is a blog image
+type JSONImage struct {
 	Filename string
 }
 
@@ -142,11 +148,10 @@ func postRegistrationHandler(w http.ResponseWriter, r *http.Request, _ map[strin
 		}
 		http.Redirect(w, r, "/admin", http.StatusFound)
 		return
-	} else {
-		// TODO: Handle creation of other users (not just the first one)
-		http.Error(w, "Not implemented yet.", http.StatusInternalServerError)
-		return
 	}
+	// TODO: Handle creation of other users (not just the first one)
+	http.Error(w, "Not implemented yet.", http.StatusInternalServerError)
+	return
 }
 
 // Function to log out the user. Not used at the moment.
@@ -160,16 +165,13 @@ func adminHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	if database.RetrieveUsersCount() == 0 {
 		http.Redirect(w, r, "/admin/register", http.StatusFound)
 		return
-	} else {
-		userName := sessionHandler.GetUserName(r)
-		if userName != "" {
-			http.ServeFile(w, r, filepath.Join(filenames.AdminFilepath, "admin.html"))
-			return
-		} else {
-			http.Redirect(w, r, "/admin/login", http.StatusFound)
-			return
-		}
 	}
+	userName := sessionHandler.GetUserName(r)
+	if userName != "" {
+		http.ServeFile(w, r, filepath.Join(filenames.AdminFilepath, "admin.html"))
+		return
+	}
+	http.Redirect(w, r, "/admin/login", http.StatusFound)
 }
 
 // Function to serve files belonging to the admin interface.
@@ -179,10 +181,8 @@ func adminFileHandler(w http.ResponseWriter, r *http.Request, params map[string]
 		// Get arguments (files)
 		http.ServeFile(w, r, filepath.Join(filenames.AdminFilepath, params["filepath"]))
 		return
-	} else {
-		http.NotFound(w, r)
-		return
 	}
+	http.NotFound(w, r)
 }
 
 // API function to get all posts by pages
@@ -196,12 +196,12 @@ func apiPostsHandler(w http.ResponseWriter, r *http.Request, params map[string]s
 			return
 		}
 		postsPerPage := int64(15)
-		posts, err := database.RetrievePostsForApi(postsPerPage, ((int64(page) - 1) * postsPerPage))
+		posts, err := database.RetrievePostsForAPI(postsPerPage, ((int64(page) - 1) * postsPerPage))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		json, err := json.Marshal(postsToJson(posts))
+		json, err := json.Marshal(postsToJSON(posts))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -209,29 +209,27 @@ func apiPostsHandler(w http.ResponseWriter, r *http.Request, params map[string]s
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(json)
 		return
-	} else {
-		http.Error(w, "Not logged in!", http.StatusInternalServerError)
-		return
 	}
+	http.Error(w, "Not logged in!", http.StatusInternalServerError)
 }
 
 // API function to get a post by id
-func getApiPostHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+func getAPIPostHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
 	userName := sessionHandler.GetUserName(r)
 	if userName != "" {
 		id := params["id"]
 		// Get post
-		postId, err := strconv.ParseInt(id, 10, 64)
-		if err != nil || postId < 1 {
+		postID, err := strconv.ParseInt(id, 10, 64)
+		if err != nil || postID < 1 {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		post, err := database.RetrievePostById(postId)
+		post, err := database.RetrievePostByID(postID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		json, err := json.Marshal(postToJson(post))
+		json, err := json.Marshal(postToJSON(post))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -239,24 +237,22 @@ func getApiPostHandler(w http.ResponseWriter, r *http.Request, params map[string
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(json)
 		return
-	} else {
-		http.Error(w, "Not logged in!", http.StatusInternalServerError)
-		return
 	}
+	http.Error(w, "Not logged in!", http.StatusInternalServerError)
 }
 
 // API function to create a post
-func postApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+func postAPIPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	userName := sessionHandler.GetUserName(r)
 	if userName != "" {
-		userId, err := getUserId(userName)
+		userID, err := getUserID(userName)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		// Create post
 		decoder := json.NewDecoder(r.Body)
-		var json JsonPost
+		var json JSONPost
 		err = decoder.Decode(&json)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -269,7 +265,7 @@ func postApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]str
 			postSlug = slug.Generate(json.Title, "posts")
 		}
 		currentTime := date.GetCurrentTime()
-		post := structure.Post{Title: []byte(json.Title), Slug: postSlug, Markdown: []byte(json.Markdown), Html: conversion.GenerateHtmlFromMarkdown([]byte(json.Markdown)), IsFeatured: json.IsFeatured, IsPage: json.IsPage, IsPublished: json.IsPublished, MetaDescription: []byte(json.MetaDescription), Image: []byte(json.Image), Date: &currentTime, Tags: methods.GenerateTagsFromCommaString(json.Tags), Author: &structure.User{Id: userId}}
+		post := structure.Post{Title: []byte(json.Title), Slug: postSlug, Markdown: []byte(json.Markdown), HTML: conversion.GenerateHTMLFromMarkdown([]byte(json.Markdown)), IsFeatured: json.IsFeatured, IsPage: json.IsPage, IsPublished: json.IsPublished, MetaDescription: []byte(json.MetaDescription), Image: []byte(json.Image), Date: &currentTime, Tags: methods.GenerateTagsFromCommaString(json.Tags), Author: &structure.User{ID: userID}}
 		err = methods.SavePost(&post)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -278,24 +274,22 @@ func postApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]str
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("Post created!"))
 		return
-	} else {
-		http.Error(w, "Not logged in!", http.StatusInternalServerError)
-		return
 	}
+	http.Error(w, "Not logged in!", http.StatusInternalServerError)
 }
 
 // API function to update a post.
-func patchApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+func patchAPIPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	userName := sessionHandler.GetUserName(r)
 	if userName != "" {
-		userId, err := getUserId(userName)
+		userID, err := getUserID(userName)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		// Update post
 		decoder := json.NewDecoder(r.Body)
-		var json JsonPost
+		var json JSONPost
 		err = decoder.Decode(&json)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -303,7 +297,7 @@ func patchApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 		}
 		var postSlug string
 		// Get current slug of post
-		post, err := database.RetrievePostById(json.Id)
+		post, err := database.RetrievePostByID(json.ID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -314,7 +308,7 @@ func patchApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 			postSlug = post.Slug
 		}
 		currentTime := date.GetCurrentTime()
-		*post = structure.Post{Id: json.Id, Title: []byte(json.Title), Slug: postSlug, Markdown: []byte(json.Markdown), Html: conversion.GenerateHtmlFromMarkdown([]byte(json.Markdown)), IsFeatured: json.IsFeatured, IsPage: json.IsPage, IsPublished: json.IsPublished, MetaDescription: []byte(json.MetaDescription), Image: []byte(json.Image), Date: &currentTime, Tags: methods.GenerateTagsFromCommaString(json.Tags), Author: &structure.User{Id: userId}}
+		*post = structure.Post{ID: json.ID, Title: []byte(json.Title), Slug: postSlug, Markdown: []byte(json.Markdown), HTML: conversion.GenerateHTMLFromMarkdown([]byte(json.Markdown)), IsFeatured: json.IsFeatured, IsPage: json.IsPage, IsPublished: json.IsPublished, MetaDescription: []byte(json.MetaDescription), Image: []byte(json.Image), Date: &currentTime, Tags: methods.GenerateTagsFromCommaString(json.Tags), Author: &structure.User{ID: userID}}
 		err = methods.UpdatePost(post)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -323,24 +317,22 @@ func patchApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("Post updated!"))
 		return
-	} else {
-		http.Error(w, "Not logged in!", http.StatusInternalServerError)
-		return
 	}
+	http.Error(w, "Not logged in!", http.StatusInternalServerError)
 }
 
 // API function to delete a post by id.
-func deleteApiPostHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+func deleteAPIPostHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
 	userName := sessionHandler.GetUserName(r)
 	if userName != "" {
 		id := params["id"]
 		// Delete post
-		postId, err := strconv.ParseInt(id, 10, 64)
-		if err != nil || postId < 1 {
+		postID, err := strconv.ParseInt(id, 10, 64)
+		if err != nil || postID < 1 {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		err = methods.DeletePost(postId)
+		err = methods.DeletePost(postID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -348,10 +340,8 @@ func deleteApiPostHandler(w http.ResponseWriter, r *http.Request, params map[str
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("Post deleted!"))
 		return
-	} else {
-		http.Error(w, "Not logged in!", http.StatusInternalServerError)
-		return
 	}
+	http.Error(w, "Not logged in!", http.StatusInternalServerError)
 }
 
 // API function to upload images
@@ -407,10 +397,8 @@ func apiUploadHandler(w http.ResponseWriter, r *http.Request, _ map[string]strin
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(json)
 		return
-	} else {
-		http.Error(w, "Not logged in!", http.StatusInternalServerError)
-		return
 	}
+	http.Error(w, "Not logged in!", http.StatusInternalServerError)
 }
 
 // API function to get all images by pages
@@ -462,19 +450,17 @@ func apiImagesHandler(w http.ResponseWriter, r *http.Request, params map[string]
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(json)
 		return
-	} else {
-		http.Error(w, "Not logged in!", http.StatusInternalServerError)
-		return
 	}
+	http.Error(w, "Not logged in!", http.StatusInternalServerError)
 }
 
 // API function to delete an image by its filename.
-func deleteApiImageHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+func deleteAPIImageHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	userName := sessionHandler.GetUserName(r)
 	if userName != "" { // TODO: Check if the user has permissions to delete the image
 		// Get the file name from the json data
 		decoder := json.NewDecoder(r.Body)
-		var json JsonImage
+		var json JSONImage
 		err := decoder.Decode(&json)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -496,19 +482,17 @@ func deleteApiImageHandler(w http.ResponseWriter, r *http.Request, _ map[string]
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("Image deleted!"))
 		return
-	} else {
-		http.Error(w, "Not logged in!", http.StatusInternalServerError)
-		return
 	}
+	http.Error(w, "Not logged in!", http.StatusInternalServerError)
 }
 
 // API function to get blog settings
-func getApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+func getAPIBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	// Read lock the global blog
 	methods.Blog.RLock()
 	defer methods.Blog.RUnlock()
-	blogJson := blogToJson(methods.Blog)
-	json, err := json.Marshal(blogJson)
+	blogJSON := blogToJSON(methods.Blog)
+	json, err := json.Marshal(blogJSON)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -519,15 +503,15 @@ func getApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]stri
 }
 
 // API function to update blog settings
-func patchApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+func patchAPIBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	userName := sessionHandler.GetUserName(r)
-	userId, err := getUserId(userName)
+	userID, err := getUserID(userName)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	decoder := json.NewDecoder(r.Body)
-	var json JsonBlog
+	var json JSONBlog
 	err = decoder.Decode(&json)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -538,12 +522,12 @@ func patchApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 		json.PostsPerPage = 1
 	}
 	// Remove blog url in front of navigation urls
-	for index, _ := range json.NavigationItems {
-		if strings.HasPrefix(json.NavigationItems[index].Url, json.Url) {
-			json.NavigationItems[index].Url = strings.Replace(json.NavigationItems[index].Url, json.Url, "", 1)
+	for index := range json.NavigationItems {
+		if strings.HasPrefix(json.NavigationItems[index].URL, json.URL) {
+			json.NavigationItems[index].URL = strings.Replace(json.NavigationItems[index].URL, json.URL, "", 1)
 			// If we removed the blog url, there should be a / in front of the url
-			if !strings.HasPrefix(json.NavigationItems[index].Url, "/") {
-				json.NavigationItems[index].Url = "/" + json.NavigationItems[index].Url
+			if !strings.HasPrefix(json.NavigationItems[index].URL, "/") {
+				json.NavigationItems[index].URL = "/" + json.NavigationItems[index].URL
 			}
 		}
 	}
@@ -553,8 +537,8 @@ func patchApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	tempBlog := structure.Blog{Url: []byte(configuration.Config.Url), Title: []byte(json.Title), Description: []byte(json.Description), Logo: []byte(json.Logo), Cover: []byte(json.Cover), AssetPath: []byte("/assets/"), PostCount: blog.PostCount, PostsPerPage: json.PostsPerPage, ActiveTheme: json.ActiveTheme, NavigationItems: json.NavigationItems}
-	err = methods.UpdateBlog(&tempBlog, userId)
+	tempBlog := structure.Blog{URL: []byte(configuration.Config.URL), Title: []byte(json.Title), Description: []byte(json.Description), Logo: []byte(json.Logo), Cover: []byte(json.Cover), AssetPath: []byte("/assets/"), PostCount: blog.PostCount, PostsPerPage: json.PostsPerPage, ActiveTheme: json.ActiveTheme, NavigationItems: json.NavigationItems}
+	err = methods.UpdateBlog(&tempBlog, userID)
 	// Check if active theme setting has been changed, if so, generate templates from new theme
 	if tempBlog.ActiveTheme != blog.ActiveTheme {
 		err = templates.Generate()
@@ -575,29 +559,29 @@ func patchApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 }
 
 // API function to get user settings
-func getApiUserHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+func getAPIUserHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
 	userName := sessionHandler.GetUserName(r)
-	userId, err := getUserId(userName)
+	userID, err := getUserID(userName)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	id := params["id"]
-	userIdToGet, err := strconv.ParseInt(id, 10, 64)
-	if err != nil || userIdToGet < 1 {
+	userIDToGet, err := strconv.ParseInt(id, 10, 64)
+	if err != nil || userIDToGet < 1 {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
-	} else if userIdToGet != userId { // Make sure the authenticated user is only accessing his/her own data. TODO: Make sure the user is admin when multiple users have been introduced
+	} else if userIDToGet != userID { // Make sure the authenticated user is only accessing his/her own data. TODO: Make sure the user is admin when multiple users have been introduced
 		http.Error(w, "You don't have permission to access this data.", http.StatusForbidden)
 		return
 	}
-	user, err := database.RetrieveUser(userIdToGet)
+	user, err := database.RetrieveUser(userIDToGet)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	userJson := userToJson(user)
-	json, err := json.Marshal(userJson)
+	userJSON := userToJSON(user)
+	json, err := json.Marshal(userJSON)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -608,30 +592,30 @@ func getApiUserHandler(w http.ResponseWriter, r *http.Request, params map[string
 }
 
 // API function to patch user settings
-func patchApiUserHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+func patchAPIUserHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	userName := sessionHandler.GetUserName(r)
-	userId, err := getUserId(userName)
+	userID, err := getUserID(userName)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	decoder := json.NewDecoder(r.Body)
-	var json JsonUser
+	var json JSONUser
 	err = decoder.Decode(&json)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	// Make sure user id is over 0
-	if json.Id < 1 {
+	if json.ID < 1 {
 		http.Error(w, "Wrong user id.", http.StatusInternalServerError)
 		return
-	} else if userId != json.Id { // Make sure the authenticated user is only changing his/her own data. TODO: Make sure the user is admin when multiple users have been introduced
+	} else if userID != json.ID { // Make sure the authenticated user is only changing his/her own data. TODO: Make sure the user is admin when multiple users have been introduced
 		http.Error(w, "You don't have permission to change this data.", http.StatusInternalServerError)
 		return
 	}
 	// Get old user data to compare
-	tempUser, err := database.RetrieveUser(json.Id)
+	tempUser, err := database.RetrieveUser(json.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -666,8 +650,8 @@ func patchApiUserHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 			json.Slug = tempUser.Slug
 		}
 	}
-	user := structure.User{Id: json.Id, Name: []byte(json.Name), Slug: json.Slug, Email: []byte(json.Email), Image: []byte(json.Image), Cover: []byte(json.Cover), Bio: []byte(json.Bio), Website: []byte(json.Website), Location: []byte(json.Location)}
-	err = methods.UpdateUser(&user, userId)
+	user := structure.User{ID: json.ID, Name: []byte(json.Name), Slug: json.Slug, Email: []byte(json.Email), Image: []byte(json.Image), Cover: []byte(json.Cover), Bio: []byte(json.Bio), Website: []byte(json.Website), Location: []byte(json.Location)}
+	err = methods.UpdateUser(&user, userID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -678,7 +662,7 @@ func patchApiUserHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		err = database.UpdateUserPassword(user.Id, encryptedPassword, date.GetCurrentTime(), json.Id)
+		err = database.UpdateUserPassword(user.ID, encryptedPassword, date.GetCurrentTime(), json.ID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -694,15 +678,15 @@ func patchApiUserHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 }
 
 // API function to get the id of the currently authenticated user
-func getApiUserIdHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+func getAPIUserIDHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	userName := sessionHandler.GetUserName(r)
-	userId, err := getUserId(userName)
+	userID, err := getUserID(userName)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	jsonUserId := JsonUserId{Id: userId}
-	json, err := json.Marshal(jsonUserId)
+	jsonUserID := JSONUserID{ID: userID}
+	json, err := json.Marshal(jsonUserID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -712,41 +696,41 @@ func getApiUserIdHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 	return
 }
 
-func getUserId(userName string) (int64, error) {
+func getUserID(userName string) (int64, error) {
 	user, err := database.RetrieveUserByName([]byte(userName))
 	if err != nil {
 		return 0, err
 	}
-	return user.Id, nil
+	return user.ID, nil
 }
 
 func logInUser(name string, w http.ResponseWriter) {
 	sessionHandler.SetSession(name, w)
-	userId, err := getUserId(name)
+	userID, err := getUserID(name)
 	if err != nil {
 		log.Println("Couldn't get id of logged in user:", err)
 	}
-	err = database.UpdateLastLogin(date.GetCurrentTime(), userId)
+	err = database.UpdateLastLogin(date.GetCurrentTime(), userID)
 	if err != nil {
 		log.Println("Couldn't update last login date of a user:", err)
 	}
 }
 
-func postsToJson(posts []structure.Post) *[]JsonPost {
-	jsonPosts := make([]JsonPost, len(posts))
-	for index, _ := range posts {
-		jsonPosts[index] = *postToJson(&posts[index])
+func postsToJSON(posts []structure.Post) *[]JSONPost {
+	jsonPosts := make([]JSONPost, len(posts))
+	for index := range posts {
+		jsonPosts[index] = *postToJSON(&posts[index])
 	}
 	return &jsonPosts
 }
 
-func postToJson(post *structure.Post) *JsonPost {
-	var jsonPost JsonPost
-	jsonPost.Id = post.Id
+func postToJSON(post *structure.Post) *JSONPost {
+	var jsonPost JSONPost
+	jsonPost.ID = post.ID
 	jsonPost.Title = string(post.Title)
 	jsonPost.Slug = post.Slug
 	jsonPost.Markdown = string(post.Markdown)
-	jsonPost.Html = string(post.Html)
+	jsonPost.HTML = string(post.HTML)
 	jsonPost.IsFeatured = post.IsFeatured
 	jsonPost.IsPage = post.IsPage
 	jsonPost.IsPublished = post.IsPublished
@@ -754,16 +738,16 @@ func postToJson(post *structure.Post) *JsonPost {
 	jsonPost.Image = string(post.Image)
 	jsonPost.Date = post.Date
 	tags := make([]string, len(post.Tags))
-	for index, _ := range post.Tags {
+	for index := range post.Tags {
 		tags[index] = string(post.Tags[index].Name)
 	}
 	jsonPost.Tags = strings.Join(tags, ",")
 	return &jsonPost
 }
 
-func blogToJson(blog *structure.Blog) *JsonBlog {
-	var jsonBlog JsonBlog
-	jsonBlog.Url = string(blog.Url)
+func blogToJSON(blog *structure.Blog) *JSONBlog {
+	var jsonBlog JSONBlog
+	jsonBlog.URL = string(blog.URL)
 	jsonBlog.Title = string(blog.Title)
 	jsonBlog.Description = string(blog.Description)
 	jsonBlog.Logo = string(blog.Logo)
@@ -775,9 +759,9 @@ func blogToJson(blog *structure.Blog) *JsonBlog {
 	return &jsonBlog
 }
 
-func userToJson(user *structure.User) *JsonUser {
-	var jsonUser JsonUser
-	jsonUser.Id = user.Id
+func userToJSON(user *structure.User) *JSONUser {
+	var jsonUser JSONUser
+	jsonUser.ID = user.ID
 	jsonUser.Name = string(user.Name)
 	jsonUser.Slug = user.Slug
 	jsonUser.Email = string(user.Email)
@@ -789,6 +773,7 @@ func userToJson(user *structure.User) *JsonUser {
 	return &jsonUser
 }
 
+// InitializeAdmin initializes all the /admin handlers
 func InitializeAdmin(router *httptreemux.TreeMux) {
 	if configuration.Config.SAMLCert != "" {
 		keyPair, err := tls.LoadX509KeyPair(configuration.Config.SAMLCert,
@@ -800,7 +785,7 @@ func InitializeAdmin(router *httptreemux.TreeMux) {
 		if err != nil {
 			panic(err)
 		}
-		rootURL, err := url.Parse(configuration.Config.HttpsUrl)
+		rootURL, err := url.Parse(configuration.Config.HTTPSUrl)
 		if err != nil {
 			panic(err)
 		}
@@ -839,7 +824,7 @@ func InitializeAdmin(router *httptreemux.TreeMux) {
 		router.POST("/saml/*all", httptreemux.HandlerFunc(func(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 			samlSP.ServeHTTP(w, r)
 		}))
-		sessionHandler = &authentication.SAMLSession{samlSP}
+		sessionHandler = &authentication.SAMLSession{Middleware: samlSP}
 	} else {
 		sessionHandler = &authentication.UsernamePasswordSession{}
 	}
@@ -857,21 +842,21 @@ func InitializeAdmin(router *httptreemux.TreeMux) {
 	// Posts
 	router.GET("/admin/api/posts/:number", sessionHandler.RequireSession(apiPostsHandler))
 	// Post
-	router.GET("/admin/api/post/:id", sessionHandler.RequireSession(getApiPostHandler))
-	router.POST("/admin/api/post", sessionHandler.RequireSession(postApiPostHandler))
-	router.PATCH("/admin/api/post", sessionHandler.RequireSession(patchApiPostHandler))
-	router.DELETE("/admin/api/post/:id", sessionHandler.RequireSession(deleteApiPostHandler))
+	router.GET("/admin/api/post/:id", sessionHandler.RequireSession(getAPIPostHandler))
+	router.POST("/admin/api/post", sessionHandler.RequireSession(postAPIPostHandler))
+	router.PATCH("/admin/api/post", sessionHandler.RequireSession(patchAPIPostHandler))
+	router.DELETE("/admin/api/post/:id", sessionHandler.RequireSession(deleteAPIPostHandler))
 	// Upload
 	router.POST("/admin/api/upload", sessionHandler.RequireSession(apiUploadHandler))
 	// Images
 	router.GET("/admin/api/images/:number", sessionHandler.RequireSession(apiImagesHandler))
-	router.DELETE("/admin/api/image", sessionHandler.RequireSession(deleteApiImageHandler))
+	router.DELETE("/admin/api/image", sessionHandler.RequireSession(deleteAPIImageHandler))
 	// Blog
-	router.GET("/admin/api/blog", sessionHandler.RequireSession(getApiBlogHandler))
-	router.PATCH("/admin/api/blog", sessionHandler.RequireSession(patchApiBlogHandler))
+	router.GET("/admin/api/blog", sessionHandler.RequireSession(getAPIBlogHandler))
+	router.PATCH("/admin/api/blog", sessionHandler.RequireSession(patchAPIBlogHandler))
 	// User
-	router.GET("/admin/api/user/:id", sessionHandler.RequireSession(getApiUserHandler))
-	router.PATCH("/admin/api/user", sessionHandler.RequireSession(patchApiUserHandler))
+	router.GET("/admin/api/user/:id", sessionHandler.RequireSession(getAPIUserHandler))
+	router.PATCH("/admin/api/user", sessionHandler.RequireSession(patchAPIUserHandler))
 	// User id
-	router.GET("/admin/api/userid", sessionHandler.RequireSession(getApiUserIdHandler))
+	router.GET("/admin/api/userid", sessionHandler.RequireSession(getAPIUserIDHandler))
 }

@@ -3,17 +3,19 @@ package templates
 import (
 	"bytes"
 	"errors"
+	"net/http"
+	"path/filepath"
+	"sync"
+
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/filenames"
 	"github.com/kabukky/journey/helpers"
 	"github.com/kabukky/journey/plugins"
 	"github.com/kabukky/journey/structure"
 	"github.com/kabukky/journey/structure/methods"
-	"net/http"
-	"path/filepath"
-	"sync"
 )
 
+// Templates hold all the compiled templates
 type Templates struct {
 	sync.RWMutex
 	m map[string]*structure.Helper
@@ -24,6 +26,7 @@ func newTemplates() *Templates { return &Templates{m: make(map[string]*structure
 // Global compiled templates - thread safe and accessible by all requests
 var compiledTemplates = newTemplates()
 
+// ShowPostTemplate shows a template for a post
 func ShowPostTemplate(writer http.ResponseWriter, r *http.Request, slug string) error {
 	// Read lock templates and global blog
 	compiledTemplates.RLock()
@@ -34,7 +37,7 @@ func ShowPostTemplate(writer http.ResponseWriter, r *http.Request, slug string) 
 	if err != nil {
 		return err
 	} else if !post.IsPublished { // Make sure the post is published before rendering it
-		return errors.New("Post not published.")
+		return errors.New("Post not published")
 	}
 	requestData := structure.RequestData{Posts: make([]structure.Post, 1), Blog: methods.Blog, CurrentTemplate: 1, CurrentPath: r.URL.Path} // CurrentTemplate = post
 	requestData.Posts[0] = *post
@@ -58,6 +61,7 @@ func ShowPostTemplate(writer http.ResponseWriter, r *http.Request, slug string) 
 	return err
 }
 
+// ShowAuthorTemplate Shows the author template
 func ShowAuthorTemplate(writer http.ResponseWriter, r *http.Request, slug string, page int) error {
 	// Read lock templates and global blog
 	compiledTemplates.RLock()
@@ -72,7 +76,7 @@ func ShowAuthorTemplate(writer http.ResponseWriter, r *http.Request, slug string
 	if err != nil {
 		return err
 	}
-	posts, err := database.RetrievePostsByUser(author.Id, methods.Blog.PostsPerPage, (methods.Blog.PostsPerPage * postIndex))
+	posts, err := database.RetrievePostsByUser(author.ID, methods.Blog.PostsPerPage, (methods.Blog.PostsPerPage * postIndex))
 	if err != nil {
 		return err
 	}
@@ -89,6 +93,7 @@ func ShowAuthorTemplate(writer http.ResponseWriter, r *http.Request, slug string
 	return err
 }
 
+// ShowTagTemplate shows the tag template
 func ShowTagTemplate(writer http.ResponseWriter, r *http.Request, slug string, page int) error {
 	// Read lock templates and global blog
 	compiledTemplates.RLock()
@@ -103,7 +108,7 @@ func ShowTagTemplate(writer http.ResponseWriter, r *http.Request, slug string, p
 	if err != nil {
 		return err
 	}
-	posts, err := database.RetrievePostsByTag(tag.Id, methods.Blog.PostsPerPage, (methods.Blog.PostsPerPage * postIndex))
+	posts, err := database.RetrievePostsByTag(tag.ID, methods.Blog.PostsPerPage, (methods.Blog.PostsPerPage * postIndex))
 	if err != nil {
 		return err
 	}
@@ -120,6 +125,7 @@ func ShowTagTemplate(writer http.ResponseWriter, r *http.Request, slug string, p
 	return err
 }
 
+// ShowIndexTemplate shows the index template
 func ShowIndexTemplate(w http.ResponseWriter, r *http.Request, page int) error {
 	// Read lock templates and global blog
 	compiledTemplates.RLock()
@@ -143,6 +149,7 @@ func ShowIndexTemplate(w http.ResponseWriter, r *http.Request, page int) error {
 	return err
 }
 
+// GetAllThemes gets all themes
 func GetAllThemes() []string {
 	themes := make([]string, 0)
 	files, _ := filepath.Glob(filepath.Join(filenames.ThemesFilepath, "*"))

@@ -20,7 +20,7 @@ import (
 )
 
 func httpsRedirect(w http.ResponseWriter, r *http.Request, _ map[string]string) {
-	http.Redirect(w, r, configuration.Config.HttpsUrl+r.RequestURI, http.StatusMovedPermanently)
+	http.Redirect(w, r, configuration.Config.HTTPSUrl+r.RequestURI, http.StatusMovedPermanently)
 	return
 }
 
@@ -69,19 +69,19 @@ func main() {
 	}
 
 	// HTTP(S) Server
-	httpPort := configuration.Config.HttpHostAndPort
-	httpsPort := configuration.Config.HttpsHostAndPort
+	httpPort := configuration.Config.HTTPHostAndPort
+	httpsPort := configuration.Config.HTTPSHostAndPort
 	// Check if HTTP/HTTPS flags were provided
-	if flags.HttpPort != "" {
+	if flags.HTTPPort != "" {
 		components := strings.SplitAfterN(httpPort, ":", 2)
-		httpPort = components[0] + flags.HttpPort
+		httpPort = components[0] + flags.HTTPPort
 	}
-	if flags.HttpsPort != "" {
+	if flags.HTTPSPort != "" {
 		components := strings.SplitAfterN(httpsPort, ":", 2)
-		httpsPort = components[0] + flags.HttpsPort
+		httpsPort = components[0] + flags.HTTPSPort
 	}
 	// Determine the kind of https support (as set in the config.json)
-	switch configuration.Config.HttpsUsage {
+	switch configuration.Config.HTTPSUsage {
 	case "AdminOnly":
 		httpRouter := httptreemux.New()
 		httpsRouter := httptreemux.New()
@@ -132,7 +132,7 @@ func main() {
 		if err := http.ListenAndServe(httpPort, httpRouter); err != nil {
 			log.Fatal("Error: Couldn't start the HTTP server:", err)
 		}
-	default: // This is configuration.HttpsUsage == "None"
+	default: // This is configuration.HTTPSUsage == "None"
 		httpRouter := httptreemux.New()
 		// Blog and pages as http
 		server.InitializeBlog(httpRouter)

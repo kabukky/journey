@@ -2,14 +2,16 @@ package templates
 
 import (
 	"bytes"
+	"net/http"
+
 	"github.com/kabukky/feeds"
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/date"
 	"github.com/kabukky/journey/structure"
 	"github.com/kabukky/journey/structure/methods"
-	"net/http"
 )
 
+// ShowIndexRss shows the index rss
 func ShowIndexRss(writer http.ResponseWriter) error {
 	// Read lock global blog
 	methods.Blog.RLock()
@@ -25,6 +27,7 @@ func ShowIndexRss(writer http.ResponseWriter) error {
 	return err
 }
 
+// ShowTagRss shows the tag rss
 func ShowTagRss(writer http.ResponseWriter, slug string) error {
 	// Read lock global blog
 	methods.Blog.RLock()
@@ -34,7 +37,7 @@ func ShowTagRss(writer http.ResponseWriter, slug string) error {
 		return err
 	}
 	// 15 posts in rss for now
-	posts, err := database.RetrievePostsByTag(tag.Id, 15, 0)
+	posts, err := database.RetrievePostsByTag(tag.ID, 15, 0)
 	if err != nil {
 		return err
 	}
@@ -44,6 +47,7 @@ func ShowTagRss(writer http.ResponseWriter, slug string) error {
 	return err
 }
 
+// ShowAuthorRss shows the author rss
 func ShowAuthorRss(writer http.ResponseWriter, slug string) error {
 	// Read lock global blog
 	methods.Blog.RLock()
@@ -53,7 +57,7 @@ func ShowAuthorRss(writer http.ResponseWriter, slug string) error {
 		return err
 	}
 	// 15 posts in rss for now
-	posts, err := database.RetrievePostsByUser(author.Id, 15, 0)
+	posts, err := database.RetrievePostsByUser(author.ID, 15, 0)
 	if err != nil {
 		return err
 	}
@@ -68,27 +72,27 @@ func createFeed(values *structure.RequestData) *feeds.Feed {
 	feed := &feeds.Feed{
 		Title:       string(values.Blog.Title),
 		Description: string(values.Blog.Description),
-		Link:        &feeds.Link{Href: string(values.Blog.Url)},
+		Link:        &feeds.Link{Href: string(values.Blog.URL)},
 		Updated:     now,
 		Image: &feeds.Image{
-			Url:   string(values.Blog.Url) + string(values.Blog.Logo),
+			Url:   string(values.Blog.URL) + string(values.Blog.Logo),
 			Title: string(values.Blog.Title),
-			Link:  string(values.Blog.Url),
+			Link:  string(values.Blog.URL),
 		},
-		Url: string(values.Blog.Url) + "/rss/",
+		Url: string(values.Blog.URL) + "/rss/",
 	}
 	for i := 0; i < len(values.Posts); i++ {
-		if values.Posts[i].Id != 0 {
+		if values.Posts[i].ID != 0 {
 			// Make link
 			var buffer bytes.Buffer
-			buffer.Write(values.Blog.Url)
+			buffer.Write(values.Blog.URL)
 			buffer.WriteString("/")
 			buffer.WriteString(values.Posts[i].Slug)
 			item := &feeds.Item{
 				Title:       string(values.Posts[i].Title),
-				Description: string(values.Posts[i].Html),
+				Description: string(values.Posts[i].HTML),
 				Link:        &feeds.Link{Href: buffer.String()},
-				Id:          string(values.Posts[i].Uuid),
+				Id:          string(values.Posts[i].UUID),
 				Author:      &feeds.Author{Name: string(values.Posts[i].Author.Name), Email: ""},
 				Created:     *values.Posts[i].Date,
 			}
@@ -96,7 +100,7 @@ func createFeed(values *structure.RequestData) *feeds.Feed {
 			image := string(values.Posts[i].Image)
 			if image != "" {
 				item.Image = &feeds.Image{
-					Url: string(values.Blog.Url) + image,
+					Url: string(values.Blog.URL) + image,
 				}
 			}
 			feed.Items = append(feed.Items, item)

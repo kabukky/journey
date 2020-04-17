@@ -1,10 +1,11 @@
 package methods
 
 import (
+	"log"
+
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/date"
 	"github.com/kabukky/journey/structure"
-	"log"
 )
 
 func SavePost(p *structure.Post) error {
@@ -12,10 +13,10 @@ func SavePost(p *structure.Post) error {
 	// Insert tags
 	for _, tag := range p.Tags {
 		// Tag slug might already be in database
-		tagId, err := database.RetrieveTagIdBySlug(tag.Slug)
+		tagId, err := database.RetrieveTagIDBySlug(tag.Slug)
 		if err != nil {
 			// Tag is probably not in database yet
-			tagId, err = database.InsertTag(tag.Name, tag.Slug, date.GetCurrentTime(), p.Author.Id)
+			tagId, err = database.InsertTag(tag.Name, tag.Slug, date.GetCurrentTime(), p.Author.ID)
 			if err != nil {
 				return err
 			}
@@ -25,7 +26,7 @@ func SavePost(p *structure.Post) error {
 		}
 	}
 	// Insert post
-	postId, err := database.InsertPost(p.Title, p.Slug, p.Markdown, p.Html, p.IsFeatured, p.IsPage, p.IsPublished, p.MetaDescription, p.Image, *p.Date, p.Author.Id)
+	postId, err := database.InsertPost(p.Title, p.Slug, p.Markdown, p.HTML, p.IsFeatured, p.IsPage, p.IsPublished, p.MetaDescription, p.Image, *p.Date, p.Author.ID)
 	if err != nil {
 		return err
 	}
@@ -49,10 +50,10 @@ func UpdatePost(p *structure.Post) error {
 	// Insert tags
 	for _, tag := range p.Tags {
 		// Tag slug might already be in database
-		tagId, err := database.RetrieveTagIdBySlug(tag.Slug)
+		tagId, err := database.RetrieveTagIDBySlug(tag.Slug)
 		if err != nil {
 			// Tag is probably not in database yet
-			tagId, err = database.InsertTag(tag.Name, tag.Slug, date.GetCurrentTime(), p.Author.Id)
+			tagId, err = database.InsertTag(tag.Name, tag.Slug, date.GetCurrentTime(), p.Author.ID)
 			if err != nil {
 				return err
 			}
@@ -62,18 +63,18 @@ func UpdatePost(p *structure.Post) error {
 		}
 	}
 	// Update post
-	err := database.UpdatePost(p.Id, p.Title, p.Slug, p.Markdown, p.Html, p.IsFeatured, p.IsPage, p.IsPublished, p.MetaDescription, p.Image, *p.Date, p.Author.Id)
+	err := database.UpdatePost(p.ID, p.Title, p.Slug, p.Markdown, p.HTML, p.IsFeatured, p.IsPage, p.IsPublished, p.MetaDescription, p.Image, *p.Date, p.Author.ID)
 	if err != nil {
 		return err
 	}
 	// Delete old postTags
-	err = database.DeletePostTagsForPostId(p.Id)
+	err = database.DeletePostTagsForPostID(p.ID)
 	// Insert postTags
 	if err != nil {
 		return err
 	}
 	for _, tagId := range tagIds {
-		err = database.InsertPostTag(p.Id, tagId)
+		err = database.InsertPostTag(p.ID, tagId)
 		if err != nil {
 			return err
 		}
@@ -87,7 +88,7 @@ func UpdatePost(p *structure.Post) error {
 }
 
 func DeletePost(postId int64) error {
-	err := database.DeletePostById(postId)
+	err := database.DeletePostByID(postId)
 	if err != nil {
 		return err
 	}
