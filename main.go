@@ -10,13 +10,13 @@ import (
 	"github.com/dimfeld/httptreemux"
 	"github.com/kabukky/journey/configuration"
 	"github.com/kabukky/journey/database"
-	"github.com/kabukky/journey/filenames"
 	"github.com/kabukky/journey/flags"
 	"github.com/kabukky/journey/https"
 	"github.com/kabukky/journey/plugins"
 	"github.com/kabukky/journey/server"
 	"github.com/kabukky/journey/structure/methods"
 	"github.com/kabukky/journey/templates"
+	apachelog "github.com/lestrrat-go/apache-logformat"
 )
 
 func httpsRedirect(w http.ResponseWriter, r *http.Request, _ map[string]string) {
@@ -100,12 +100,12 @@ func main() {
 		// Start https server
 		log.Println("Starting https server on port " + httpsPort + "...")
 		go func() {
-			if err := https.StartServer(httpsPort, httpsRouter); err != nil {
+			if err := https.StartServer(httpsPort, logWrapRouter(httpsRouter, configuration.Config)); err != nil {
 				log.Fatal("Error: Couldn't start the HTTPS server:", err)
 			}
 		}()
 		// Start http server
-		log.Println("Starting http server on port " + httpPort + "...")
+		log.Println("Starting http-redirect server on port " + httpPort + "...")
 		if err := http.ListenAndServe(httpPort, httpRouter); err != nil {
 			log.Fatal("Error: Couldn't start the HTTP server:", err)
 		}
@@ -121,16 +121,16 @@ func main() {
 		httpRouter.GET("/", httpsRedirect)
 		httpRouter.GET("/*path", httpsRedirect)
 		// Start https server
-		log.Println("Starting https server on port " + httpsPort + "...")
+		log.Printf("Starting https server on port %q", httpsPort)
 		go func() {
-			if err := https.StartServer(httpsPort, httpsRouter); err != nil {
-				log.Fatal("Error: Couldn't start the HTTPS server:", err)
+			if err := https.StartServer(httpsPort, logWrapRouter(httpsRouter, configuration.Config)); err != nil {
+				log.Fatal("Couldn't start the HTTPS server", err)
 			}
 		}()
 		// Start http server
-		log.Println("Starting http server on port " + httpPort + "...")
+		log.Printf("Starting http-redirect server on port %q", httpPort)
 		if err := http.ListenAndServe(httpPort, httpRouter); err != nil {
-			log.Fatal("Error: Couldn't start the HTTP server:", err)
+			log.Fatal("Couldn't start the HTTP server:", err)
 		}
 	default: // This is configuration.HTTPSUsage == "None"
 		httpRouter := httptreemux.New()
@@ -140,10 +140,32 @@ func main() {
 		// Admin as http
 		server.InitializeAdmin(httpRouter)
 		// Start http server
-		log.Println("Starting server without HTTPS support. Please enable HTTPS in " + filenames.ConfigFilename + " to improve security.")
-		log.Println("Starting http server on port " + httpPort + "...")
-		if err := http.ListenAndServe(httpPort, httpRouter); err != nil {
-			log.Fatal("Error: Couldn't start the HTTP server:", err)
+		log.Printf("Starting http-only server on port %q", httpPort)
+		if err := http.ListenAndServe(httpPort, logWrapRouter(httpRouter, configuration.Config)); err != nil {
+			log.Fatal("Couldn't start the HTTP server:", err)
 		}
 	}
+}
+func logWrapRouter(httpRouter *httptreemux.TreeMux, config *configuration.Configuration) http.Handler {
+	logfile := config.RequestLog
+	format := config.RequestLogFormat
+	if logfile != "" {
+		var logFormat *apachelog.ApacheLog
+		if format == "" {
+			logFormat = apachelog.CombinedLog
+		} else {
+			var err error
+			logFormat, err = apachelog.New(format)
+			if err != nil {
+				log.Fatalf("bad ApacheLog format: %s", err)
+			}
+		}
+		fp, err := os.OpenFile(logfile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+		if err != nil {
+			log.Fatalf("error creating logfile: %s", err)
+		}
+		log.Printf("Logging to %q", logfile)
+		return logFormat.Wrap(httpRouter, fp)
+	}
+	return httpRouter
 }

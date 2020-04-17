@@ -7,5 +7,7 @@
 	"UseLetsEncrypt":false,
 	"SAMLCert":"",
 	"SAMLKey":"",
-	"SAMLIDPUrl":""
+	"SAMLIDPUrl":"",
+	"RequestLog":"",
+	"RequestLogFormat":""
 }

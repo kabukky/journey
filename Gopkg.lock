@@ -62,6 +62,18 @@
   revision = "ae77be60afb1dcacde03767a8c37337fad28ac14"
 
 [[projects]]
+  name = "github.com/lestrrat-go/apache-logformat"
+  packages = [".","internal/httputil","internal/logctx"]
+  revision = "03f0eea7f35b19f822ceae0298fb2c4a288ff174"
+  version = "v2.0.4"
+
+[[projects]]
+  name = "github.com/lestrrat-go/strftime"
+  packages = ["."]
+  revision = "6b63b6de4db1514785520f626319d12516ee6932"
+  version = "v1.0.1"
+
+[[projects]]
   name = "github.com/mattn/go-sqlite3"
   packages = ["."]
   revision = "ed69081a91fd053f17672236b0dd52ba7485e1a3"
@@ -124,6 +136,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "ca85eb7b31fd1462b5b08708d84646d272bed2acf452a9a4f9a7556275fc61a1"
+  inputs-digest = "29f358e66191ff48b67e4dfc6c6e0a97ec75c75bb051e58b9bd21465a5d84202"
   solver-name = "gps-cdcl"
   solver-version = 1

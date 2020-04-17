@@ -69,3 +69,7 @@
 [[constraint]]
   name = "github.com/crewjam/saml"
   version = "0.4.0"
+
+[[constraint]]
+  name="github.com/lestrrat-go/apache-logformat"
+  version = "v2.0.4"

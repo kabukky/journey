@@ -23,6 +23,8 @@ type Configuration struct {
 	SAMLCert         string
 	SAMLKey          string
 	SAMLIDPUrl       string
+	RequestLog       string
+	RequestLogFormat string
 }
 
 // NewConfiguration loads the configuration from config.json and returns it
@@ -105,8 +107,8 @@ func (c *Configuration) load() error {
 	cReflected := reflect.ValueOf(*c)
 	for i := 0; i < cReflected.NumField(); i++ {
 		if cReflected.Field(i).Interface() == "" &&
-			!strings.HasPrefix(cReflected.Type().Field(i).Name, "SAML") {
-			return fmt.Errorf("Error: file %s missing required field %s", filenames.ConfigFilename, cReflected.Type().Field(i).Name)
+			isRequired(cReflected.Type().Field(i).Name) {
+			return fmt.Errorf("Error: file %s missing required field %q", filenames.ConfigFilename, cReflected.Type().Field(i).Name)
 		}
 	}
 	// Save the changed config
@@ -129,4 +131,16 @@ func (c *Configuration) create() error {
 	}
 
 	return nil
+}
+
+func isRequired(fieldName string) bool {
+	// SAML values are not required
+	if strings.HasPrefix(fieldName, "SAML") {
+		return false
+	}
+	// logging is off if these are empty
+	if strings.HasPrefix(fieldName, "Request") {
+		return false
+	}
+	return true
 }

@@ -4,7 +4,7 @@ ALL_SRC := $(shell find . -name "*.go" | grep -v -e vendor \
 
 GOIMPORTS=goimports
 
-all: fmt vet lint journey
+all: journey fmt vet lint
 
 .PHONY: all fmt vet lint
 
