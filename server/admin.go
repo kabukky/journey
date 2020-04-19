@@ -20,6 +20,7 @@ import (
 	"github.com/crewjam/saml"
 	"github.com/crewjam/saml/samlsp"
 	"github.com/dimfeld/httptreemux"
+	"github.com/gofrs/uuid"
 	"github.com/kabukky/journey/authentication"
 	"github.com/kabukky/journey/configuration"
 	"github.com/kabukky/journey/conversion"
@@ -30,7 +31,6 @@ import (
 	"github.com/kabukky/journey/structure"
 	"github.com/kabukky/journey/structure/methods"
 	"github.com/kabukky/journey/templates"
-	uuid "github.com/satori/go.uuid"
 )
 
 var sessionHandler authentication.SessionHandler
@@ -373,7 +373,7 @@ func apiUploadHandler(w http.ResponseWriter, r *http.Request, _ map[string]strin
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			dst, err := os.Create(filepath.Join(filePath, strconv.FormatInt(currentDate.Unix(), 10)+"_"+uuid.NewV4().String()+filepath.Ext(part.FileName())))
+			dst, err := os.Create(filepath.Join(filePath, strconv.FormatInt(currentDate.Unix(), 10)+"_"+uuid.Must(uuid.NewV4()).String()+filepath.Ext(part.FileName())))
 			defer dst.Close()
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)

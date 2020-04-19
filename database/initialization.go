@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 
+	"github.com/gofrs/uuid"
 	"github.com/kabukky/journey/database/migration"
 	"github.com/kabukky/journey/date"
 	"github.com/kabukky/journey/filenames"
@@ -11,7 +12,6 @@ import (
 
 	// import the sqlite driver
 	_ "github.com/mattn/go-sqlite3"
-	uuid "github.com/satori/go.uuid"
 )
 
 // Handler for read access
@@ -147,7 +147,7 @@ func Initialize() error {
 		return err
 	}
 	currentTime := date.GetCurrentTime()
-	_, err = readDB.Exec(stmtInitialization, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime)
+	_, err = readDB.Exec(stmtInitialization, uuid.Must(uuid.NewV4()).String(), currentTime, currentTime, uuid.Must(uuid.NewV4()).String(), currentTime, currentTime, uuid.Must(uuid.NewV4()).String(), currentTime, currentTime, uuid.Must(uuid.NewV4()).String(), currentTime, currentTime, uuid.Must(uuid.NewV4()).String(), currentTime, currentTime, uuid.Must(uuid.NewV4()).String(), currentTime, currentTime, uuid.Must(uuid.NewV4()).String(), currentTime, currentTime, uuid.Must(uuid.NewV4()).String(), currentTime, currentTime, uuid.Must(uuid.NewV4()).String(), currentTime, currentTime, uuid.Must(uuid.NewV4()).String(), currentTime, currentTime, uuid.Must(uuid.NewV4()).String(), currentTime, currentTime, uuid.Must(uuid.NewV4()).String(), currentTime, currentTime)
 	// TODO: Is Commit()/Rollback() needed for DB.Exec()?
 	if err != nil {
 		return err

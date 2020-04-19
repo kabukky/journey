@@ -23,11 +23,11 @@
 
 [[constraint]]
   name = "github.com/dimfeld/httptreemux"
-  version = "5.0.0"
+  version = "^5.0.0"
 
 [[constraint]]
   name = "github.com/gorilla/securecookie"
-  version = "1.1.0"
+  version = "^1.1.0"
 
 [[constraint]]
   branch = "master"
@@ -43,15 +43,15 @@
 
 [[constraint]]
   name = "github.com/mattn/go-sqlite3"
-  version = "1.4.0"
+  version = "^2.0.2"
 
 [[constraint]]
   name = "github.com/russross/blackfriday"
-  version = "1.5.0"
+  version = "^1.5.0"
 
 [[constraint]]
-  name = "github.com/satori/go.uuid"
-  version = "1.1.0"
+  name = "github.com/gofrs/uuid"
+  version = "^3.2.0"
 
 [[constraint]]
   branch = "master"
@@ -62,8 +62,9 @@
   name = "golang.org/x/crypto"
 
 [[constraint]]
+  source = "https://github.com/fsnotify/fsnotify/archive/v1.4.7.tar.gz"
   name = "gopkg.in/fsnotify.v1"
-  version = "1.4.2"
+  version = "1.4.7"
 
 
 [[constraint]]
