@@ -146,7 +146,7 @@ func postEditHandler(w http.ResponseWriter, r *http.Request, params map[string]s
 		return
 	}
 
-	url := fmt.Sprintf("/admin/#/edit/%d", post.ID)
+	url := fmt.Sprintf("/admin#/edit/%d", post.ID)
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
