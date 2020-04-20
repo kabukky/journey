@@ -37,11 +37,11 @@ var sessionHandler authentication.SessionHandler
 
 // JSONPost is a JSON representation of a post
 type JSONPost struct {
-	ID              int64 `json:"id"`
+	ID              int64
 	Title           string
 	Slug            string
 	Markdown        string
-	HTML            string `json:"html"`
+	HTML            string
 	IsFeatured      bool
 	IsPage          bool
 	IsPublished     bool
@@ -82,7 +82,7 @@ type JSONUser struct {
 
 // JSONUserID is the ID for the user
 type JSONUserID struct {
-	ID int64 `json:"id"`
+	ID int64 `json:"Id"`
 }
 
 // JSONImage is a blog image
