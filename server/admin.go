@@ -807,10 +807,11 @@ func InitializeAdmin(router *httptreemux.TreeMux) {
 			metadata, err = samlsp.ParseMetadata(data)
 		}
 		samlSP, err := samlsp.New(samlsp.Options{
-			URL:         *rootURL,
-			Key:         keyPair.PrivateKey.(*rsa.PrivateKey),
-			Certificate: keyPair.Leaf,
-			IDPMetadata: metadata,
+			URL:          *rootURL,
+			Key:          keyPair.PrivateKey.(*rsa.PrivateKey),
+			Certificate:  keyPair.Leaf,
+			IDPMetadata:  metadata,
+			CookieMaxAge: 12 * time.Hour, // consider moving this to the configuration
 		})
 
 		if err != nil {
