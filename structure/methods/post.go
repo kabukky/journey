@@ -45,7 +45,7 @@ func SavePost(p *structure.Post) error {
 	return nil
 }
 
-func UpdatePost(p *structure.Post) error {
+func UpdatePost(p *structure.Post) (bool, error) {
 	tagIds := make([]int64, 0)
 	// Insert tags
 	for _, tag := range p.Tags {
@@ -55,7 +55,7 @@ func UpdatePost(p *structure.Post) error {
 			// Tag is probably not in database yet
 			tagId, err = database.InsertTag(tag.Name, tag.Slug, date.GetCurrentTime(), p.Author.ID)
 			if err != nil {
-				return err
+				return false, err
 			}
 		}
 		if tagId != 0 {
@@ -63,20 +63,20 @@ func UpdatePost(p *structure.Post) error {
 		}
 	}
 	// Update post
-	err := database.UpdatePost(p.ID, p.Title, p.Slug, p.Markdown, p.HTML, p.IsFeatured, p.IsPage, p.IsPublished, p.MetaDescription, p.Image, *p.Date, p.Author.ID)
+	published, err := database.UpdatePost(p.ID, p.Title, p.Slug, p.Markdown, p.HTML, p.IsFeatured, p.IsPage, p.IsPublished, p.MetaDescription, p.Image, *p.Date, p.Author.ID)
 	if err != nil {
-		return err
+		return false, err
 	}
 	// Delete old postTags
 	err = database.DeletePostTagsForPostID(p.ID)
 	// Insert postTags
 	if err != nil {
-		return err
+		return false, err
 	}
 	for _, tagId := range tagIds {
 		err = database.InsertPostTag(p.ID, tagId)
 		if err != nil {
-			return err
+			return false, err
 		}
 	}
 	// Generate new global blog
@@ -84,7 +84,7 @@ func UpdatePost(p *structure.Post) error {
 	if err != nil {
 		log.Panic("Error: couldn't generate blog data:", err)
 	}
-	return nil
+	return published, nil
 }
 
 func DeletePost(postId int64) error {

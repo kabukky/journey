@@ -12,10 +12,10 @@ const stmtUpdateLastLogin = "UPDATE users SET last_login = ? WHERE id = ?"
 const stmtUpdateUserPassword = "UPDATE users SET password = ?, updated_at = ?, updated_by = ? WHERE id = ?"
 
 // UpdatePost ...
-func UpdatePost(id int64, title []byte, slug string, markdown []byte, html []byte, featured bool, isPage bool, published bool, metaDescription []byte, image []byte, updatedAt time.Time, updatedBy int64) error {
+func UpdatePost(id int64, title []byte, slug string, markdown []byte, html []byte, featured bool, isPage bool, published bool, metaDescription []byte, image []byte, updatedAt time.Time, updatedBy int64) (bool, error) {
 	currentPost, err := RetrievePostByID(id)
 	if err != nil {
-		return err
+		return false, err
 	}
 	status := "draft"
 	if published {
@@ -24,7 +24,7 @@ func UpdatePost(id int64, title []byte, slug string, markdown []byte, html []byt
 	writeDB, err := readDB.Begin()
 	if err != nil {
 		writeDB.Rollback()
-		return err
+		return false, err
 	}
 	// If the updated post is published for the first time, add publication date and user
 	if published && !currentPost.IsPublished {
@@ -34,9 +34,9 @@ func UpdatePost(id int64, title []byte, slug string, markdown []byte, html []byt
 	}
 	if err != nil {
 		writeDB.Rollback()
-		return err
+		return false, err
 	}
-	return writeDB.Commit()
+	return published, writeDB.Commit()
 }
 
 // UpdateSettings ...

@@ -3,7 +3,8 @@ all: journey fmt vet lint
 .PHONY: all fmt vet lint
 
 PACKAGE = github.com/kabukky/journey
-PKG_DIRS ?= authentication configuration conversion database date filenames flags helpers https plugins server slug structure templates watcher
+PKG_DIRS ?= authentication configuration conversion database date filenames flags \
+	    helpers https notifications plugins server slug structure templates watcher
 PKG_FILES := $(foreach dir,$(PKG_DIRS), $(wildcard $(dir)/*.go))
 MAIN_FILES = main.go
 

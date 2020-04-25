@@ -12,6 +12,7 @@ import (
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/flags"
 	"github.com/kabukky/journey/https"
+	"github.com/kabukky/journey/notifications"
 	"github.com/kabukky/journey/plugins"
 	"github.com/kabukky/journey/server"
 	"github.com/kabukky/journey/structure/methods"
@@ -66,6 +67,13 @@ func main() {
 		// Close LuaPool at the end
 		defer plugins.LuaPool.Shutdown()
 		log.Println("Plugins loaded.")
+	}
+
+	// Notification system
+	// expand the SMTP password from the environment
+	configuration.Config.SMTP.SMTPPassword = os.ExpandEnv(configuration.Config.SMTP.SMTPPassword)
+	if err = notifications.Initialize(&configuration.Config.SMTP); err != nil {
+		log.Fatal("Could not initialize notification system:", err)
 	}
 
 	// HTTP(S) Server

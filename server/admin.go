@@ -27,6 +27,7 @@ import (
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/date"
 	"github.com/kabukky/journey/filenames"
+	"github.com/kabukky/journey/notifications"
 	"github.com/kabukky/journey/slug"
 	"github.com/kabukky/journey/structure"
 	"github.com/kabukky/journey/structure/methods"
@@ -271,6 +272,9 @@ func postAPIPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]str
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+		if post.IsPublished {
+			notifications.Send(string(post.Title), "https://svjaneo.com/"+post.Slug)
+		}
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("Post created!"))
 		return
@@ -309,10 +313,13 @@ func patchAPIPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 		}
 		currentTime := date.GetCurrentTime()
 		*post = structure.Post{ID: json.ID, Title: []byte(json.Title), Slug: postSlug, Markdown: []byte(json.Markdown), HTML: conversion.GenerateHTMLFromMarkdown([]byte(json.Markdown)), IsFeatured: json.IsFeatured, IsPage: json.IsPage, IsPublished: json.IsPublished, MetaDescription: []byte(json.MetaDescription), Image: []byte(json.Image), Date: &currentTime, Tags: methods.GenerateTagsFromCommaString(json.Tags), Author: &structure.User{ID: userID}}
-		err = methods.UpdatePost(post)
+		newlyPublished, err := methods.UpdatePost(post)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
+		}
+		if newlyPublished {
+			notifications.Send(string(post.Title), "https://svjaneo.com/"+post.Slug)
 		}
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("Post updated!"))

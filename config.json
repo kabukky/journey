@@ -9,5 +9,12 @@
 	"SAMLKey":"",
 	"SAMLIDPUrl":"",
 	"RequestLog":"",
-	"RequestLogFormat":""
+	"RequestLogFormat":"",
+	"SMTP": {
+		"SMTPUserName":"",
+		"SMTPServer":"",
+		"SMTPPassword":"${PASSWORD_ENVORNMENT}",
+		"Sender":"you@somewhere.com",
+		"Recipient":"mailinglist@somewhere.com"
+	}
 }

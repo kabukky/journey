@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/kabukky/journey/filenames"
+	"github.com/kabukky/journey/notifications"
 )
 
 // Configuration settings that are neccesary for server configuration
@@ -25,6 +26,7 @@ type Configuration struct {
 	SAMLIDPUrl       string
 	RequestLog       string
 	RequestLogFormat string
+	SMTP             notifications.Notification
 }
 
 // NewConfiguration loads the configuration from config.json and returns it
