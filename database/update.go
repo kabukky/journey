@@ -36,7 +36,7 @@ func UpdatePost(id int64, title []byte, slug string, markdown []byte, html []byt
 		writeDB.Rollback()
 		return false, err
 	}
-	return published, writeDB.Commit()
+	return published && !currentPost.IsPublished, writeDB.Commit()
 }
 
 // UpdateSettings ...
