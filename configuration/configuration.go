@@ -44,6 +44,7 @@ func NewConfiguration() *Configuration {
 var Config = NewConfiguration()
 
 func (c *Configuration) save() error {
+	// TODO: config to YAML
 	data, err := json.Marshal(c)
 	if err != nil {
 		return err
@@ -57,6 +58,7 @@ func (c *Configuration) load() error {
 	if err != nil {
 		return err
 	}
+	// TODO: config to YAML
 	err = json.Unmarshal(data, c)
 	if err != nil {
 		return err
