@@ -6,7 +6,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/kabukky/journey/database"
+	"github.com/rkuris/journey/database"
 )
 
 // Generate ...

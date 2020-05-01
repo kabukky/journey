@@ -1,8 +1,8 @@
 all: journey fmt vet lint
 
-.PHONY: all fmt vet lint
+.PHONY: all fmt vet lint clean
 
-PACKAGE = github.com/kabukky/journey
+PACKAGE = github.com/rkuris/journey
 PKG_DIRS ?= authentication configuration conversion database date filenames flags \
 	    helpers https notifications plugins server slug structure templates watcher
 PKG_FILES := $(foreach dir,$(PKG_DIRS), $(wildcard $(dir)/*.go))
@@ -32,3 +32,10 @@ fmt:
 
 journey: $(PKG_FILES) vendor
 	go build
+
+clean:
+	rm -f journey lint.log vet.log
+
+
+vendor:
+	mkdir vendor

@@ -8,12 +8,12 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/kabukky/journey/conversion"
-	"github.com/kabukky/journey/database"
-	"github.com/kabukky/journey/date"
-	"github.com/kabukky/journey/plugins"
-	"github.com/kabukky/journey/structure"
-	"github.com/kabukky/journey/structure/methods"
+	"github.com/rkuris/journey/conversion"
+	"github.com/rkuris/journey/database"
+	"github.com/rkuris/journey/date"
+	"github.com/rkuris/journey/plugins"
+	"github.com/rkuris/journey/structure"
+	"github.com/rkuris/journey/structure/methods"
 )
 
 // Helper fuctions

@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/kabukky/journey/configuration"
-	"github.com/kabukky/journey/database"
-	"github.com/kabukky/journey/date"
-	"github.com/kabukky/journey/slug"
-	"github.com/kabukky/journey/structure"
+	"github.com/rkuris/journey/configuration"
+	"github.com/rkuris/journey/database"
+	"github.com/rkuris/journey/date"
+	"github.com/rkuris/journey/slug"
+	"github.com/rkuris/journey/structure"
 )
 
 // Global blog - thread safe and accessible by all requests

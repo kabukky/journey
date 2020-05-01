@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/kabukky/journey/helpers"
+	"github.com/rkuris/journey/helpers"
 	"gopkg.in/fsnotify.v1"
 )
 

@@ -8,8 +8,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/kabukky/journey/filenames"
-	"github.com/kabukky/journey/structure"
+	"github.com/rkuris/journey/filenames"
+	"github.com/rkuris/journey/structure"
 	lua "github.com/yuin/gopher-lua"
 )
 

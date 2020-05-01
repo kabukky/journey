@@ -10,14 +10,14 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/kabukky/journey/database"
-	"github.com/kabukky/journey/filenames"
-	"github.com/kabukky/journey/flags"
-	"github.com/kabukky/journey/helpers"
-	"github.com/kabukky/journey/plugins"
-	"github.com/kabukky/journey/structure"
-	"github.com/kabukky/journey/structure/methods"
-	"github.com/kabukky/journey/watcher"
+	"github.com/rkuris/journey/database"
+	"github.com/rkuris/journey/filenames"
+	"github.com/rkuris/journey/flags"
+	"github.com/rkuris/journey/helpers"
+	"github.com/rkuris/journey/plugins"
+	"github.com/rkuris/journey/structure"
+	"github.com/rkuris/journey/structure/methods"
+	"github.com/rkuris/journey/watcher"
 )
 
 // For parsing of the theme files

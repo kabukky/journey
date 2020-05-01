@@ -4,11 +4,11 @@ import (
 	"database/sql"
 
 	"github.com/gofrs/uuid"
-	"github.com/kabukky/journey/database/migration"
-	"github.com/kabukky/journey/date"
-	"github.com/kabukky/journey/filenames"
-	"github.com/kabukky/journey/helpers"
-	"github.com/kabukky/journey/structure"
+	"github.com/rkuris/journey/database/migration"
+	"github.com/rkuris/journey/date"
+	"github.com/rkuris/journey/filenames"
+	"github.com/rkuris/journey/helpers"
+	"github.com/rkuris/journey/structure"
 
 	// import the sqlite driver
 	_ "github.com/mattn/go-sqlite3"

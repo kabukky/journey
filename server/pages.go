@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/dimfeld/httptreemux"
-	"github.com/kabukky/journey/filenames"
-	"github.com/kabukky/journey/helpers"
+	"github.com/rkuris/journey/filenames"
+	"github.com/rkuris/journey/helpers"
 )
 
 func pagesHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {

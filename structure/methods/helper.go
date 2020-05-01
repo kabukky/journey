@@ -3,7 +3,7 @@ package methods
 import (
 	"strings"
 
-	"github.com/kabukky/journey/structure"
+	"github.com/rkuris/journey/structure"
 )
 
 // Function to put all arguments into a neatly organized map (splitting argument.Name with format "name=argument" into map["name"]"argument")

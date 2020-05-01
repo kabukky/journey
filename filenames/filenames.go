@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/kabukky/journey/flags"
 	"github.com/kardianos/osext"
+	"github.com/rkuris/journey/flags"
 )
 
 var (

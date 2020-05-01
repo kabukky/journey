@@ -8,16 +8,16 @@ import (
 	"strings"
 
 	"github.com/dimfeld/httptreemux"
-	"github.com/kabukky/journey/configuration"
-	"github.com/kabukky/journey/database"
-	"github.com/kabukky/journey/flags"
-	"github.com/kabukky/journey/https"
-	"github.com/kabukky/journey/notifications"
-	"github.com/kabukky/journey/plugins"
-	"github.com/kabukky/journey/server"
-	"github.com/kabukky/journey/structure/methods"
-	"github.com/kabukky/journey/templates"
 	apachelog "github.com/lestrrat-go/apache-logformat"
+	"github.com/rkuris/journey/configuration"
+	"github.com/rkuris/journey/database"
+	"github.com/rkuris/journey/flags"
+	"github.com/rkuris/journey/https"
+	"github.com/rkuris/journey/notifications"
+	"github.com/rkuris/journey/plugins"
+	"github.com/rkuris/journey/server"
+	"github.com/rkuris/journey/structure/methods"
+	"github.com/rkuris/journey/templates"
 )
 
 func httpsRedirect(w http.ResponseWriter, r *http.Request, _ map[string]string) {

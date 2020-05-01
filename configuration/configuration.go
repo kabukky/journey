@@ -9,8 +9,8 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/kabukky/journey/filenames"
-	"github.com/kabukky/journey/notifications"
+	"github.com/rkuris/journey/filenames"
+	"github.com/rkuris/journey/notifications"
 )
 
 // Configuration settings that are neccesary for server configuration

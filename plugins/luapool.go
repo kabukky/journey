@@ -5,7 +5,7 @@ package plugins
 import (
 	"sync"
 
-	"github.com/kabukky/journey/structure"
+	"github.com/rkuris/journey/structure"
 	lua "github.com/yuin/gopher-lua"
 )
 

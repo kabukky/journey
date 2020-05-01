@@ -5,10 +5,10 @@ import (
 	"net/http"
 
 	"github.com/kabukky/feeds"
-	"github.com/kabukky/journey/database"
-	"github.com/kabukky/journey/date"
-	"github.com/kabukky/journey/structure"
-	"github.com/kabukky/journey/structure/methods"
+	"github.com/rkuris/journey/database"
+	"github.com/rkuris/journey/date"
+	"github.com/rkuris/journey/structure"
+	"github.com/rkuris/journey/structure/methods"
 )
 
 // ShowIndexRss shows the index rss

@@ -39,12 +39,12 @@
   version = "v3.2.0"
 
 [[projects]]
-  digest = "1:4261fa3713c57452d2a922ee3d52e58a31a1fea7c870700c6ed4660769aabffa"
+  digest = "1:a661d918513b722967d92c664c9e9a17e2d0fe3924b0016aca7dcb422be93573"
   name = "github.com/dimfeld/httptreemux"
   packages = ["."]
   pruneopts = ""
-  revision = "4a4229d047055d6421a1c3a46ffc10220f5934bb"
-  version = "v5.2.1"
+  revision = "ebfe087278c7efe283236a9ee656b10ccffabb4e"
+  version = "v5.2.2"
 
 [[projects]]
   digest = "1:141cc9fc6279592458b304038bd16a05ef477d125c6dad281216345a11746fd7"
@@ -85,6 +85,14 @@
   packages = ["."]
   pruneopts = ""
   revision = "617593d7dcb39c9ed617bb62c5e2056244d02184"
+
+[[projects]]
+  digest = "1:efc96b1af4d57ba523586aa01ffd4edaf94011e4ffda6ab196112272211a2368"
+  name = "github.com/kabukky/journey"
+  packages = ["structure"]
+  pruneopts = ""
+  revision = "58d81ca85b7716ed4a986acce99530759d4f5ffd"
+  version = "v0.2.0"
 
 [[projects]]
   branch = "master"
@@ -165,7 +173,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:cadec9f74ad2027612c018d3f55e90a3bcb07e0b249fb91ce0724abb572d54d9"
+  digest = "1:bf61fa9b53be5ce096004599b957e5957b28a5e421b724250aa06ecb7ee6dc57"
   name = "golang.org/x/crypto"
   packages = [
     "acme",
@@ -175,23 +183,23 @@
     "ripemd160",
   ]
   pruneopts = ""
-  revision = "0848c9571904fcbcb24543358ca8b5a7dbfde875"
+  revision = "4b2356b1ed79e6be3deca3737a3db3d132d2847a"
 
 [[projects]]
   branch = "master"
-  digest = "1:5ee8059477435bc4ec344bfa2ba129566bd0bc8137d98af9ec9aa4ba8e5f1e4e"
+  digest = "1:cc0cd79615fac200d1df9b269bd74f8903ae793f27dfb4c4b9f9b47ce79f6b25"
   name = "golang.org/x/net"
   packages = ["idna"]
   pruneopts = ""
-  revision = "d3edc9973b7eb1fb302b0ff2c62357091cea9a30"
+  revision = "ff2c4b7c35a07b0c1e90ce72aa7bfe41bb66a3cb"
 
 [[projects]]
   branch = "master"
-  digest = "1:bec9c788e5357887ac914cbdec8cf6f2962661a852b902734f0fc90bbc58b08e"
+  digest = "1:c37f1064062c0f3f49b53690ce1161fbf4466f759d1351e1d61c68f559e0c75b"
   name = "golang.org/x/sys"
   packages = ["unix"]
   pruneopts = ""
-  revision = "669c56c373c468cbe0f0c12b7939832b26088d33"
+  revision = "593003d681fa6bf81a6affb4ef4129684af97f9c"
 
 [[projects]]
   digest = "1:740b51a55815493a8d0f2b1e0d0ae48fe48953bf7eaf3fcc4198823bf67768c0"
@@ -238,6 +246,7 @@
     "github.com/gorilla/securecookie",
     "github.com/kabukky/feeds",
     "github.com/kabukky/httpscerts",
+    "github.com/kabukky/journey/structure",
     "github.com/kardianos/osext",
     "github.com/lestrrat-go/apache-logformat",
     "github.com/mattn/go-sqlite3",
