@@ -586,13 +586,11 @@ func urlFunc(helper *structure.Helper, values *structure.RequestData) []byte {
 	if values.CurrentHelperContext == 1 { // post
 		buffer.WriteString("/")
 		buffer.WriteString(values.Posts[values.CurrentPostIndex].Slug)
-		buffer.WriteString("/")
 		return evaluateEscape(buffer.Bytes(), helper.Unescaped)
 	} else if values.CurrentHelperContext == 3 { // author
 		buffer.WriteString("/author/")
 		// TODO: Error handling if there is no Posts[values.CurrentPostIndex]
 		buffer.WriteString(values.Posts[values.CurrentPostIndex].Author.Slug)
-		buffer.WriteString("/")
 		return evaluateEscape(buffer.Bytes(), helper.Unescaped)
 	} else if values.CurrentHelperContext == 4 { // navigation
 		buffer.WriteString(values.Blog.NavigationItems[values.CurrentNavigationIndex].URL)
