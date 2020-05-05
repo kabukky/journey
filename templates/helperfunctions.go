@@ -34,6 +34,7 @@ var helperFuctions = map[string]func(*structure.Helper, *structure.RequestData) 
 	"@blog.url":         atBlogDotUrlFunc,
 	"@blog.logo":        atBlogDotLogoFunc,
 	"@blog.cover":       atBlogDotCoverFunc,
+	"@blog.cover_image": atBlogDotCoverFunc,
 	"@blog.description": atBlogDotDescriptionFunc,
 	"@blog.navigation":  navigationFunc,
 
