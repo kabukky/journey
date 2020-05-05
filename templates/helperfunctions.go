@@ -29,6 +29,7 @@ var helperFuctions = map[string]func(*structure.Helper, *structure.RequestData) 
 	"contentFor":       contentForFunc,
 	"block":            blockFunc,
 
+	// TODO: remove legacy API v2
 	// @blog functions
 	"@blog.title":       atBlogDotTitleFunc,
 	"@blog.url":         atBlogDotUrlFunc,
@@ -37,6 +38,14 @@ var helperFuctions = map[string]func(*structure.Helper, *structure.RequestData) 
 	"@blog.cover_image": atBlogDotCoverFunc,
 	"@blog.description": atBlogDotDescriptionFunc,
 	"@blog.navigation":  navigationFunc,
+
+	// @site functions
+	"@site.title":       atBlogDotTitleFunc,
+	"@site.url":         atBlogDotUrlFunc,
+	"@site.logo":        atBlogDotLogoFunc,
+	"@site.cover_image": atBlogDotCoverFunc,
+	"@site.description": atBlogDotDescriptionFunc,
+	"@site.navigation":  navigationFunc,
 
 	// Post functions
 	"post":       postFunc,
@@ -53,12 +62,21 @@ var helperFuctions = map[string]func(*structure.Helper, *structure.RequestData) 
 	"tag.slug": tagDotSlugFunc,
 
 	// Author functions
+	"bio":                     bioFunc,
+	"email":                   emailFunc,
+	"website":                 websiteFunc,
+	"cover":                   coverFunc,
+	"location":                locationFunc,
+	"primary_author":          authorFunc,
+	"primary_author.name":     authorDotNameFunc,
+	"primary_author.bio":      bioFunc,
+	"primary_author.email":    emailFunc,
+	"primary_author.website":  websiteFunc,
+	"primary_author.image":    authorDotImageFunc,
+	"primary_author.cover":    coverFunc,
+	"primary_author.location": locationFunc,
+	// TODO: remove legacy API v2
 	"author":          authorFunc,
-	"bio":             bioFunc,
-	"email":           emailFunc,
-	"website":         websiteFunc,
-	"cover":           coverFunc,
-	"location":        locationFunc,
 	"author.name":     authorDotNameFunc,
 	"author.bio":      bioFunc,
 	"author.email":    emailFunc,
