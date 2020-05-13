@@ -359,6 +359,9 @@ func ghost_headFunc(helper *structure.Helper, values *structure.RequestData) []b
 	buffer.Write(evaluateEscape(values.Blog.Url, helper.Unescaped))
 	buffer.WriteString(values.CurrentPath)
 	buffer.WriteString("\">")
+	// Custom head content
+	buffer.WriteString("\n")
+	buffer.WriteString(values.Blog.GhostHead)
 	// TODO: structured data
 	return buffer.Bytes()
 }

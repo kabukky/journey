@@ -16,5 +16,6 @@ type Blog struct {
 	PostCount       int64
 	PostsPerPage    int64
 	ActiveTheme     string
+	GhostHead       string
 	NavigationItems []Navigation
 }

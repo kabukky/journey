@@ -349,6 +349,12 @@ func RetrieveBlog() (*structure.Blog, error) {
 	if err != nil {
 		return &tempBlog, err
 	}
+	// GhostHead
+	row = readDB.QueryRow(stmtRetrieveBlog, "ghost_head")
+	err = row.Scan(&tempBlog.GhostHead)
+	if err != nil {
+		return &tempBlog, err
+	}
 	// Post count
 	postCount, err := RetrieveNumberOfPosts()
 	if err != nil {
