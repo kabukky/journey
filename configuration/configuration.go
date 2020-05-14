@@ -2,30 +2,46 @@ package configuration
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 	"reflect"
 	"strings"
 
-	"github.com/kabukky/journey/filenames"
+	"github.com/rkuris/journey/filenames"
+	"github.com/rkuris/journey/notifications"
 )
 
-// Configuration: settings that are neccesary for server configuration
+// Configuration settings that are neccesary for server configuration
 type Configuration struct {
-	HttpHostAndPort  string
-	HttpsHostAndPort string
-	HttpsUsage       string
-	Url              string
-	HttpsUrl         string
+	HTTPHostAndPort  string
+	HTTPSHostAndPort string
+	HTTPSUsage       string
+	URL              string
+	HTTPSUrl         string
 	UseLetsEncrypt   bool
+	SAMLCert         string
+	SAMLKey          string
+	SAMLIDPUrl       string
+	RequestLog       string
+	RequestLogFormat string
+	SMTP             notifications.Notification
 }
 
+// NewConfiguration loads the configuration from config.json and returns it
+// It will create a new, empty configuration with defaults if it doesn't
+// exist yet.  // It dies with a fatal error if the configuration file can't
+// be parsed
 func NewConfiguration() *Configuration {
 	var config Configuration
 	err := config.load()
 	if err != nil {
-		log.Println("Warning: couldn't load " + filenames.ConfigFilename + ", creating new config file.")
+		if !os.IsNotExist(err) {
+			log.Fatalf("Error reading configuration file %s: %s",
+				filenames.ConfigFilename, err)
+		}
+		log.Printf("%s does not exist; creating new config file", filenames.ConfigFilename)
 		err = config.create()
 		if err != nil {
 			log.Fatal("Fatal error: Couldn't create configuration.")
@@ -40,7 +56,7 @@ func NewConfiguration() *Configuration {
 	return &config
 }
 
-// Global config - thread safe and accessible from all packages
+// Config is thread safe and accessible from all packages
 var Config = NewConfiguration()
 
 func (c *Configuration) save() error {
@@ -63,38 +79,38 @@ func (c *Configuration) load() error {
 	}
 	// Make sure the url is in the right format
 	// Make sure there is no trailing slash at the end of the url
-	if strings.HasSuffix(c.Url, "/") {
-		c.Url = c.Url[0 : len(c.Url)-1]
+	if strings.HasSuffix(c.URL, "/") {
+		c.URL = c.URL[0 : len(c.URL)-1]
 		configWasChanged = true
 	}
-	if !strings.HasPrefix(c.Url, "http://") && !strings.HasPrefix(c.Url, "https://") {
-		c.Url = "http://" + c.Url
+	if !strings.HasPrefix(c.URL, "http://") && !strings.HasPrefix(c.URL, "https://") {
+		c.URL = "http://" + c.URL
 		configWasChanged = true
 	}
 	// Make sure the https url is in the right format
 	// Make sure there is no trailing slash at the end of the https url
-	if strings.HasSuffix(c.HttpsUrl, "/") {
-		c.HttpsUrl = c.HttpsUrl[0 : len(c.HttpsUrl)-1]
+	if strings.HasSuffix(c.HTTPSUrl, "/") {
+		c.HTTPSUrl = c.HTTPSUrl[0 : len(c.HTTPSUrl)-1]
 		configWasChanged = true
 	}
-	if strings.HasPrefix(c.HttpsUrl, "http://") {
-		c.HttpsUrl = strings.Replace(c.HttpsUrl, "http://", "https://", 1)
+	if strings.HasPrefix(c.HTTPSUrl, "http://") {
+		c.HTTPSUrl = strings.Replace(c.HTTPSUrl, "http://", "https://", 1)
 		configWasChanged = true
-	} else if !strings.HasPrefix(c.HttpsUrl, "https://") {
-		c.HttpsUrl = "https://" + c.HttpsUrl
+	} else if !strings.HasPrefix(c.HTTPSUrl, "https://") {
+		c.HTTPSUrl = "https://" + c.HTTPSUrl
 		configWasChanged = true
 	}
 	// Make sure there is no trailing slash at the end of the url
-	if strings.HasSuffix(c.HttpsUrl, "/") {
-		c.HttpsUrl = c.HttpsUrl[0 : len(c.HttpsUrl)-1]
+	if strings.HasSuffix(c.HTTPSUrl, "/") {
+		c.HTTPSUrl = c.HTTPSUrl[0 : len(c.HTTPSUrl)-1]
 		configWasChanged = true
 	}
 	// Check if all fields are filled out
 	cReflected := reflect.ValueOf(*c)
 	for i := 0; i < cReflected.NumField(); i++ {
-		if cReflected.Field(i).Interface() == "" {
-			log.Println("Error: " + filenames.ConfigFilename + " is corrupted. Did you fill out all of the fields?")
-			return errors.New("Error: Configuration corrupted.")
+		if cReflected.Field(i).Interface() == "" &&
+			isRequired(cReflected.Type().Field(i).Name) {
+			return fmt.Errorf("Error: file %s missing required field %q", filenames.ConfigFilename, cReflected.Type().Field(i).Name)
 		}
 	}
 	// Save the changed config
@@ -109,7 +125,7 @@ func (c *Configuration) load() error {
 
 func (c *Configuration) create() error {
 	// TODO: Change default port
-	c = &Configuration{HttpHostAndPort: ":8084", HttpsHostAndPort: ":8085", HttpsUsage: "None", Url: "127.0.0.1:8084", HttpsUrl: "127.0.0.1:8085"}
+	c = &Configuration{HTTPHostAndPort: ":8084", HTTPSHostAndPort: ":8085", HTTPSUsage: "None", URL: "127.0.0.1:8084", HTTPSUrl: "127.0.0.1:8085"}
 	err := c.save()
 	if err != nil {
 		log.Println("Error: couldn't create " + filenames.ConfigFilename)
@@ -117,4 +133,16 @@ func (c *Configuration) create() error {
 	}
 
 	return nil
+}
+
+func isRequired(fieldName string) bool {
+	// SAML values are not required
+	if strings.HasPrefix(fieldName, "SAML") {
+		return false
+	}
+	// logging is off if these are empty
+	if strings.HasPrefix(fieldName, "Request") {
+		return false
+	}
+	return true
 }

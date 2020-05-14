@@ -22,15 +22,15 @@
 				</td>
 			</tr>
 			<tr ng-repeat="post in infiniteScrollFactory.items" class="post-content-row">
-				<td class="post-number-cell" ng-click="openPost(post.Id)">
+				<td class="post-number-cell" ng-click="openPost(post.ID)">
 					<h4>{{$index + 1}}</h4>
 				</td>
-				<td class="post-cell" ng-click="openPost(post.Id)">
-				<h4>{{post.Title}} <small class="text-success" ng-if="post.IsPublished">Published</small><small class="text-warning" ng-if="!post.IsPublished">Draft</small></h4>
+				<td class="post-cell" ng-click="openPost(post.ID)">
+					<h4>{{post.Title}} <small class="text-success" ng-if="post.IsPublished">Published</small><small class="text-warning" ng-if="!post.IsPublished">Draft</small></h4>
 				<p>{{post.Markdown | limitTo: 400}}{{post.Markdown.length > 400 ? '...' : ''}}</p>
 				</td>
 				<td class="post-remove-cell">
-					<a class="text-danger" id="post-cover-delete" ng-click="deletePost(post.Id, post.Title)"><h5><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete</h5></a>
+					<a class="text-danger" id="post-cover-delete" ng-click="deletePost(post.ID, post.Title)"><h5><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete</h5></a>
 				</td>
 			</tr>
 		</tbody>

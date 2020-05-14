@@ -7,10 +7,10 @@ import (
 	"strconv"
 
 	"github.com/dimfeld/httptreemux"
-	"github.com/kabukky/journey/database"
-	"github.com/kabukky/journey/filenames"
-	"github.com/kabukky/journey/structure/methods"
-	"github.com/kabukky/journey/templates"
+	"github.com/rkuris/journey/database"
+	"github.com/rkuris/journey/filenames"
+	"github.com/rkuris/journey/structure/methods"
+	"github.com/rkuris/journey/templates"
 )
 
 func indexHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
@@ -146,7 +146,7 @@ func postEditHandler(w http.ResponseWriter, r *http.Request, params map[string]s
 		return
 	}
 
-	url := fmt.Sprintf("/admin/#/edit/%d", post.Id)
+	url := fmt.Sprintf("/admin#/edit/%d", post.ID)
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
@@ -159,7 +159,12 @@ func assetsHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 }
 
 func imagesHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
-	http.ServeFile(w, r, filepath.Join(filenames.ImagesFilepath, params["filepath"]))
+	if path, ok := params["filepath"]; ok {
+		http.ServeFile(w, r, filepath.Join(filenames.ImagesFilepath, path))
+	} else {
+		// special, top level files like favicon.ico, robots.txt, etc.
+		http.ServeFile(w, r, filepath.Join(filenames.ImagesFilepath, r.URL.Path))
+	}
 	return
 }
 
@@ -168,22 +173,26 @@ func publicHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 	return
 }
 
+// InitializeBlog initializes all the non-admin non-post handlers
 func InitializeBlog(router *httptreemux.TreeMux) {
 	// For index
 	router.GET("/", indexHandler)
 	router.GET("/:slug/edit", postEditHandler)
-	router.GET("/:slug/", postHandler)
-	router.GET("/page/:number/", indexHandler)
+	router.GET("/:slug", postHandler)
+	router.GET("/page/:number", indexHandler)
 	// For author
-	router.GET("/author/:slug/", authorHandler)
-	router.GET("/author/:slug/:function/", authorHandler)
-	router.GET("/author/:slug/:function/:number/", authorHandler)
+	router.GET("/author/:slug", authorHandler)
+	router.GET("/author/:slug/:function", authorHandler)
+	router.GET("/author/:slug/:function/:number", authorHandler)
 	// For tag
-	router.GET("/tag/:slug/", tagHandler)
-	router.GET("/tag/:slug/:function/", tagHandler)
-	router.GET("/tag/:slug/:function/:number/", tagHandler)
+	router.GET("/tag/:slug", tagHandler)
+	router.GET("/tag/:slug/:function", tagHandler)
+	router.GET("/tag/:slug/:function/:number", tagHandler)
 	// For serving asset files
 	router.GET("/assets/*filepath", assetsHandler)
+	router.GET("/favicon.ico", imagesHandler)
+	router.GET("/robots.txt", imagesHandler)
+	router.GET("/sitemap.xml", imagesHandler)
 	router.GET("/images/*filepath", imagesHandler)
 	router.GET("/content/images/*filepath", imagesHandler) // This is here to keep compatibility with Ghost
 	router.GET("/public/*filepath", publicHandler)

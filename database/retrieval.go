@@ -3,46 +3,50 @@ package database
 import (
 	"database/sql"
 	"encoding/json"
-	"github.com/kabukky/journey/structure"
 	"time"
+
+	"github.com/rkuris/journey/structure"
 )
 
 const stmtRetrievePostsCount = "SELECT count(*) FROM posts WHERE page = 0 AND status = 'published'"
 const stmtRetrievePostsCountByUser = "SELECT count(*) FROM posts WHERE page = 0 AND status = 'published' AND author_id = ?"
 const stmtRetrievePostsCountByTag = "SELECT count(*) FROM posts, posts_tags WHERE posts_tags.post_id = posts.id AND posts_tags.tag_id = ? AND page = 0 AND status = 'published'"
 const stmtRetrievePostsForIndex = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, meta_description, image, author_id, published_at FROM posts WHERE page = 0 AND status = 'published' ORDER BY published_at DESC LIMIT ? OFFSET ?"
-const stmtRetrievePostsForApi = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, meta_description, image, author_id, published_at FROM posts ORDER BY id DESC LIMIT ? OFFSET ?"
+const stmtRetrievePostsForAPI = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, meta_description, image, author_id, published_at FROM posts ORDER BY id DESC LIMIT ? OFFSET ?"
 const stmtRetrievePostsByUser = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, meta_description, image, author_id, published_at FROM posts WHERE page = 0 AND status = 'published' AND author_id = ? ORDER BY published_at DESC LIMIT ? OFFSET ?"
 const stmtRetrievePostsByTag = "SELECT posts.id, posts.uuid, posts.title, posts.slug, posts.markdown, posts.html, posts.featured, posts.page, posts.status, posts.meta_description, posts.image, posts.author_id, posts.published_at FROM posts, posts_tags WHERE posts_tags.post_id = posts.id AND posts_tags.tag_id = ? AND page = 0 AND status = 'published' ORDER BY posts.published_at DESC LIMIT ? OFFSET ?"
-const stmtRetrievePostById = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, meta_description, image, author_id, published_at FROM posts WHERE id = ?"
+const stmtRetrievePostByID = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, meta_description, image, author_id, published_at FROM posts WHERE id = ?"
 const stmtRetrievePostBySlug = "SELECT id, uuid, title, slug, markdown, html, featured, page, status, meta_description, image, author_id, published_at FROM posts WHERE slug = ?"
-const stmtRetrieveUserById = "SELECT id, name, slug, email, image, cover, bio, website, location FROM users WHERE id = ?"
+const stmtRetrieveUserByID = "SELECT id, name, slug, email, image, cover, bio, website, location FROM users WHERE id = ?"
 const stmtRetrieveUserBySlug = "SELECT id, name, slug, email, image, cover, bio, website, location FROM users WHERE slug = ?"
 const stmtRetrieveUserByName = "SELECT id, name, slug, email, image, cover, bio, website, location FROM users WHERE name = ?"
 const stmtRetrieveTags = "SELECT tag_id FROM posts_tags WHERE post_id = ?"
-const stmtRetrieveTagById = "SELECT id, name, slug FROM tags WHERE id = ?"
+const stmtRetrieveTagByID = "SELECT id, name, slug FROM tags WHERE id = ?"
 const stmtRetrieveTagBySlug = "SELECT id, name, slug FROM tags WHERE slug = ?"
-const stmtRetrieveTagIdBySlug = "SELECT id FROM tags WHERE slug = ?"
+const stmtRetrieveTagIDBySlug = "SELECT id FROM tags WHERE slug = ?"
 const stmtRetrieveHashedPasswordByName = "SELECT password FROM users WHERE name = ?"
 const stmtRetrieveUsersCount = "SELECT count(*) FROM users"
 const stmtRetrieveBlog = "SELECT value FROM settings WHERE key = ?"
-const stmtRetrievePostCreationDateById = "SELECT created_at FROM posts WHERE id = ?"
+const stmtRetrievePostCreationDateByID = "SELECT created_at FROM posts WHERE id = ?"
 
-func RetrievePostById(id int64) (*structure.Post, error) {
+// RetrievePostByID ...
+func RetrievePostByID(id int64) (*structure.Post, error) {
 	// Retrieve post
-	row := readDB.QueryRow(stmtRetrievePostById, id)
+	row := readDB.QueryRow(stmtRetrievePostByID, id)
 	return extractPost(row)
 }
 
+// RetrievePostBySlug ...
 func RetrievePostBySlug(slug string) (*structure.Post, error) {
 	// Retrieve post
 	row := readDB.QueryRow(stmtRetrievePostBySlug, slug)
 	return extractPost(row)
 }
 
-func RetrievePostsByUser(user_id int64, limit int64, offset int64) ([]structure.Post, error) {
+// RetrievePostsByUser ...
+func RetrievePostsByUser(userID int64, limit int64, offset int64) ([]structure.Post, error) {
 	// Retrieve posts
-	rows, err := readDB.Query(stmtRetrievePostsByUser, user_id, limit, offset)
+	rows, err := readDB.Query(stmtRetrievePostsByUser, userID, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -54,9 +58,10 @@ func RetrievePostsByUser(user_id int64, limit int64, offset int64) ([]structure.
 	return *posts, nil
 }
 
-func RetrievePostsByTag(tag_id int64, limit int64, offset int64) ([]structure.Post, error) {
+// RetrievePostsByTag ...
+func RetrievePostsByTag(tagID int64, limit int64, offset int64) ([]structure.Post, error) {
 	// Retrieve posts
-	rows, err := readDB.Query(stmtRetrievePostsByTag, tag_id, limit, offset)
+	rows, err := readDB.Query(stmtRetrievePostsByTag, tagID, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -68,6 +73,7 @@ func RetrievePostsByTag(tag_id int64, limit int64, offset int64) ([]structure.Po
 	return *posts, nil
 }
 
+// RetrievePostsForIndex ...
 func RetrievePostsForIndex(limit int64, offset int64) ([]structure.Post, error) {
 	// Retrieve posts
 	rows, err := readDB.Query(stmtRetrievePostsForIndex, limit, offset)
@@ -82,9 +88,10 @@ func RetrievePostsForIndex(limit int64, offset int64) ([]structure.Post, error) 
 	return *posts, nil
 }
 
-func RetrievePostsForApi(limit int64, offset int64) ([]structure.Post, error) {
+// RetrievePostsForAPI ...
+func RetrievePostsForAPI(limit int64, offset int64) ([]structure.Post, error) {
 	// Retrieve posts
-	rows, err := readDB.Query(stmtRetrievePostsForApi, limit, offset)
+	rows, err := readDB.Query(stmtRetrievePostsForAPI, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -100,15 +107,15 @@ func extractPosts(rows *sql.Rows) (*[]structure.Post, error) {
 	posts := make([]structure.Post, 0)
 	for rows.Next() {
 		post := structure.Post{}
-		var userId int64
+		var userID int64
 		var status string
-		err := rows.Scan(&post.Id, &post.Uuid, &post.Title, &post.Slug, &post.Markdown, &post.Html, &post.IsFeatured, &post.IsPage, &status, &post.MetaDescription, &post.Image, &userId, &post.Date)
+		err := rows.Scan(&post.ID, &post.UUID, &post.Title, &post.Slug, &post.Markdown, &post.HTML, &post.IsFeatured, &post.IsPage, &status, &post.MetaDescription, &post.Image, &userID, &post.Date)
 		if err != nil {
 			return nil, err
 		}
 		// If there was no publication date attached to the post, make its creation date the date of the post
 		if post.Date == nil {
-			post.Date, err = retrievePostCreationDateById(post.Id)
+			post.Date, err = retrievePostCreationDateByID(post.ID)
 			if err != nil {
 				return nil, err
 			}
@@ -120,12 +127,12 @@ func extractPosts(rows *sql.Rows) (*[]structure.Post, error) {
 			post.IsPublished = false
 		}
 		// Retrieve user
-		post.Author, err = RetrieveUser(userId)
+		post.Author, err = RetrieveUser(userID)
 		if err != nil {
 			return nil, err
 		}
 		// Retrieve tags
-		post.Tags, err = RetrieveTags(post.Id)
+		post.Tags, err = RetrieveTags(post.ID)
 		if err != nil {
 			return nil, err
 		}
@@ -136,15 +143,15 @@ func extractPosts(rows *sql.Rows) (*[]structure.Post, error) {
 
 func extractPost(row *sql.Row) (*structure.Post, error) {
 	post := structure.Post{}
-	var userId int64
+	var userID int64
 	var status string
-	err := row.Scan(&post.Id, &post.Uuid, &post.Title, &post.Slug, &post.Markdown, &post.Html, &post.IsFeatured, &post.IsPage, &status, &post.MetaDescription, &post.Image, &userId, &post.Date)
+	err := row.Scan(&post.ID, &post.UUID, &post.Title, &post.Slug, &post.Markdown, &post.HTML, &post.IsFeatured, &post.IsPage, &status, &post.MetaDescription, &post.Image, &userID, &post.Date)
 	if err != nil {
 		return nil, err
 	}
 	// If there was no publication date attached to the post, make its creation date the date of the post
 	if post.Date == nil {
-		post.Date, err = retrievePostCreationDateById(post.Id)
+		post.Date, err = retrievePostCreationDateByID(post.ID)
 		if err != nil {
 			return nil, err
 		}
@@ -156,18 +163,19 @@ func extractPost(row *sql.Row) (*structure.Post, error) {
 		post.IsPublished = false
 	}
 	// Retrieve user
-	post.Author, err = RetrieveUser(userId)
+	post.Author, err = RetrieveUser(userID)
 	if err != nil {
 		return nil, err
 	}
 	// Retrieve tags
-	post.Tags, err = RetrieveTags(post.Id)
+	post.Tags, err = RetrieveTags(post.ID)
 	if err != nil {
 		return nil, err
 	}
 	return &post, nil
 }
 
+// RetrieveNumberOfPosts ...
 func RetrieveNumberOfPosts() (int64, error) {
 	var count int64
 	// Retrieve number of posts
@@ -179,10 +187,11 @@ func RetrieveNumberOfPosts() (int64, error) {
 	return count, nil
 }
 
-func RetrieveNumberOfPostsByUser(user_id int64) (int64, error) {
+// RetrieveNumberOfPostsByUser ...
+func RetrieveNumberOfPostsByUser(userID int64) (int64, error) {
 	var count int64
 	// Retrieve number of posts
-	row := readDB.QueryRow(stmtRetrievePostsCountByUser, user_id)
+	row := readDB.QueryRow(stmtRetrievePostsCountByUser, userID)
 	err := row.Scan(&count)
 	if err != nil {
 		return 0, err
@@ -190,10 +199,11 @@ func RetrieveNumberOfPostsByUser(user_id int64) (int64, error) {
 	return count, nil
 }
 
-func RetrieveNumberOfPostsByTag(tag_id int64) (int64, error) {
+// RetrieveNumberOfPostsByTag ...
+func RetrieveNumberOfPostsByTag(tagID int64) (int64, error) {
 	var count int64
 	// Retrieve number of posts
-	row := readDB.QueryRow(stmtRetrievePostsCountByTag, tag_id)
+	row := readDB.QueryRow(stmtRetrievePostsCountByTag, tagID)
 	err := row.Scan(&count)
 	if err != nil {
 		return 0, err
@@ -201,10 +211,10 @@ func RetrieveNumberOfPostsByTag(tag_id int64) (int64, error) {
 	return count, nil
 }
 
-func retrievePostCreationDateById(post_id int64) (*time.Time, error) {
+func retrievePostCreationDateByID(postID int64) (*time.Time, error) {
 	var creationDate time.Time
 	// Retrieve number of posts
-	row := readDB.QueryRow(stmtRetrievePostCreationDateById, post_id)
+	row := readDB.QueryRow(stmtRetrievePostCreationDateByID, postID)
 	err := row.Scan(&creationDate)
 	if err != nil {
 		return &creationDate, err
@@ -212,54 +222,58 @@ func retrievePostCreationDateById(post_id int64) (*time.Time, error) {
 	return &creationDate, nil
 }
 
+// RetrieveUser ...
 func RetrieveUser(id int64) (*structure.User, error) {
 	user := structure.User{}
 	// Retrieve user
-	row := readDB.QueryRow(stmtRetrieveUserById, id)
-	err := row.Scan(&user.Id, &user.Name, &user.Slug, &user.Email, &user.Image, &user.Cover, &user.Bio, &user.Website, &user.Location)
+	row := readDB.QueryRow(stmtRetrieveUserByID, id)
+	err := row.Scan(&user.ID, &user.Name, &user.Slug, &user.Email, &user.Image, &user.Cover, &user.Bio, &user.Website, &user.Location)
 	if err != nil {
 		return nil, err
 	}
 	return &user, nil
 }
 
+// RetrieveUserBySlug ...
 func RetrieveUserBySlug(slug string) (*structure.User, error) {
 	user := structure.User{}
 	// Retrieve user
 	row := readDB.QueryRow(stmtRetrieveUserBySlug, slug)
-	err := row.Scan(&user.Id, &user.Name, &user.Slug, &user.Email, &user.Image, &user.Cover, &user.Bio, &user.Website, &user.Location)
+	err := row.Scan(&user.ID, &user.Name, &user.Slug, &user.Email, &user.Image, &user.Cover, &user.Bio, &user.Website, &user.Location)
 	if err != nil {
 		return nil, err
 	}
 	return &user, nil
 }
 
+// RetrieveUserByName ...
 func RetrieveUserByName(name []byte) (*structure.User, error) {
 	user := structure.User{}
 	// Retrieve user
 	row := readDB.QueryRow(stmtRetrieveUserByName, name)
-	err := row.Scan(&user.Id, &user.Name, &user.Slug, &user.Email, &user.Image, &user.Cover, &user.Bio, &user.Website, &user.Location)
+	err := row.Scan(&user.ID, &user.Name, &user.Slug, &user.Email, &user.Image, &user.Cover, &user.Bio, &user.Website, &user.Location)
 	if err != nil {
 		return nil, err
 	}
 	return &user, nil
 }
 
-func RetrieveTags(postId int64) ([]structure.Tag, error) {
+// RetrieveTags ...
+func RetrieveTags(postID int64) ([]structure.Tag, error) {
 	tags := make([]structure.Tag, 0)
 	// Retrieve tags
-	rows, err := readDB.Query(stmtRetrieveTags, postId)
+	rows, err := readDB.Query(stmtRetrieveTags, postID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var tagId int64
-		err := rows.Scan(&tagId)
+		var tagID int64
+		err := rows.Scan(&tagID)
 		if err != nil {
 			return nil, err
 		}
-		tag, err := RetrieveTag(tagId)
+		tag, err := RetrieveTag(tagID)
 		// TODO: Error while receiving individual tag is ignored right now. Keep it this way?
 		if err == nil {
 			tags = append(tags, *tag)
@@ -268,31 +282,34 @@ func RetrieveTags(postId int64) ([]structure.Tag, error) {
 	return tags, nil
 }
 
-func RetrieveTag(tagId int64) (*structure.Tag, error) {
+// RetrieveTag ...
+func RetrieveTag(tagID int64) (*structure.Tag, error) {
 	tag := structure.Tag{}
 	// Retrieve tag
-	row := readDB.QueryRow(stmtRetrieveTagById, tagId)
-	err := row.Scan(&tag.Id, &tag.Name, &tag.Slug)
+	row := readDB.QueryRow(stmtRetrieveTagByID, tagID)
+	err := row.Scan(&tag.ID, &tag.Name, &tag.Slug)
 	if err != nil {
 		return nil, err
 	}
 	return &tag, nil
 }
 
+// RetrieveTagBySlug ...
 func RetrieveTagBySlug(slug string) (*structure.Tag, error) {
 	tag := structure.Tag{}
 	// Retrieve tag
 	row := readDB.QueryRow(stmtRetrieveTagBySlug, slug)
-	err := row.Scan(&tag.Id, &tag.Name, &tag.Slug)
+	err := row.Scan(&tag.ID, &tag.Name, &tag.Slug)
 	if err != nil {
 		return nil, err
 	}
 	return &tag, nil
 }
 
-func RetrieveTagIdBySlug(slug string) (int64, error) {
+// RetrieveTagIDBySlug ...
+func RetrieveTagIDBySlug(slug string) (int64, error) {
 	var id int64
-	row := readDB.QueryRow(stmtRetrieveTagIdBySlug, slug)
+	row := readDB.QueryRow(stmtRetrieveTagIDBySlug, slug)
 	err := row.Scan(&id)
 	if err != nil {
 		return 0, err
@@ -300,6 +317,7 @@ func RetrieveTagIdBySlug(slug string) (int64, error) {
 	return id, nil
 }
 
+// RetrieveHashedPasswordForUser ...
 func RetrieveHashedPasswordForUser(name []byte) ([]byte, error) {
 	var hashedPassword []byte
 	row := readDB.QueryRow(stmtRetrieveHashedPasswordByName, name)
@@ -310,6 +328,7 @@ func RetrieveHashedPasswordForUser(name []byte) ([]byte, error) {
 	return hashedPassword, nil
 }
 
+// RetrieveBlog retrieves a blog entry from the db
 func RetrieveBlog() (*structure.Blog, error) {
 	tempBlog := structure.Blog{}
 	// Title
@@ -368,6 +387,7 @@ func RetrieveBlog() (*structure.Blog, error) {
 	return &tempBlog, err
 }
 
+// RetrieveActiveTheme retrieves the active theme from the db
 func RetrieveActiveTheme() (*string, error) {
 	var activeTheme string
 	row := readDB.QueryRow(stmtRetrieveBlog, "activeTheme")
@@ -378,6 +398,7 @@ func RetrieveActiveTheme() (*string, error) {
 	return &activeTheme, nil
 }
 
+// RetrieveUsersCount reads the number of users in the db
 func RetrieveUsersCount() int {
 	userCount := -1
 	row := readDB.QueryRow(stmtRetrieveUsersCount)

@@ -2,12 +2,13 @@ package methods
 
 import (
 	"encoding/json"
-	"github.com/kabukky/journey/configuration"
-	"github.com/kabukky/journey/database"
-	"github.com/kabukky/journey/date"
-	"github.com/kabukky/journey/slug"
-	"github.com/kabukky/journey/structure"
 	"log"
+
+	"github.com/rkuris/journey/configuration"
+	"github.com/rkuris/journey/database"
+	"github.com/rkuris/journey/date"
+	"github.com/rkuris/journey/slug"
+	"github.com/rkuris/journey/structure"
 )
 
 // Global blog - thread safe and accessible by all requests
@@ -58,10 +59,10 @@ func GenerateBlog() error {
 		return err
 	}
 	// Add parameters that are not saved in db
-	blog.Url = []byte(configuration.Config.Url)
+	blog.URL = []byte(configuration.Config.URL)
 	blog.AssetPath = assetPath
 	// Create navigation slugs
-	for index, _ := range blog.NavigationItems {
+	for index := range blog.NavigationItems {
 		blog.NavigationItems[index].Slug = slug.Generate(blog.NavigationItems[index].Label, "navigation")
 	}
 	Blog = blog

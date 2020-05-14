@@ -3,20 +3,21 @@ package templates
 import (
 	"bytes"
 	"errors"
-	"github.com/kabukky/journey/database"
-	"github.com/kabukky/journey/filenames"
-	"github.com/kabukky/journey/flags"
-	"github.com/kabukky/journey/helpers"
-	"github.com/kabukky/journey/plugins"
-	"github.com/kabukky/journey/structure"
-	"github.com/kabukky/journey/structure/methods"
-	"github.com/kabukky/journey/watcher"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	"github.com/rkuris/journey/database"
+	"github.com/rkuris/journey/filenames"
+	"github.com/rkuris/journey/flags"
+	"github.com/rkuris/journey/helpers"
+	"github.com/rkuris/journey/plugins"
+	"github.com/rkuris/journey/structure"
+	"github.com/rkuris/journey/structure/methods"
+	"github.com/rkuris/journey/watcher"
 )
 
 // For parsing of the theme files
@@ -28,9 +29,8 @@ var quoteTagChecker = regexp.MustCompile("(.*?)[\"'](.+?)[\"']$")
 func getFunction(name string) func(*structure.Helper, *structure.RequestData) []byte {
 	if helperFuctions[name] != nil {
 		return helperFuctions[name]
-	} else {
-		return helperFuctions["null"]
 	}
+	return helperFuctions["null"]
 }
 
 func createHelper(helperName []byte, unescaped bool, startPos int, block []byte, children []structure.Helper, elseHelper *structure.Helper) *structure.Helper {
@@ -116,9 +116,8 @@ func findHelper(data []byte, allHelpers []structure.Helper) ([]byte, []structure
 		}
 		allHelpers = append(allHelpers, *createHelper(helperName, unescaped, startPos, []byte{}, nil, nil))
 		return findHelper(data, allHelpers)
-	} else {
-		return data, allHelpers
 	}
+	return data, allHelpers
 }
 
 func findBlock(data []byte, helperName []byte, unescaped bool, startPos int) ([]byte, structure.Helper) {
@@ -153,7 +152,7 @@ func findBlock(data []byte, helperName []byte, unescaped bool, startPos int) ([]
 			// Change children, omit else helper
 			elseHelper.Children = children[(index + 1):]
 			// Change Position in children of else helper
-			for indexElse, _ := range elseHelper.Children {
+			for indexElse := range elseHelper.Children {
 				elseHelper.Children[indexElse].Position = elseHelper.Children[indexElse].Position - elseHelper.Position
 			}
 			children = children[:index]
@@ -284,6 +283,7 @@ func checkThemes() error {
 	return errors.New("Couldn't find a theme to use in " + filenames.ThemesFilepath)
 }
 
+// Generate generates a page from a compiled template
 func Generate() error {
 	compiledTemplates.Lock()
 	defer compiledTemplates.Unlock()
