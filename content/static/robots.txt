@@ -1,4 +1,5 @@
 User-agent: *
 
 Disallow: /admin/
+Disallow: /author/
 Disallow: /tag/
