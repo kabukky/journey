@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/dimfeld/httptreemux"
+	"github.com/dimfeld/httptreemux/v5"
 
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/filenames"

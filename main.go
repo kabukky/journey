@@ -7,7 +7,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/dimfeld/httptreemux"
+	"github.com/dimfeld/httptreemux/v5"
 
 	"github.com/kabukky/journey/configuration"
 	"github.com/kabukky/journey/database"

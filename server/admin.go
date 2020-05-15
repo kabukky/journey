@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dimfeld/httptreemux"
+	"github.com/dimfeld/httptreemux/v5"
 	uuid "github.com/satori/go.uuid"
 
 	"github.com/kabukky/journey/authentication"

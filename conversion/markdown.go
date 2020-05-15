@@ -1,7 +1,7 @@
 package conversion
 
 import (
-	"github.com/russross/blackfriday"
+	"github.com/russross/blackfriday/v2"
 )
 
 // Using blackfriday library for markdown to html conversion. At least for now.
