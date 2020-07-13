@@ -1,24 +1,25 @@
 package configuration
 
 import (
-	"encoding/json"
 	"errors"
 	"io/ioutil"
 	"log"
 	"reflect"
 	"strings"
 
+	"gopkg.in/yaml.v2"
+
 	"github.com/kabukky/journey/filenames"
 )
 
 // Configuration - settings that are neccesary for server configuration
 type Configuration struct {
-	HttpHostAndPort  string
-	HttpsHostAndPort string
-	HttpsUsage       string
-	Url              string
-	HttpsUrl         string
-	UseLetsEncrypt   bool
+	HttpHostAndPort  string `yaml:"HttpHostAndPort"`
+	HttpsHostAndPort string `yaml:"HttpsHostAndPort"`
+	HttpsUsage       string `yaml:"HttpsUsage"`
+	Url              string `yaml:"Url"`
+	HttpsUrl         string `yaml:"HttpsUrl"`
+	UseLetsEncrypt   bool   `yaml:"UseLetsEncrypt"`
 }
 
 func NewConfiguration() *Configuration {
@@ -44,8 +45,7 @@ func NewConfiguration() *Configuration {
 var Config = NewConfiguration()
 
 func (c *Configuration) save() error {
-	// TODO: config to YAML
-	data, err := json.Marshal(c)
+	data, err := yaml.Marshal(c)
 	if err != nil {
 		return err
 	}
@@ -58,8 +58,7 @@ func (c *Configuration) load() error {
 	if err != nil {
 		return err
 	}
-	// TODO: config to YAML
-	err = json.Unmarshal(data, c)
+	err = yaml.Unmarshal(data, c)
 	if err != nil {
 		return err
 	}

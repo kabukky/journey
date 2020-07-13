@@ -17,7 +17,7 @@ var (
 	AssetPath = determineAssetPath()
 
 	// For assets that are created, changed, our user-provided while running journey
-	ConfigFilename   = filepath.Join(AssetPath, "config.json")
+	ConfigFilename   = filepath.Join(AssetPath, "config.yaml")
 	ContentFilepath  = filepath.Join(AssetPath, "content")
 	DatabaseFilepath = filepath.Join(ContentFilepath, "data")
 	DatabaseFilename = filepath.Join(ContentFilepath, "data", "journey.db")
