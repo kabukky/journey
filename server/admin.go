@@ -397,7 +397,12 @@ func apiUploadHandler(w http.ResponseWriter, r *http.Request, _ map[string]strin
 				return
 			}
 			dst, err := os.Create(filepath.Join(filePath, strconv.FormatInt(currentDate.Unix(), 10)+"_"+uuid.NewV4().String()+filepath.Ext(part.FileName())))
-			defer dst.Close()
+			defer func() {
+				err := dst.Close()
+				if err != nil {
+					log.Println("Failed to close upload file:", err)
+				}
+			}()
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				log.Println("503:", r.URL)
