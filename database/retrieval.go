@@ -28,6 +28,7 @@ const stmtRetrieveHashedPasswordByName = "SELECT password FROM users WHERE name 
 const stmtRetrieveUsersCount = "SELECT count(*) FROM users"
 const stmtRetrieveBlog = "SELECT value FROM settings WHERE key = ?"
 const stmtRetrievePostCreationDateById = "SELECT created_at FROM posts WHERE id = ?"
+const stmtRetrieveSitemap = "SELECT slug, updated_at FROM posts WHERE status = 'published' ORDER BY updated_at DESC"
 
 func RetrievePostById(id int64) (*structure.Post, error) {
 	// Retrieve post
@@ -402,4 +403,25 @@ func makeNavigation(navigation []byte) ([]structure.Navigation, error) {
 		return navigationItems, err
 	}
 	return navigationItems, nil
+}
+
+func RetrieveSitemap() ([]structure.SmURL, error) {
+	SmURL := make([]structure.SmURL, 0)
+	// Retrieve sitemap URLs
+	rows, err := readDB.Query(stmtRetrieveSitemap)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var url structure.SmURL
+		err := rows.Scan(&url.Loc, &url.LastMod)
+		if err != nil {
+			return nil, err
+		}
+		if err == nil {
+			SmURL = append(SmURL, url)
+		}
+	}
+	return SmURL, nil
 }
