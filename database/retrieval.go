@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/kabukky/journey/structure"
@@ -415,11 +416,14 @@ func RetrieveSitemap() ([]structure.SmURL, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var url structure.SmURL
-		err := rows.Scan(&url.Loc, &url.LastMod)
+		var lastMod *time.Time
+
+		err := rows.Scan(&url.Loc, &lastMod)
 		if err != nil {
 			return nil, err
 		}
 		if err == nil {
+			url.LastMod = fmt.Sprint(lastMod.UTC().Format("2006-01-02T15:04:05-07:00"))
 			SmURL = append(SmURL, url)
 		}
 	}

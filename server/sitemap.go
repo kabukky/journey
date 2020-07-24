@@ -16,7 +16,7 @@ import (
 func sitemapPrefix(SmURLS []structure.SmURL) []structure.SmURL {
 	urls := make([]structure.SmURL, 0)
 	for _, url := range SmURLS {
-		url.Loc = fmt.Sprintf("%s/%s", configuration.Config.Url, url.Loc)
+		url.Loc = fmt.Sprintf("%s/%s/", configuration.Config.Url, url.Loc)
 		urls = append(urls, url)
 	}
 	return urls

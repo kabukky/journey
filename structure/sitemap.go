@@ -2,12 +2,11 @@ package structure
 
 import (
 	"encoding/xml"
-	"time"
 )
 
 type SmURL struct {
-	Loc     string     `xml:"loc"`
-	LastMod *time.Time `xml:"lastmod,omitempty"`
+	Loc     string `xml:"loc"`
+	LastMod string `xml:"lastmod,omitempty"`
 }
 
 type Sitemap struct {
