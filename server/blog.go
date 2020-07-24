@@ -189,6 +189,8 @@ func tagHandler(w http.ResponseWriter, r *http.Request, params map[string]string
 }
 
 func postHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	var err error
+
 	slug := params["slug"]
 	if slug == "" {
 		http.Redirect(w, r, "/", http.StatusFound)
@@ -214,7 +216,11 @@ func postHandler(w http.ResponseWriter, r *http.Request, params map[string]strin
 	}
 
 	// Render post template
-	err := templates.ShowPostTemplate(w, r, slug)
+	if slug == "404" {
+		err = fmt.Errorf("sql: no rows in result set")
+	} else {
+		err = templates.ShowPostTemplate(w, r, slug)
+	}
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
 			w.WriteHeader(http.StatusNotFound)

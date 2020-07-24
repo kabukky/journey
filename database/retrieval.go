@@ -29,7 +29,7 @@ const stmtRetrieveHashedPasswordByName = "SELECT password FROM users WHERE name 
 const stmtRetrieveUsersCount = "SELECT count(*) FROM users"
 const stmtRetrieveBlog = "SELECT value FROM settings WHERE key = ?"
 const stmtRetrievePostCreationDateById = "SELECT created_at FROM posts WHERE id = ?"
-const stmtRetrieveSitemap = "SELECT slug, updated_at FROM posts WHERE status = 'published' ORDER BY updated_at DESC"
+const stmtRetrieveSitemap = "SELECT slug, updated_at FROM posts WHERE status = 'published' AND slug != 404 ORDER BY updated_at DESC"
 
 func RetrievePostById(id int64) (*structure.Post, error) {
 	// Retrieve post
