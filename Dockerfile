@@ -4,7 +4,7 @@ FROM golang:1.14 AS build
 WORKDIR /opt/journey
 COPY . .
 RUN git -c http.sslVerify=false submodule update --init --recursive
-RUN GOPROXY=http://172.17.0.1:8080 go build -a -o journey
+RUN go build -a -tags netgo -ldflags '-w' -o journey
 
 # final stage
 # hadolint ignore=DL3007

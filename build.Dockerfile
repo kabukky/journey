@@ -7,4 +7,4 @@ RUN apt update &&\
 
 WORKDIR /opt/journey
 COPY . .
-RUN go build -a -o journey
+RUN go build -a -tags netgo -ldflags '-w' -o journey
