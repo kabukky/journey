@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"net/http"
 
+	// TODO: switch to original https://github.com/gorilla/feeds
 	"github.com/kabukky/feeds"
+
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/date"
 	"github.com/kabukky/journey/structure"
