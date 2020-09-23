@@ -92,20 +92,20 @@ func TestFeed(t *testing.T) {
 	}
 
 	feed.Items = []*Item{
-		&Item{
+		{
 			Title:       "Limiting Concurrency in Go",
 			Link:        &Link{Href: "http://jmoiron.net/blog/limiting-concurrency-in-go/"},
 			Description: "A discussion on controlled parallelism in golang",
 			Author:      &Author{"Jason Moiron", "jmoiron@jmoiron.net"},
 			Created:     now,
 		},
-		&Item{
+		{
 			Title:       "Logic-less Template Redux",
 			Link:        &Link{Href: "http://jmoiron.net/blog/logicless-template-redux/"},
 			Description: "More thoughts on logicless templates",
 			Created:     now,
 		},
-		&Item{
+		{
 			Title:       "Idiomatic Code Reuse in Go",
 			Link:        &Link{Href: "http://jmoiron.net/blog/idiomatic-code-reuse-in-go/"},
 			Description: "How to use interfaces <em>effectively</em>",
@@ -115,7 +115,7 @@ func TestFeed(t *testing.T) {
 
 	atom, err := feed.ToAtom()
 	if err != nil {
-		t.Error("unexpected error encoding Atom: %v", err)
+		t.Errorf("unexpected error encoding Atom: %v", err)
 	}
 	if atom != atomOutput {
 		t.Errorf("Atom not what was expected.  Got:\n%s\n\nExpected:\n%s\n", atom, atomOutput)
