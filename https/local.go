@@ -3,11 +3,9 @@ package https
 import (
 	"log"
 
-	// TODO: integrate lib kabukky/httpscerts
-	"github.com/kabukky/httpscerts"
-
 	"github.com/kabukky/journey/configuration"
 	"github.com/kabukky/journey/filenames"
+	"github.com/kabukky/journey/httpscerts"
 )
 
 func checkCertificates() {
