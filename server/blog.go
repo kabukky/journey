@@ -9,14 +9,17 @@ import (
 	"strconv"
 
 	"github.com/dimfeld/httptreemux/v5"
+	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/kabukky/journey/database"
 	"github.com/kabukky/journey/filenames"
+	"github.com/kabukky/journey/metrics"
 	"github.com/kabukky/journey/structure/methods"
 	"github.com/kabukky/journey/templates"
 )
 
 func indexHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	metrics.JourneyHandler.With(prometheus.Labels{"handler": "index"}).Inc()
 	number := params["number"]
 	if number == "" {
 		// Render index template (first page)
@@ -61,6 +64,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request, params map[string]stri
 }
 
 func authorHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	metrics.JourneyHandler.With(prometheus.Labels{"handler": "author"}).Inc()
 	slug := params["slug"]
 	function := params["function"]
 	number := params["number"]
@@ -125,6 +129,7 @@ func authorHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 }
 
 func tagHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	metrics.JourneyHandler.With(prometheus.Labels{"handler": "tag"}).Inc()
 	slug := params["slug"]
 	function := params["function"]
 	number := params["number"]
@@ -189,6 +194,7 @@ func tagHandler(w http.ResponseWriter, r *http.Request, params map[string]string
 }
 
 func postHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	metrics.JourneyHandler.With(prometheus.Labels{"handler": "post"}).Inc()
 	var err error
 
 	slug := params["slug"]
