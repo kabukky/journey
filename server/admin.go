@@ -25,6 +25,7 @@ import (
 	"github.com/kabukky/journey/structure"
 	"github.com/kabukky/journey/structure/methods"
 	"github.com/kabukky/journey/templates"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 type JsonPost struct {
@@ -774,6 +775,12 @@ func getApiUserIdHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 	log.Println("503:", r.URL)
 }
 
+// Function to serve the metrics
+func getMetrics(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+	handler := promhttp.Handler()
+	handler.ServeHTTP(w, r)
+}
+
 func getUserId(userName string) (int64, error) {
 	user, err := database.RetrieveUserByName([]byte(userName))
 	if err != nil {
@@ -882,4 +889,6 @@ func InitializeAdmin(router *httptreemux.TreeMux) {
 	router.PATCH("/admin/api/user", patchApiUserHandler)
 	// User id
 	router.GET("/admin/api/userid", getApiUserIdHandler)
+	// Metrics
+	router.GET("/metrics/", getMetrics)
 }
