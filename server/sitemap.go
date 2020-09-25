@@ -7,9 +7,11 @@ import (
 	"net/http"
 
 	"github.com/dimfeld/httptreemux/v5"
+	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/kabukky/journey/configuration"
 	"github.com/kabukky/journey/database"
+	"github.com/kabukky/journey/metrics"
 	"github.com/kabukky/journey/structure"
 )
 
@@ -23,6 +25,7 @@ func sitemapPrefix(SmURLS []structure.SmURL) []structure.SmURL {
 }
 
 func sitemapHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	metrics.JourneyHandler.With(prometheus.Labels{"handler": "sitemap"}).Inc()
 	var sitemap structure.Sitemap
 	urls, err := database.RetrieveSitemap()
 	if err != nil {

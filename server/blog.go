@@ -244,6 +244,7 @@ func postHandler(w http.ResponseWriter, r *http.Request, params map[string]strin
 }
 
 func postEditHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	metrics.JourneyHandler.With(prometheus.Labels{"handler": "postedit"}).Inc()
 	slug := params["slug"]
 
 	if slug == "" {
@@ -272,6 +273,7 @@ func postEditHandler(w http.ResponseWriter, r *http.Request, params map[string]s
 }
 
 func assetsHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	metrics.JourneyHandler.With(prometheus.Labels{"handler": "assets"}).Inc()
 	// Read lock global blog
 	methods.Blog.RLock()
 	defer methods.Blog.RUnlock()
@@ -279,14 +281,17 @@ func assetsHandler(w http.ResponseWriter, r *http.Request, params map[string]str
 }
 
 func imagesHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	metrics.JourneyHandler.With(prometheus.Labels{"handler": "images"}).Inc()
 	http.ServeFile(w, r, filepath.Join(filenames.ImagesFilepath, params["filepath"]))
 }
 
 func publicHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	metrics.JourneyHandler.With(prometheus.Labels{"handler": "public"}).Inc()
 	http.ServeFile(w, r, filepath.Join(filenames.PublicFilepath, params["filepath"]))
 }
 
 func staticHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
+	metrics.JourneyHandler.With(prometheus.Labels{"handler": "static"}).Inc()
 	filePath := filepath.Join(filenames.StaticFilepath, r.URL.Path)
 	if _, err := os.Stat(filePath); err == nil {
 		http.ServeFile(w, r, filePath)
