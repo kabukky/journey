@@ -3,8 +3,8 @@ package database
 import (
 	"database/sql"
 
+	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/satori/go.uuid"
 
 	"github.com/kabukky/journey/database/migration"
 	"github.com/kabukky/journey/date"
@@ -145,7 +145,7 @@ func Initialize() error {
 		return err
 	}
 	currentTime := date.GetCurrentTime()
-	_, err = readDB.Exec(stmtInitialization, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime)
+	_, err = readDB.Exec(stmtInitialization, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime)
 	// TODO: Is Commit()/Rollback() needed for DB.Exec()?
 	if err != nil {
 		return err
