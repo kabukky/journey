@@ -178,17 +178,20 @@ func convertPosts(readDB *sql.DB) error {
 	for _, row := range allRows {
 		writeDB, err := readDB.Begin()
 		if err != nil {
+			// TODO: error handling
 			_ = writeDB.Rollback()
 			return err
 		}
 		// Update the database with new date formats
 		_, err = writeDB.Exec(stmtUpdateGhostPost, row.createdAt, row.updatedAt, row.publishedAt, row.id)
 		if err != nil {
+			// TODO: error handling
 			_ = writeDB.Rollback()
 			return err
 		}
 		err = writeDB.Commit()
 		if err != nil {
+			// TODO: error handling
 			_ = writeDB.Rollback()
 			return err
 		}
@@ -242,17 +245,20 @@ func convertUsers(readDB *sql.DB) error {
 	for _, row := range allRows {
 		writeDB, err := readDB.Begin()
 		if err != nil {
+			// TODO: error handling
 			_ = writeDB.Rollback()
 			return err
 		}
 		// Update the database with new date formats
 		_, err = writeDB.Exec(stmtUpdateGhostUsers, row.name, row.email, row.lastLogin, row.createdAt, row.updatedAt, row.id)
 		if err != nil {
+			// TODO: error handling
 			_ = writeDB.Rollback()
 			return err
 		}
 		err = writeDB.Commit()
 		if err != nil {
+			// TODO: error handling
 			_ = writeDB.Rollback()
 			return err
 		}
@@ -292,17 +298,20 @@ func convertDates(readDB *sql.DB, stmtRetrieve string, stmtUpdate string) error 
 	for _, row := range allRows {
 		writeDB, err := readDB.Begin()
 		if err != nil {
+			// TODO: error handling
 			_ = writeDB.Rollback()
 			return err
 		}
 		// Update the database with new date formats
 		_, err = writeDB.Exec(stmtUpdate, row.createdAt, row.updatedAt, row.id)
 		if err != nil {
+			// TODO: error handling
 			_ = writeDB.Rollback()
 			return err
 		}
 		err = writeDB.Commit()
 		if err != nil {
+			// TODO: error handling
 			_ = writeDB.Rollback()
 			return err
 		}
@@ -313,6 +322,7 @@ func convertDates(readDB *sql.DB, stmtRetrieve string, stmtUpdate string) error 
 func setDefaultTheme(readDB *sql.DB) error {
 	writeDB, err := readDB.Begin()
 	if err != nil {
+		// TODO: error handling
 		_ = writeDB.Rollback()
 		return err
 	}
@@ -320,6 +330,7 @@ func setDefaultTheme(readDB *sql.DB) error {
 	currentDate := date.GetCurrentTime()
 	_, err = writeDB.Exec(stmtUpdateGhostTheme, "promenade", currentDate, 1)
 	if err != nil {
+		// TODO: error handling
 		_ = writeDB.Rollback()
 		return err
 	}

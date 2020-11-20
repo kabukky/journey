@@ -32,7 +32,7 @@ var (
 	HttpsCertFilename = filepath.Join(ContentFilepath, "https", "cert.pem")
 	HttpsKeyFilename  = filepath.Join(ContentFilepath, "https", "key.pem")
 
-	//For built-in files (e.g. the admin interface)
+	// For built-in files (e.g. the admin interface)
 	AdminFilepath  = filepath.Join(ExecutablePath, "built-in", "admin")
 	PublicFilepath = filepath.Join(ExecutablePath, "built-in", "public")
 	HbsFilepath    = filepath.Join(ExecutablePath, "built-in", "hbs")

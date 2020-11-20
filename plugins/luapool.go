@@ -5,7 +5,7 @@ package plugins
 import (
 	"sync"
 
-	"github.com/yuin/gopher-lua"
+	lua "github.com/yuin/gopher-lua"
 
 	"github.com/kabukky/journey/structure"
 )
@@ -28,6 +28,7 @@ func (pl *lStatePool) Get(helper *structure.Helper, values *structure.RequestDat
 		// Since these are new lua states, do the lua file.
 		for key, value := range x {
 			setUpVm(value, helper, values, LuaPool.files[key])
+			// TODO: error handling
 			_ = value.DoFile(LuaPool.files[key])
 		}
 		return x

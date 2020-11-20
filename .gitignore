@@ -92,3 +92,6 @@ nohup.out
 
 # No hidden
 .*
+!.dockerignore
+!.gitignore
+!.gitmodules

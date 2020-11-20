@@ -151,7 +151,8 @@ func Generate(certPath string, keyPath string, host string) error {
 		log.Printf("failed to open "+certPath+" for writing: %s", err)
 		return err
 	}
-	pem.Encode(certOut, &pem.Block{Type: "CERTIFICATE", Bytes: derBytes})
+	// TODO: error handling
+	_ = pem.Encode(certOut, &pem.Block{Type: "CERTIFICATE", Bytes: derBytes})
 	certOut.Close()
 	log.Print("written cert.pem\n")
 
@@ -160,7 +161,8 @@ func Generate(certPath string, keyPath string, host string) error {
 		log.Print("failed to open "+keyPath+" for writing:", err)
 		return err
 	}
-	pem.Encode(keyOut, pemBlockForKey(priv))
+	// TODO: error handling
+	_ = pem.Encode(keyOut, pemBlockForKey(priv))
 	keyOut.Close()
 	log.Print("written key.pem\n")
 	return nil

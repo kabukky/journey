@@ -1,5 +1,6 @@
 // +build noplugins
 
+// TODO: no plugins mode
 package plugins
 
 import (

@@ -12,7 +12,7 @@ import (
 	"github.com/kabukky/journey/filenames"
 )
 
-// Configuration - settings that are neccesary for server configuration
+// Configuration - settings that are necessary for server configuration
 type Configuration struct {
 	HttpHostAndPort  string `yaml:"HttpHostAndPort"`
 	HttpsHostAndPort string `yaml:"HttpsHostAndPort"`

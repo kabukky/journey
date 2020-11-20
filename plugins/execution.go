@@ -5,7 +5,7 @@ package plugins
 import (
 	"log"
 
-	"github.com/yuin/gopher-lua"
+	lua "github.com/yuin/gopher-lua"
 
 	"github.com/kabukky/journey/structure"
 )
@@ -18,8 +18,8 @@ func Execute(helper *structure.Helper, values *structure.RequestData) ([]byte, e
 	if err != nil {
 		log.Println("Error while executing plugin for helper "+helper.Name+":", err)
 		// Since the vm threw an error, close all vms and don't put the map back into the pool
-		for _, luavm := range values.PluginVMs {
-			luavm.Close()
+		for _, luaVM := range values.PluginVMs {
+			luaVM.Close()
 		}
 		values.PluginVMs = nil
 		return []byte{}, err
