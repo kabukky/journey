@@ -149,6 +149,7 @@ func ShowIndexTemplate(w http.ResponseWriter, r *http.Request, page int) error {
 
 func GetAllThemes() []string {
 	themes := make([]string, 0)
+	// TODO: error handling
 	files, _ := filepath.Glob(filepath.Join(filenames.ThemesFilepath, "*"))
 	for _, file := range files {
 		if helpers.IsDirectory(file) {
@@ -159,7 +160,7 @@ func GetAllThemes() []string {
 }
 
 func executeHelper(helper *structure.Helper, values *structure.RequestData, context int) []byte {
-	// Set context and set it back to the old value once fuction returns
+	// Set context and set it back to the old value once function returns
 	defer setCurrentHelperContext(values, values.CurrentHelperContext)
 	values.CurrentHelperContext = context
 

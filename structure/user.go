@@ -10,5 +10,5 @@ type User struct {
 	Bio      []byte
 	Website  []byte
 	Location []byte
-	Role     int //1 = Administrator, 2 = Editor, 3 = Author, 4 = Owner
+	Role     int // 1 = Administrator, 2 = Editor, 3 = Author, 4 = Owner
 }

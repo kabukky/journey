@@ -34,9 +34,11 @@ func sitemapHandler(w http.ResponseWriter, r *http.Request, params map[string]st
 	urls = sitemapPrefix(urls)
 	sitemap.URLs = urls
 	sitemap.Xmlns = "http://www.sitemaps.org/schemas/sitemap/0.9"
+	// TODO: error handling
 	output, _ := xml.MarshalIndent(sitemap, " ", "  ")
 
 	w.Header().Set("Content-Type", "application/xml")
+	// TODO: error handling
 	_, _ = w.Write(output)
 }
 

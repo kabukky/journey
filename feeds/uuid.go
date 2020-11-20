@@ -7,6 +7,7 @@ import (
 	"fmt"
 )
 
+// TODO: switch to UUID lib or use original https://github.com/gorilla/feeds
 type UUID [16]byte
 
 // create a new uuid v4

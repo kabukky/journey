@@ -213,6 +213,7 @@ func apiPostsHandler(w http.ResponseWriter, r *http.Request, params map[string]s
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
+		// TODO: error handling
 		_, _ = w.Write(json)
 		return
 	}
@@ -245,6 +246,7 @@ func getApiPostHandler(w http.ResponseWriter, r *http.Request, params map[string
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
+		// TODO: error handling
 		_, _ = w.Write(json)
 		return
 	}
@@ -286,6 +288,7 @@ func postApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]str
 			return
 		}
 		w.WriteHeader(http.StatusOK)
+		// TODO: error handling
 		_, _ = w.Write([]byte("Post created!"))
 		return
 	}
@@ -334,6 +337,7 @@ func patchApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 			return
 		}
 		w.WriteHeader(http.StatusOK)
+		// TODO: error handling
 		_, _ = w.Write([]byte("Post updated!"))
 		return
 	}
@@ -360,6 +364,7 @@ func deleteApiPostHandler(w http.ResponseWriter, r *http.Request, params map[str
 			return
 		}
 		w.WriteHeader(http.StatusOK)
+		// TODO: error handling
 		_, _ = w.Write([]byte("Post deleted!"))
 		return
 	}
@@ -426,6 +431,7 @@ func apiUploadHandler(w http.ResponseWriter, r *http.Request, _ map[string]strin
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
+		// TODO: error handling
 		_, _ = w.Write(json)
 		return
 	}
@@ -460,6 +466,7 @@ func apiImagesHandler(w http.ResponseWriter, r *http.Request, params map[string]
 		if len(images) == 0 {
 			// Write empty json array
 			w.Header().Set("Content-Type", "application/json")
+			// TODO: error handling
 			_, _ = w.Write([]byte("[]"))
 			return
 		}
@@ -469,6 +476,7 @@ func apiImagesHandler(w http.ResponseWriter, r *http.Request, params map[string]
 		if start > (len(images) - 1) {
 			// Write empty json array
 			w.Header().Set("Content-Type", "application/json")
+			// TODO: error handling
 			_, _ = w.Write([]byte("[]"))
 			return
 		}
@@ -482,6 +490,7 @@ func apiImagesHandler(w http.ResponseWriter, r *http.Request, params map[string]
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
+		// TODO: error handling
 		_, _ = w.Write(json)
 		return
 	}
@@ -517,6 +526,7 @@ func deleteApiImageHandler(w http.ResponseWriter, r *http.Request, _ map[string]
 			return
 		}
 		w.WriteHeader(http.StatusOK)
+		// TODO: error handling
 		_, _ = w.Write([]byte("Image deleted!"))
 		return
 	}
@@ -539,6 +549,7 @@ func getApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]stri
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
+		// TODO: error handling
 		_, _ = w.Write(json)
 		return
 	}
@@ -604,6 +615,7 @@ func patchApiBlogHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 			return
 		}
 		w.WriteHeader(http.StatusOK)
+		// TODO: error handling
 		_, _ = w.Write([]byte("Blog settings updated!"))
 		return
 	}
@@ -645,6 +657,7 @@ func getApiUserHandler(w http.ResponseWriter, r *http.Request, params map[string
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
+		// TODO: error handling
 		_, _ = w.Write(json)
 		return
 	}
@@ -743,6 +756,7 @@ func patchApiUserHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 			logInUser(json.Name, w)
 		}
 		w.WriteHeader(http.StatusOK)
+		// TODO: error handling
 		_, _ = w.Write([]byte("User settings updated!"))
 		return
 	}
@@ -768,6 +782,7 @@ func getApiUserIdHandler(w http.ResponseWriter, r *http.Request, _ map[string]st
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
+		// TODO: error handling
 		_, _ = w.Write(json)
 		return
 	}

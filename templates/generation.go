@@ -27,10 +27,10 @@ var twoPartArgumentChecker = regexp.MustCompile("(\\S+?)\\s*?=\\s*?['\"](.*?)['\
 var quoteTagChecker = regexp.MustCompile("(.*?)[\"'](.+?)[\"']$")
 
 func getFunction(name string) func(*structure.Helper, *structure.RequestData) []byte {
-	if helperFuctions[name] != nil {
-		return helperFuctions[name]
+	if helperFunctions[name] != nil {
+		return helperFunctions[name]
 	}
-	return helperFuctions["null"]
+	return helperFunctions["null"]
 }
 
 func createHelper(helperName []byte, unescaped bool, startPos int, block []byte, children []structure.Helper, elseHelper *structure.Helper) *structure.Helper {
@@ -41,20 +41,20 @@ func createHelper(helperName []byte, unescaped bool, startPos int, block []byte,
 	for _, arg := range twoPartArgumentResult {
 		if len(arg) == 3 {
 			twoPartArguments = append(twoPartArguments, bytes.Join(arg[1:], []byte("=")))
-			//remove =argument from helper name
+			// remove =argument from helper name
 			helperName = bytes.Replace(helperName, arg[0], []byte(""), 1)
 		}
 	}
 	// Separate arguments (e.g. 'if @blog.title')
 	tags := bytes.Fields(helperName)
 	for index, tag := range tags {
-		//remove "" around tag if present
+		// remove "" around tag if present
 		quoteTagResult := quoteTagChecker.FindSubmatch(tag)
 		if len(quoteTagResult) != 0 {
 			// Get the string inside the quotes (3rd element in array)
 			tag = quoteTagResult[2]
 		}
-		//TODO: This may have to change if the first argument is surrounded by quotes
+		// TODO: This may have to change if the first argument is surrounded by quotes
 		if index == 0 {
 			helper = makeHelper(string(tag), unescaped, startPos, block, children)
 		} else {
@@ -64,10 +64,10 @@ func createHelper(helperName []byte, unescaped bool, startPos int, block []byte,
 	}
 	if len(twoPartArguments) != 0 {
 		for _, arg := range twoPartArguments {
-			// Check for quotes in the =argument (has beem omitted from the check above)
+			// Check for quotes in the =argument (has been omitted from the check above)
 			quoteTagResult := quoteTagChecker.FindSubmatch(arg)
 			if len(quoteTagResult) != 0 {
-				// Join poth parts, this time without the quotes
+				// Join both parts, this time without the quotes
 				arg = bytes.Join([][]byte{quoteTagResult[1], quoteTagResult[2]}, []byte(""))
 			}
 			helper.Arguments = append(helper.Arguments, *makeHelper(string(arg), unescaped, 0, []byte{}, nil))
@@ -97,7 +97,7 @@ func findHelper(data []byte, allHelpers []structure.Helper) ([]byte, []structure
 			closeTagLength++
 			helperName = helperName[len([]byte("{")):]
 		}
-		helperName = bytes.Trim(helperName, " ") //make sure there are no trailing whitespaces
+		helperName = bytes.Trim(helperName, " ") // make sure there are no trailing whitespaces
 		// Remove helper from data
 		parts := [][]byte{data[:startPos], data[endPos+closeTagLength:]}
 		data = bytes.Join(parts, []byte(""))
@@ -107,9 +107,9 @@ func findHelper(data []byte, allHelpers []structure.Helper) ([]byte, []structure
 		}
 		// Check if block
 		if bytes.HasPrefix(helperName, []byte("#")) {
-			helperName = helperName[len([]byte("#")):] //remove '#' from helperName
+			helperName = helperName[len([]byte("#")):] // remove '#' from helperName
 			var helper structure.Helper
-			data, helper = findBlock(data, helperName, unescaped, startPos) //only use the data string after the opening tag
+			data, helper = findBlock(data, helperName, unescaped, startPos) // only use the data string after the opening tag
 			allHelpers = append(allHelpers, helper)
 			return findHelper(data, allHelpers)
 		}
@@ -171,7 +171,7 @@ func compileTemplate(data []byte, name string) *structure.Helper {
 	// Handle extend helpers
 	for index, child := range baseHelper.Children {
 		if child.Name == "body" {
-			baseHelper.BodyHelper = &baseHelper.Children[index] //TODO: This handles only one body helper per hbs file. That is a potential bug source, but no theme should be using more than one per file anyway.
+			baseHelper.BodyHelper = &baseHelper.Children[index] // TODO: This handles only one body helper per hbs file. That is a potential bug source, but no theme should be using more than one per file anyway.
 		}
 	}
 	return &baseHelper
@@ -258,7 +258,7 @@ func checkThemes() error {
 		return nil
 	}
 	log.Println("Warning: Couldn't compile theme in " + currentThemePath + ": " + err.Error())
-	// If the currently set theme couldnt be compiled, try the default theme (promenade)
+	// If the currently set theme couldn't be compiled, try the default theme (promenade)
 	err = compileTheme(filepath.Join(filenames.ThemesFilepath, "promenade"))
 	if err == nil {
 		// Update the theme name in the database
@@ -296,7 +296,7 @@ func Generate() error {
 	if err != nil {
 		return err
 	}
-	// If the dev flag is set, watch the theme directory and the plugin directoy for changes
+	// If the dev flag is set, watch the theme directory and the plugin directory for changes
 	// TODO: It seems unclean to do the watching of the plugins in the templates package. Move this somewhere else.
 	if flags.IsInDevMode {
 		// Get the currently used theme path

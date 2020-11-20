@@ -22,6 +22,7 @@ func InsertPost(title []byte, slug string, markdown []byte, html []byte, feature
 	}
 	writeDB, err := readDB.Begin()
 	if err != nil {
+		// TODO: error handling
 		_ = writeDB.Rollback()
 		return 0, err
 	}
@@ -32,11 +33,13 @@ func InsertPost(title []byte, slug string, markdown []byte, html []byte, feature
 		result, err = writeDB.Exec(stmtInsertPost, nil, uuid.New().String(), title, slug, markdown, html, featured, isPage, status, meta_description, image, created_by, created_at, created_by, created_at, created_by, nil, nil)
 	}
 	if err != nil {
+		// TODO: error handling
 		_ = writeDB.Rollback()
 		return 0, err
 	}
 	postId, err := result.LastInsertId()
 	if err != nil {
+		// TODO: error handling
 		_ = writeDB.Rollback()
 		return 0, err
 	}
@@ -46,16 +49,19 @@ func InsertPost(title []byte, slug string, markdown []byte, html []byte, feature
 func InsertUser(name []byte, slug string, password string, email []byte, image []byte, cover []byte, created_at time.Time, created_by int64) (int64, error) {
 	writeDB, err := readDB.Begin()
 	if err != nil {
+		// TODO: error handling
 		_ = writeDB.Rollback()
 		return 0, err
 	}
 	result, err := writeDB.Exec(stmtInsertUser, nil, uuid.New().String(), name, slug, password, email, image, cover, created_at, created_by, created_at, created_by)
 	if err != nil {
+		// TODO: error handling
 		_ = writeDB.Rollback()
 		return 0, err
 	}
 	userId, err := result.LastInsertId()
 	if err != nil {
+		// TODO: error handling
 		_ = writeDB.Rollback()
 		return 0, err
 	}
@@ -65,11 +71,13 @@ func InsertUser(name []byte, slug string, password string, email []byte, image [
 func InsertRoleUser(role_id int, user_id int64) error {
 	writeDB, err := readDB.Begin()
 	if err != nil {
+		// TODO: error handling
 		_ = writeDB.Rollback()
 		return err
 	}
 	_, err = writeDB.Exec(stmtInsertRoleUser, nil, role_id, user_id)
 	if err != nil {
+		// TODO: error handling
 		_ = writeDB.Rollback()
 		return err
 	}
@@ -79,16 +87,19 @@ func InsertRoleUser(role_id int, user_id int64) error {
 func InsertTag(name []byte, slug string, created_at time.Time, created_by int64) (int64, error) {
 	writeDB, err := readDB.Begin()
 	if err != nil {
+		// TODO: error handling
 		_ = writeDB.Rollback()
 		return 0, err
 	}
 	result, err := writeDB.Exec(stmtInsertTag, nil, uuid.New().String(), name, slug, created_at, created_by, created_at, created_by)
 	if err != nil {
+		// TODO: error handling
 		_ = writeDB.Rollback()
 		return 0, err
 	}
 	tagId, err := result.LastInsertId()
 	if err != nil {
+		// TODO: error handling
 		_ = writeDB.Rollback()
 		return 0, err
 	}
@@ -98,11 +109,13 @@ func InsertTag(name []byte, slug string, created_at time.Time, created_by int64)
 func InsertPostTag(post_id int64, tag_id int64) error {
 	writeDB, err := readDB.Begin()
 	if err != nil {
+		// TODO: error handling
 		_ = writeDB.Rollback()
 		return err
 	}
 	_, err = writeDB.Exec(stmtInsertPostTag, nil, post_id, tag_id)
 	if err != nil {
+		// TODO: error handling
 		_ = writeDB.Rollback()
 		return err
 	}
@@ -112,11 +125,13 @@ func InsertPostTag(post_id int64, tag_id int64) error {
 func insertSettingString(key string, value string, setting_type string, created_at time.Time, created_by int64) error {
 	writeDB, err := readDB.Begin()
 	if err != nil {
+		// TODO: error handling
 		_ = writeDB.Rollback()
 		return err
 	}
 	_, err = writeDB.Exec(stmtInsertSetting, nil, uuid.New().String(), key, value, setting_type, created_at, created_by, created_at, created_by)
 	if err != nil {
+		// TODO: error handling
 		_ = writeDB.Rollback()
 		return err
 	}
@@ -126,11 +141,13 @@ func insertSettingString(key string, value string, setting_type string, created_
 func insertSettingInt64(key string, value int64, setting_type string, created_at time.Time, created_by int64) error {
 	writeDB, err := readDB.Begin()
 	if err != nil {
+		// TODO: error handling
 		_ = writeDB.Rollback()
 		return err
 	}
 	_, err = writeDB.Exec(stmtInsertSetting, nil, uuid.New().String(), key, value, setting_type, created_at, created_by, created_at, created_by)
 	if err != nil {
+		// TODO: error handling
 		_ = writeDB.Rollback()
 		return err
 	}
