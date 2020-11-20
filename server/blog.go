@@ -18,6 +18,10 @@ import (
 	"github.com/kabukky/journey/templates"
 )
 
+func healthzHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
+	fmt.Fprint(w, "Ok!\n")
+}
+
 func indexHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {
 	metrics.JourneyHandler.With(prometheus.Labels{"handler": "index"}).Inc()
 	number := params["number"]
@@ -325,6 +329,8 @@ func InitializeBlog(router *httptreemux.TreeMux) {
 	router.GET("/favicon.ico", staticHandler)
 	router.GET("/robots.txt", staticHandler)
 
+	// Internal health
+	router.GET("/healthz", healthzHandler)
 	// 404
 	router.NotFoundHandler = func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)

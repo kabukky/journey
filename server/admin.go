@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/dimfeld/httptreemux/v5"
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 
 	"github.com/kabukky/journey/authentication"
 	"github.com/kabukky/journey/configuration"
@@ -109,7 +109,7 @@ func getRegistrationHandler(w http.ResponseWriter, r *http.Request, _ map[string
 	http.Redirect(w, r, "/admin/", 302)
 }
 
-// Function to recieve a registration form.
+// Function to receive a registration form.
 func postRegistrationHandler(w http.ResponseWriter, r *http.Request, _ map[string]string) {
 	if database.RetrieveUsersCount() == 0 { // TODO: Or check if authenticated user is admin when adding users from inside the admin area
 		name := r.FormValue("name")
@@ -272,7 +272,7 @@ func postApiPostHandler(w http.ResponseWriter, r *http.Request, _ map[string]str
 			return
 		}
 		var postSlug string
-		if json.Slug != "" { // Ceck if user has submitted a custom slug
+		if json.Slug != "" { // Check if user has submitted a custom slug
 			postSlug = slug.Generate(json.Slug, "posts")
 		} else {
 			postSlug = slug.Generate(json.Title, "posts")
@@ -397,7 +397,7 @@ func apiUploadHandler(w http.ResponseWriter, r *http.Request, _ map[string]strin
 				log.Println("503:", r.URL)
 				return
 			}
-			dst, err := os.Create(filepath.Join(filePath, strconv.FormatInt(currentDate.Unix(), 10)+"_"+uuid.NewV4().String()+filepath.Ext(part.FileName())))
+			dst, err := os.Create(filepath.Join(filePath, strconv.FormatInt(currentDate.Unix(), 10)+"_"+uuid.New().String()+filepath.Ext(part.FileName())))
 			defer func() {
 				err := dst.Close()
 				if err != nil {
