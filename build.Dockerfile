@@ -1,4 +1,4 @@
-# rm journey ; docker build -t tmp -f build.Dockerfile . && docker run -it --rm -v $(pwd):/mnt tmp cp journey /mnt/
+# rm -f journey ; docker build -t tmp -f build.Dockerfile . && docker run -it --rm -v $(pwd):/mnt tmp cp journey /mnt/
 FROM ubuntu:18.04
 RUN apt update &&\
     apt install -y software-properties-common &&\
