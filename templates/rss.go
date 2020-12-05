@@ -85,6 +85,7 @@ func createFeed(values *structure.RequestData) *feeds.Feed {
 			buffer.Write(values.Blog.Url)
 			buffer.WriteString("/")
 			buffer.WriteString(values.Posts[i].Slug)
+			buffer.WriteString("/")
 			item := &feeds.Item{
 				Title:       string(values.Posts[i].Title),
 				Description: string(values.Posts[i].Html),
