@@ -1,6 +1,5 @@
 // +build noplugins
 
-// TODO: no plugins mode
 package structure
 
 // RequestData used for template/helper execution. Contains data specific to the incoming request.

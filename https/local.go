@@ -1,3 +1,5 @@
+// +build !nossl
+
 package https
 
 import (
