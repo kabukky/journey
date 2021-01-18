@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"runtime"
 	"strings"
 
 	"github.com/dimfeld/httptreemux/v5"
@@ -27,9 +26,6 @@ func httpsRedirect(w http.ResponseWriter, r *http.Request, _ map[string]string) 
 func main() {
 	// Setup
 	var err error
-
-	// GOMAXPROCS - Maybe not needed
-	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	// Write log to file if the log flag was provided
 	if flags.Log != "" {
