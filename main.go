@@ -37,7 +37,7 @@ func main() {
 		log.SetOutput(logFile)
 	}
 
-	// Configuration is read from config.json by loading the configuration package
+	// Configuration is read from config.yaml by loading the configuration package
 
 	// Database
 	if err = database.Initialize(); err != nil {
@@ -76,7 +76,7 @@ func main() {
 		components := strings.SplitAfterN(httpsPort, ":", 2)
 		httpsPort = components[0] + flags.HttpsPort
 	}
-	// Determine the kind of https support (as set in the config.json)
+	// Determine the kind of https support (as set in the config.yaml)
 	switch configuration.Config.HttpsUsage {
 	case "AdminOnly":
 		httpRouter := httptreemux.New()
