@@ -1,3 +1,10 @@
+# Files and Folders to ignore
+.git
+# Allow files for specific files with an !
+!.git/HEAD
+!.git/config
+!.git/refs
+
 # ./.**
 ./Dockerfile
 ./*.md
