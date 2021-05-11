@@ -95,3 +95,4 @@ nohup.out
 !.dockerignore
 !.gitignore
 !.gitmodules
+!.github/
