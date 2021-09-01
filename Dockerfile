@@ -1,9 +1,10 @@
 # build stage
-FROM golang:1.16 AS build
+FROM golang:1.17 AS build
 
 WORKDIR /opt/journey
 COPY . .
-RUN git -c http.sslVerify=false submodule update --init --recursive
+# RUN git -c http.sslVerify=false submodule update --init --recursive
+RUN go mod download
 RUN go test ./...
 RUN go build -a -tags "noplugins nossl netgo" -ldflags '-w' -o journey
 

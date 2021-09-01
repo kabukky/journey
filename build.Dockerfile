@@ -9,5 +9,6 @@ RUN apt update &&\
 
 WORKDIR /opt/journey
 COPY . .
+RUN go mod download
 RUN go test ./...
 RUN go build -a -tags "noplugins nossl netgo" -ldflags '-w' -o journey
