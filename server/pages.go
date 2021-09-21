@@ -1,12 +1,13 @@
 package server
 
 import (
-	"github.com/dimfeld/httptreemux"
-	"github.com/kabukky/journey/filenames"
-	"github.com/kabukky/journey/helpers"
 	"net/http"
 	"path/filepath"
 	"strings"
+
+	"github.com/Landria/journey/filenames"
+	"github.com/Landria/journey/helpers"
+	"github.com/dimfeld/httptreemux"
 )
 
 func pagesHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {

@@ -1,10 +1,11 @@
 package methods
 
 import (
-	"github.com/kabukky/journey/database"
-	"github.com/kabukky/journey/date"
-	"github.com/kabukky/journey/structure"
 	"log"
+
+	"github.com/Landria/journey/database"
+	"github.com/Landria/journey/date"
+	"github.com/Landria/journey/structure"
 )
 
 func SavePost(p *structure.Post) error {

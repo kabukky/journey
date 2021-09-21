@@ -1,11 +1,12 @@
+//go:build !noplugins
 // +build !noplugins
 
 package plugins
 
 import (
-	"github.com/kabukky/journey/structure"
-	"github.com/kabukky/journey/structure/methods"
-	"github.com/yuin/gopher-lua"
+	"github.com/Landria/journey/structure"
+	"github.com/Landria/journey/structure/methods"
+	lua "github.com/yuin/gopher-lua"
 )
 
 func convertArguments(vm *lua.LState, structureArguments []structure.Helper) *lua.LTable {

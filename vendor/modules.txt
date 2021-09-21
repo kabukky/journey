@@ -1,0 +1,51 @@
+# github.com/dimfeld/httptreemux v3.7.1-0.20170114182716-9cde5e866f4d+incompatible
+## explicit
+github.com/dimfeld/httptreemux
+# github.com/fsnotify/fsnotify v1.5.1
+## explicit; go 1.13
+# github.com/gorilla/securecookie v0.0.0-20150820082958-e95799a481bb
+## explicit
+github.com/gorilla/securecookie
+# github.com/Landria/feeds v0.0.0-20151110114325-c7025aca4568
+## explicit
+github.com/Landria/feeds
+# github.com/Landria/httpscerts v0.0.0-20150320125433-617593d7dcb3
+## explicit
+github.com/Landria/httpscerts
+# github.com/kardianos/osext v0.0.0-20151222153229-29ae4ffbc9a6
+## explicit
+github.com/kardianos/osext
+# github.com/mattn/go-sqlite3 v1.2.1-0.20170118172042-7ed900a7c4cc
+## explicit
+github.com/mattn/go-sqlite3
+# github.com/russross/blackfriday v0.0.0-20160531111224-1d6b8e9301e7
+## explicit
+github.com/russross/blackfriday
+# github.com/satori/go.uuid v1.1.1-0.20170321230731-5bf94b69c6b6
+## explicit
+github.com/satori/go.uuid
+# github.com/shurcooL/sanitized_anchor_name v0.0.0-20151028001915-10ef21a441db
+## explicit
+github.com/shurcooL/sanitized_anchor_name
+# github.com/yuin/gopher-lua v0.0.0-20170119023643-66c871e454fc
+## explicit
+github.com/yuin/gopher-lua
+github.com/yuin/gopher-lua/ast
+github.com/yuin/gopher-lua/parse
+github.com/yuin/gopher-lua/pm
+# golang.org/x/crypto v0.0.0-20170930174604-9419663f5a44
+## explicit
+golang.org/x/crypto/acme
+golang.org/x/crypto/acme/autocert
+golang.org/x/crypto/bcrypt
+golang.org/x/crypto/blowfish
+# golang.org/x/net v0.0.0-20160322021652-4876518f9e71
+## explicit
+golang.org/x/net/context
+# golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c
+## explicit; go 1.17
+golang.org/x/sys/internal/unsafeheader
+golang.org/x/sys/unix
+# gopkg.in/fsnotify.v1 v1.4.2
+## explicit
+gopkg.in/fsnotify.v1

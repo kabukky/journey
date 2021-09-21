@@ -1,11 +1,13 @@
+//go:build !noplugins
 // +build !noplugins
 
 package plugins
 
 import (
-	"github.com/kabukky/journey/structure"
-	"github.com/yuin/gopher-lua"
 	"sync"
+
+	"github.com/Landria/journey/structure"
+	lua "github.com/yuin/gopher-lua"
 )
 
 // Global LState pool

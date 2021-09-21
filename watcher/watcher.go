@@ -1,11 +1,12 @@
 package watcher
 
 import (
-	"github.com/kabukky/journey/helpers"
-	"gopkg.in/fsnotify.v1"
 	"log"
 	"os"
 	"path/filepath"
+
+	"github.com/Landria/journey/helpers"
+	"gopkg.in/fsnotify.v1"
 )
 
 var watcher *fsnotify.Watcher

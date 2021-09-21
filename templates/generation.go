@@ -3,20 +3,21 @@ package templates
 import (
 	"bytes"
 	"errors"
-	"github.com/kabukky/journey/database"
-	"github.com/kabukky/journey/filenames"
-	"github.com/kabukky/journey/flags"
-	"github.com/kabukky/journey/helpers"
-	"github.com/kabukky/journey/plugins"
-	"github.com/kabukky/journey/structure"
-	"github.com/kabukky/journey/structure/methods"
-	"github.com/kabukky/journey/watcher"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	"github.com/Landria/journey/database"
+	"github.com/Landria/journey/filenames"
+	"github.com/Landria/journey/flags"
+	"github.com/Landria/journey/helpers"
+	"github.com/Landria/journey/plugins"
+	"github.com/Landria/journey/structure"
+	"github.com/Landria/journey/structure/methods"
+	"github.com/Landria/journey/watcher"
 )
 
 // For parsing of the theme files

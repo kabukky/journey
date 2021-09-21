@@ -1,10 +1,11 @@
+//go:build noplugins
 // +build noplugins
 
 package plugins
 
 import (
-	"github.com/kabukky/journey/structure"
 	"errors"
+	"github.com/Landria/journey/structure"
 	"sync"
 )
 
@@ -30,9 +31,8 @@ func (pl *lStatePool) Get(helper *structure.Helper, values *structure.RequestDat
 	return nil
 }
 
-func (pl *lStatePool) Put(L map[string]*string){
+func (pl *lStatePool) Put(L map[string]*string) {
 }
-
 
 func (pl *lStatePool) Shutdown() {
 }
