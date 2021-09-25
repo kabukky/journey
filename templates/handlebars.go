@@ -2,12 +2,12 @@ package templates
 
 import (
 	"bytes"
-	"github.com/kabukky/journey/conversion"
-	"github.com/kabukky/journey/database"
-	"github.com/kabukky/journey/date"
-	"github.com/kabukky/journey/plugins"
-	"github.com/kabukky/journey/structure"
-	"github.com/kabukky/journey/structure/methods"
+	"github.com/Landria/journey/conversion"
+	"github.com/Landria/journey/database"
+	"github.com/Landria/journey/date"
+	"github.com/Landria/journey/plugins"
+	"github.com/Landria/journey/structure"
+	"github.com/Landria/journey/structure/methods"
 	"html"
 	"log"
 	"net/url"

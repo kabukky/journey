@@ -2,11 +2,11 @@ package templates
 
 import (
 	"bytes"
+	"github.com/Landria/journey/database"
+	"github.com/Landria/journey/date"
+	"github.com/Landria/journey/structure"
+	"github.com/Landria/journey/structure/methods"
 	"github.com/kabukky/feeds"
-	"github.com/kabukky/journey/database"
-	"github.com/kabukky/journey/date"
-	"github.com/kabukky/journey/structure"
-	"github.com/kabukky/journey/structure/methods"
 	"net/http"
 )
 

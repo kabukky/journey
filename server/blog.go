@@ -6,11 +6,11 @@ import (
 	"path/filepath"
 	"strconv"
 
+	"github.com/Landria/journey/database"
+	"github.com/Landria/journey/filenames"
+	"github.com/Landria/journey/structure/methods"
+	"github.com/Landria/journey/templates"
 	"github.com/dimfeld/httptreemux"
-	"github.com/kabukky/journey/database"
-	"github.com/kabukky/journey/filenames"
-	"github.com/kabukky/journey/structure/methods"
-	"github.com/kabukky/journey/templates"
 )
 
 func indexHandler(w http.ResponseWriter, r *http.Request, params map[string]string) {

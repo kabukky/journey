@@ -1,9 +1,9 @@
 package server
 
 import (
+	"github.com/Landria/journey/filenames"
+	"github.com/Landria/journey/helpers"
 	"github.com/dimfeld/httptreemux"
-	"github.com/kabukky/journey/filenames"
-	"github.com/kabukky/journey/helpers"
 	"net/http"
 	"path/filepath"
 	"strings"

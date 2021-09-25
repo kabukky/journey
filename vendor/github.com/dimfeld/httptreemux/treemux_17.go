@@ -91,3 +91,59 @@ func (t *TreeMux) setDefaultRequestContext(r *http.Request) *http.Request {
 
 	return r
 }
+
+type ContextMux struct {
+	*TreeMux
+	*ContextGroup
+}
+
+// NewContextMux returns a TreeMux preconfigured to work with standard http
+// Handler functions and context objects.
+func NewContextMux() *ContextMux {
+	mux := New()
+	cg := mux.UsingContext()
+
+	return &ContextMux{
+		TreeMux:      mux,
+		ContextGroup: cg,
+	}
+}
+
+func (cm *ContextMux) NewGroup(path string) *ContextGroup {
+	return cm.ContextGroup.NewGroup(path)
+}
+
+// GET is convenience method for handling GET requests on a context group.
+func (cm *ContextMux) GET(path string, handler http.HandlerFunc) {
+	cm.ContextGroup.Handle("GET", path, handler)
+}
+
+// POST is convenience method for handling POST requests on a context group.
+func (cm *ContextMux) POST(path string, handler http.HandlerFunc) {
+	cm.ContextGroup.Handle("POST", path, handler)
+}
+
+// PUT is convenience method for handling PUT requests on a context group.
+func (cm *ContextMux) PUT(path string, handler http.HandlerFunc) {
+	cm.ContextGroup.Handle("PUT", path, handler)
+}
+
+// DELETE is convenience method for handling DELETE requests on a context group.
+func (cm *ContextMux) DELETE(path string, handler http.HandlerFunc) {
+	cm.ContextGroup.Handle("DELETE", path, handler)
+}
+
+// PATCH is convenience method for handling PATCH requests on a context group.
+func (cm *ContextMux) PATCH(path string, handler http.HandlerFunc) {
+	cm.ContextGroup.Handle("PATCH", path, handler)
+}
+
+// HEAD is convenience method for handling HEAD requests on a context group.
+func (cm *ContextMux) HEAD(path string, handler http.HandlerFunc) {
+	cm.ContextGroup.Handle("HEAD", path, handler)
+}
+
+// OPTIONS is convenience method for handling OPTIONS requests on a context group.
+func (cm *ContextMux) OPTIONS(path string, handler http.HandlerFunc) {
+	cm.ContextGroup.Handle("OPTIONS", path, handler)
+}

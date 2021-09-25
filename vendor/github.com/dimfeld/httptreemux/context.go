@@ -16,7 +16,7 @@ type ContextGroup struct {
 
 // UsingContext wraps the receiver to return a new instance of a ContextGroup.
 // The returned ContextGroup is a sibling to its wrapped Group, within the parent TreeMux.
-// The choice of using a *Group as the reciever, as opposed to a function parameter, allows chaining
+// The choice of using a *Group as the receiver, as opposed to a function parameter, allows chaining
 // while method calls between a TreeMux, Group, and ContextGroup. For example:
 //
 //              tree := httptreemux.New()
@@ -41,12 +41,16 @@ func (cg *ContextGroup) NewContextGroup(path string) *ContextGroup {
 	return &ContextGroup{cg.group.NewGroup(path)}
 }
 
+func (cg *ContextGroup) NewGroup(path string) *ContextGroup {
+	return cg.NewContextGroup(path)
+}
+
 // Handle allows handling HTTP requests via an http.HandlerFunc, as opposed to an httptreemux.HandlerFunc.
 // Any parameters from the request URL are stored in a map[string]string in the request's context.
 func (cg *ContextGroup) Handle(method, path string, handler http.HandlerFunc) {
 	cg.group.Handle(method, path, func(w http.ResponseWriter, r *http.Request, params map[string]string) {
 		if params != nil {
-			r = r.WithContext(context.WithValue(r.Context(), ParamsContextKey, params))
+			r = r.WithContext(AddParamsToContext(r.Context(), params))
 		}
 		handler(w, r)
 	})
@@ -57,7 +61,7 @@ func (cg *ContextGroup) Handle(method, path string, handler http.HandlerFunc) {
 func (cg *ContextGroup) Handler(method, path string, handler http.Handler) {
 	cg.group.Handle(method, path, func(w http.ResponseWriter, r *http.Request, params map[string]string) {
 		if params != nil {
-			r = r.WithContext(context.WithValue(r.Context(), ParamsContextKey, params))
+			r = r.WithContext(AddParamsToContext(r.Context(), params))
 		}
 		handler.ServeHTTP(w, r)
 	})
@@ -100,11 +104,20 @@ func (cg *ContextGroup) OPTIONS(path string, handler http.HandlerFunc) {
 
 // ContextParams returns the params map associated with the given context if one exists. Otherwise, an empty map is returned.
 func ContextParams(ctx context.Context) map[string]string {
-	if p, ok := ctx.Value(ParamsContextKey).(map[string]string); ok {
+	if p, ok := ctx.Value(paramsContextKey).(map[string]string); ok {
 		return p
 	}
 	return map[string]string{}
 }
 
-// ParamsContextKey is used to retrieve a path's params map from a request's context.
-const ParamsContextKey = "params.context.key"
+// AddParamsToContext inserts a parameters map into a context using
+// the package's internal context key. Clients of this package should
+// really only use this for unit tests.
+func AddParamsToContext(ctx context.Context, params map[string]string) context.Context {
+	return context.WithValue(ctx, paramsContextKey, params)
+}
+
+type contextKey int
+
+// paramsContextKey is used to retrieve a path's params map from a request's context.
+const paramsContextKey contextKey = 0

@@ -14,7 +14,8 @@ import (
 func OpenBase(L *LState) int {
 	global := L.Get(GlobalsIndex).(*LTable)
 	L.SetGlobal("_G", global)
-	L.SetGlobal("_VERSION", LString(PackageName+" "+PackageVersion))
+	L.SetGlobal("_VERSION", LString(LuaVersion))
+	L.SetGlobal("_GOPHER_LUA_VERSION", LString(PackageName+" "+PackageVersion))
 	basemod := L.RegisterModule("_G", baseFuncs)
 	global.RawSetString("ipairs", L.NewClosure(baseIpairs, L.NewFunction(ipairsaux)))
 	global.RawSetString("pairs", L.NewClosure(basePairs, L.NewFunction(pairsaux)))
@@ -50,6 +51,8 @@ var baseFuncs = map[string]LGFunction{
 	// loadlib
 	"module":  loModule,
 	"require": loRequire,
+	// hidden features
+	"newproxy": baseNewProxy,
 }
 
 func baseAssert(L *LState) int {
@@ -255,7 +258,13 @@ func basePairs(L *LState) int {
 }
 
 func basePCall(L *LState) int {
-	L.CheckFunction(1)
+	L.CheckAny(1)
+	v := L.Get(1)
+	if v.Type() != LTFunction {
+		L.Push(LFalse)
+		L.Push(LString("attempt to call a " + v.Type().String() + " value"))
+		return 2
+	}
 	nargs := L.GetTop() - 1
 	if err := L.PCall(nargs, MultRet, nil); err != nil {
 		L.Push(LFalse)
@@ -389,6 +398,8 @@ func baseSetMetatable(L *LState) int {
 
 func baseToNumber(L *LState) int {
 	base := L.OptInt(2, 10)
+	noBase := L.Get(2) == LNil
+
 	switch lv := L.CheckAny(1).(type) {
 	case LNumber:
 		L.Push(lv)
@@ -401,6 +412,9 @@ func baseToNumber(L *LState) int {
 				L.Push(LNumber(v))
 			}
 		} else {
+			if noBase && strings.HasPrefix(strings.ToLower(str), "0x") {
+				base, str = 16, str[2:] // Hex number
+			}
 			if v, err := strconv.ParseInt(str, base, LNumberBit); err != nil {
 				L.Push(LNil)
 			} else {
@@ -554,6 +568,22 @@ loopbreak:
 	} else {
 		L.Push(modv)
 	}
+	return 1
+}
+
+/* }}} */
+
+/* hidden features {{{ */
+
+func baseNewProxy(L *LState) int {
+	ud := L.NewUserData()
+	L.SetTop(1)
+	if L.Get(1) == LTrue {
+		L.SetMetatable(ud, L.NewTable())
+	} else if d, ok := L.Get(1).(*LUserData); ok {
+		L.SetMetatable(ud, L.GetMetatable(d))
+	}
+	L.Push(ud)
 	return 1
 }
 

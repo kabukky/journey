@@ -1,9 +1,10 @@
+//go:build !noplugins
 // +build !noplugins
 
 package plugins
 
 import (
-	"github.com/kabukky/journey/structure"
+	"github.com/Landria/journey/structure"
 	"github.com/yuin/gopher-lua"
 	"log"
 )

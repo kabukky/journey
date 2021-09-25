@@ -12,7 +12,7 @@ import (
 )
 
 const EOF = -1
-const whitespace1 = 1<<'\t' | 1<<'\r' | 1<<' '
+const whitespace1 = 1<<'\t' | 1<<' '
 const whitespace2 = 1<<'\t' | 1<<'\n' | 1<<'\r' | 1<<' '
 
 type Error struct {
@@ -49,7 +49,11 @@ type Scanner struct {
 
 func NewScanner(reader io.Reader, source string) *Scanner {
 	return &Scanner{
-		Pos:    ast.Position{source, 1, 0},
+		Pos: ast.Position{
+			Source: source,
+			Line:   1,
+			Column: 0,
+		},
 		reader: bufio.NewReaderSize(reader, 4096),
 	}
 }
@@ -233,9 +237,7 @@ func (sc *Scanner) scanEscape(ch int, buf *bytes.Buffer) error {
 			val, _ := strconv.ParseInt(string(bytes), 10, 32)
 			writeChar(buf, int(val))
 		} else {
-			buf.WriteByte('\\')
 			writeChar(buf, ch)
-			return sc.Error(buf.String(), "Invalid escape sequence")
 		}
 	}
 	return nil
@@ -298,8 +300,10 @@ redo:
 		ch = sc.skipWhiteSpace(whitespace2)
 	}
 
-	if ch == '(' {
+	if ch == '(' && lexer.PrevTokenType == ')' {
 		lexer.PNewLine = newline
+	} else {
+		lexer.PNewLine = false
 	}
 
 	var _buf bytes.Buffer
@@ -422,13 +426,15 @@ finally:
 // yacc interface {{{
 
 type Lexer struct {
-	scanner  *Scanner
-	Stmts    []ast.Stmt
-	PNewLine bool
-	Token    ast.Token
+	scanner       *Scanner
+	Stmts         []ast.Stmt
+	PNewLine      bool
+	Token         ast.Token
+	PrevTokenType int
 }
 
 func (lx *Lexer) Lex(lval *yySymType) int {
+	lx.PrevTokenType = lx.Token.Type
 	tok, err := lx.scanner.Scan(lx)
 	if err != nil {
 		panic(err)
@@ -450,7 +456,7 @@ func (lx *Lexer) TokenError(tok ast.Token, message string) {
 }
 
 func Parse(reader io.Reader, name string) (chunk []ast.Stmt, err error) {
-	lexer := &Lexer{NewScanner(reader, name), nil, false, ast.Token{Str: ""}}
+	lexer := &Lexer{NewScanner(reader, name), nil, false, ast.Token{Str: ""}, TNil}
 	chunk = nil
 	defer func() {
 		if e := recover(); e != nil {

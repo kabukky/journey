@@ -60,11 +60,21 @@ func mainLoopWithContext(L *LState, baseframe *callFrame) {
 	}
 }
 
+// regv is the first target register to copy the return values to.
+// It can be reg.top, indicating that the copied values are going into new registers, or it can be below reg.top
+// Indicating that the values should be within the existing registers.
+// b is the available number of return values + 1.
+// n is the desired number of return values.
+// If n more than the available return values then the extra values are set to nil.
+// When this function returns the top of the registry will be set to regv+n.
 func copyReturnValues(L *LState, regv, start, n, b int) { // +inline-start
 	if b == 1 {
 		// +inline-call L.reg.FillNil  regv n
 	} else {
 		// +inline-call L.reg.CopyRange regv start -1 n
+		if b > 1 && n > (b-1) {
+			// +inline-call L.reg.FillNil  regv+b-1 n-(b-1)
+		}
 	}
 } // +inline-end
 
@@ -96,8 +106,7 @@ func callGFunction(L *LState, tailcall bool) bool {
 	frame := L.currentFrame
 	gfnret := frame.Fn.GFunction(L)
 	if tailcall {
-		L.stack.Remove(L.stack.Sp() - 2) // remove caller lua function frame
-		L.currentFrame = L.stack.Last()
+		L.currentFrame = L.RemoveCallerFrame()
 	}
 
 	if gfnret < 0 {
@@ -402,7 +411,12 @@ func init() {
 					reg.Push(op)
 					reg.Push(lv)
 					L.Call(1, 1)
-					reg.Set(RA, reg.Pop())
+					ret := reg.Pop()
+					if ret.Type() == LTNumber {
+						reg.SetNumber(RA, ret.(LNumber))
+					} else {
+						reg.SetNumber(RA, LNumber(0))
+					}
 				} else if lv.Type() == LTTable {
 					reg.SetNumber(RA, LNumber(lv.(*LTable).Len()))
 				} else {

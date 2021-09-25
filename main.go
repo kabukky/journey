@@ -7,16 +7,16 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/Landria/journey/configuration"
+	"github.com/Landria/journey/database"
+	"github.com/Landria/journey/filenames"
+	"github.com/Landria/journey/flags"
+	"github.com/Landria/journey/https"
+	"github.com/Landria/journey/plugins"
+	"github.com/Landria/journey/server"
+	"github.com/Landria/journey/structure/methods"
+	"github.com/Landria/journey/templates"
 	"github.com/dimfeld/httptreemux"
-	"github.com/kabukky/journey/configuration"
-	"github.com/kabukky/journey/database"
-	"github.com/kabukky/journey/filenames"
-	"github.com/kabukky/journey/flags"
-	"github.com/kabukky/journey/https"
-	"github.com/kabukky/journey/plugins"
-	"github.com/kabukky/journey/server"
-	"github.com/kabukky/journey/structure/methods"
-	"github.com/kabukky/journey/templates"
 )
 
 func httpsRedirect(w http.ResponseWriter, r *http.Request, _ map[string]string) {

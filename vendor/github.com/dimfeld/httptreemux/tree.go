@@ -2,7 +2,6 @@ package httptreemux
 
 import (
 	"fmt"
-	"net/url"
 	"strings"
 )
 
@@ -278,7 +277,7 @@ func (n *node) search(method, path string) (found *node, handler HandlerFunc, pa
 		if len(thisToken) > 0 { // Don't match on empty tokens.
 			wcNode, wcHandler, wcParams := n.wildcardChild.search(method, nextToken)
 			if wcHandler != nil || (found == nil && wcNode != nil) {
-				unescaped, err := url.QueryUnescape(thisToken)
+				unescaped, err := unescape(thisToken)
 				if err != nil {
 					unescaped = thisToken
 				}
@@ -311,7 +310,7 @@ func (n *node) search(method, path string) (found *node, handler HandlerFunc, pa
 		// Found a handler, or we found a catchall node without a handler.
 		// Either way, return it since there's nothing left to check after this.
 		if handler != nil || found == nil {
-			unescaped, err := url.QueryUnescape(path)
+			unescaped, err := unescape(path)
 			if err != nil {
 				unescaped = path
 			}

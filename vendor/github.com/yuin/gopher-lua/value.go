@@ -1,8 +1,8 @@
 package lua
 
 import (
+	"context"
 	"fmt"
-	"golang.org/x/net/context"
 	"os"
 )
 
@@ -210,7 +210,7 @@ type LState struct {
 
 	stop         int32
 	reg          *registry
-	stack        *callFrameStack
+	stack        callFrameStack
 	alloc        *allocator
 	currentFrame *callFrame
 	wrapped      bool

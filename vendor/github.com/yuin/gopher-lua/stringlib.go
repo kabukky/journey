@@ -3,10 +3,11 @@ package lua
 import (
 	"fmt"
 	"strings"
-	"unsafe"
 
 	"github.com/yuin/gopher-lua/pm"
 )
+
+const emptyLString LString = LString("")
 
 func OpenString(L *LState) int {
 	var mod *LTable
@@ -111,7 +112,7 @@ func strFind(L *LState) int {
 		return 2
 	}
 
-	mds, err := pm.Find(pattern, *(*[]byte)(unsafe.Pointer(&str)), init, 1)
+	mds, err := pm.Find(pattern, unsafeFastStringToReadOnlyBytes(str), init, 1)
 	if err != nil {
 		L.RaiseError(err.Error())
 	}
@@ -151,7 +152,7 @@ func strGsub(L *LState) int {
 	repl := L.CheckAny(3)
 	limit := L.OptInt(4, -1)
 
-	mds, err := pm.Find(pat, *(*[]byte)(unsafe.Pointer(&str)), 0, limit)
+	mds, err := pm.Find(pat, unsafeFastStringToReadOnlyBytes(str), 0, limit)
 	if err != nil {
 		L.RaiseError(err.Error())
 	}
@@ -362,7 +363,7 @@ func strMatch(L *LState) int {
 		offset = 0
 	}
 
-	mds, err := pm.Find(pattern, *(*[]byte)(unsafe.Pointer(&str)), offset, 1)
+	mds, err := pm.Find(pattern, unsafeFastStringToReadOnlyBytes(str), offset, 1)
 	if err != nil {
 		L.RaiseError(err.Error())
 	}
@@ -391,7 +392,11 @@ func strMatch(L *LState) int {
 func strRep(L *LState) int {
 	str := L.CheckString(1)
 	n := L.CheckInt(2)
-	L.Push(LString(strings.Repeat(str, n)))
+	if n < 0 {
+		L.Push(emptyLString)
+	} else {
+		L.Push(LString(strings.Repeat(str, n)))
+	}
 	return 1
 }
 
@@ -412,7 +417,7 @@ func strSub(L *LState) int {
 	end := luaIndex2StringIndex(str, L.OptInt(3, -1), false)
 	l := len(str)
 	if start >= l || end < start {
-		L.Push(LString(""))
+		L.Push(emptyLString)
 	} else {
 		L.Push(LString(str[start:end]))
 	}
