@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"runtime"
 	"strings"
 
 	"github.com/dimfeld/httptreemux/v5"
@@ -28,9 +27,6 @@ func main() {
 	// Setup
 	var err error
 
-	// GOMAXPROCS - Maybe not needed
-	runtime.GOMAXPROCS(runtime.NumCPU())
-
 	// Write log to file if the log flag was provided
 	if flags.Log != "" {
 		logFile, err := os.OpenFile(flags.Log, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
@@ -41,7 +37,7 @@ func main() {
 		log.SetOutput(logFile)
 	}
 
-	// Configuration is read from config.json by loading the configuration package
+	// Configuration is read from config.yaml by loading the configuration package
 
 	// Database
 	if err = database.Initialize(); err != nil {
@@ -80,7 +76,7 @@ func main() {
 		components := strings.SplitAfterN(httpsPort, ":", 2)
 		httpsPort = components[0] + flags.HttpsPort
 	}
-	// Determine the kind of https support (as set in the config.json)
+	// Determine the kind of https support (as set in the config.yaml)
 	switch configuration.Config.HttpsUsage {
 	case "AdminOnly":
 		httpRouter := httptreemux.New()
