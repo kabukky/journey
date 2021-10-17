@@ -9,7 +9,6 @@ RUN go mod download \
     && go build -a -tags "noplugins nossl netgo" -ldflags '-w' -o journey
 
 # final stage
-# hadolint ignore=DL3007
 FROM alpine:3.14
 WORKDIR /opt/journey
 COPY --from=build /opt/journey/journey /opt/journey/
