@@ -6,7 +6,7 @@ COPY . .
 # RUN git -c http.sslVerify=false submodule update --init --recursive
 RUN go mod download \
     && go test ./... \
-    && go build -a -tags "noplugins nossl netgo" -ldflags '-w' -o journey
+    && go build -a -tags "noplugins nossl netgo" -ldflags '-s -w' -o journey
 
 # final stage
 FROM alpine:3.14

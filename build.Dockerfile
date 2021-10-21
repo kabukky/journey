@@ -12,4 +12,4 @@ WORKDIR /opt/journey
 COPY . .
 RUN go mod download \
     && go test ./... \
-    && go build -a -tags "noplugins nossl netgo" -ldflags '-w' -o journey
+    && go build -a -tags "noplugins nossl netgo" -ldflags '-s -w' -o journey
