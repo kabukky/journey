@@ -1,12 +1,18 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"strings"
+	"time"
 
 	"github.com/dimfeld/httptreemux/v5"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 
 	"github.com/kabukky/journey/configuration"
 	"github.com/kabukky/journey/database"
@@ -142,11 +148,32 @@ func main() {
 		server.InitializeAdmin(httpRouter)
 		// Sitemap
 		server.InitializeSitemap(httpRouter)
-		// Start http server
-		log.Println("Starting server without HTTPS support. Please enable HTTPS in " + filenames.ConfigFilename + " to improve security.")
-		log.Println("Starting http server on port " + httpPort + "...")
-		if err := http.ListenAndServe(httpPort, httpRouter); err != nil {
-			log.Fatal("Error: Couldn't start the HTTP server:", err)
+		// Enable HTTP2 over Cleartext
+		h2s := &http2.Server{}
+		// Configure the server
+		srv := &http.Server{
+			Addr: fmt.Sprintf("%v", httpPort),
+			// TLSConfig: m.TLSConfig(),
+			ReadTimeout:  5 * time.Second,
+			WriteTimeout: 10 * time.Second,
+			IdleTimeout:  120 * time.Second,
+			Handler:      h2c.NewHandler(httpRouter, h2s),
 		}
+		// Start http server
+		go func() {
+			log.Println("Starting server without HTTPS support. Please enable HTTPS in " + filenames.ConfigFilename + " to improve security.")
+			log.Println("Starting http server at " + httpPort + "...")
+			if err := srv.ListenAndServe(); err != nil {
+				log.Fatal("Error: Couldn't start the HTTP server:", err)
+			}
+		}()
+		// Wait for an interrupt
+		c := make(chan os.Signal, 1)
+		signal.Notify(c, os.Interrupt)
+		<-c
+		// Attempt a graceful shutdown
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		_ = srv.Shutdown(ctx)
 	}
 }
