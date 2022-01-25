@@ -1,18 +1,24 @@
 # build stage
+# FROM golang:1.17 AS build
 FROM golang:1.17-alpine AS build
 
-WORKDIR /opt/journey
+RUN apk add --no-cache gcc g++
+
+WORKDIR /opt/app
+
+COPY ["go.mod", "go.sum", "./"]
+RUN go mod download
+
 COPY . .
-# RUN git -c http.sslVerify=false submodule update --init --recursive
-RUN go mod download \
-    && go test ./... \
+RUN go test ./... \
     && go build -a -tags "noplugins nossl netgo" -ldflags '-s -w' -o journey
 
 # final stage
-FROM alpine:3.14
-WORKDIR /opt/journey
-COPY --from=build /opt/journey/journey /opt/journey/
-COPY --from=build /opt/journey/built-in /opt/journey/
-COPY --from=build /opt/journey/config.yaml /opt/journey/
-COPY --from=build /opt/journey/content /opt/journey/
-CMD ["./journey"]
+# FROM debian:buster-slim
+FROM alpine:latest
+COPY --from=build /opt/app/journey  /usr/local/bin/journey
+USER nobody
+WORKDIR /opt/data
+COPY --from=build --chown=nobody:nobody /opt/app/built-in ./built-in
+COPY --from=build --chown=nobody:nobody /opt/app/content  ./content
+CMD ["journey"]

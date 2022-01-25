@@ -10,10 +10,10 @@ import (
 )
 
 var (
-	// Determine the path the Journey executable is in - needed to load relative assets
-	ExecutablePath = determineExecutablePath()
+	// Determine the work path for built-in resources - needed to load relative assets
+	WorkPath = determineWorkPath()
 
-	// Determine the path to the assets folder (default: Journey root folder)
+	// Determine the path to the variable assets directory (default: Journey work directory)
 	AssetPath = determineAssetPath()
 
 	// For assets that are created, changed, our user-provided while running journey
@@ -33,9 +33,9 @@ var (
 	HttpsKeyFilename  = filepath.Join(ContentFilepath, "https", "key.pem")
 
 	// For built-in files (e.g. the admin interface)
-	AdminFilepath  = filepath.Join(ExecutablePath, "built-in", "admin")
-	PublicFilepath = filepath.Join(ExecutablePath, "built-in", "public")
-	HbsFilepath    = filepath.Join(ExecutablePath, "built-in", "hbs")
+	AdminFilepath  = filepath.Join(WorkPath, "built-in", "admin")
+	PublicFilepath = filepath.Join(WorkPath, "built-in", "public")
+	HbsFilepath    = filepath.Join(WorkPath, "built-in", "hbs")
 
 	// For blog  (this is a url string)
 	// TODO: This is not used at the moment because it is still hard-coded into the create database string
@@ -81,20 +81,19 @@ func determineAssetPath() string {
 	if flags.CustomPath != "" {
 		contentPath, err := filepath.Abs(bashPath(flags.CustomPath))
 		if err != nil {
-			log.Fatal("Error: Couldn't read from custom path:", err)
+			log.Fatal("Error: Couldn't read from custom path: ", err)
 		}
 		return contentPath
 	}
-	return determineExecutablePath()
+	return determineWorkPath()
 }
 
-func determineExecutablePath() string {
-	// Get the path this executable is located in
-	executablePath, err := os.Executable()
+func determineWorkPath() string {
+	// Get the path of work directory
+	path, err := os.Getwd()
 	if err != nil {
-		log.Fatal("Error: Couldn't determine what directory this executable is in:", err)
+		log.Fatal("Error: Couldn't determine what work directory: ", err)
 	}
-	executablePath = filepath.Clean(executablePath)
-	executablePath = filepath.Dir(executablePath)
-	return executablePath
+	path = filepath.Clean(path)
+	return path
 }
