@@ -2,7 +2,7 @@
 # FROM golang:1.17 AS build
 FROM golang:1.17-alpine AS build
 
-RUN apk add --no-cache gcc g++
+RUN apk add --no-cache --update gcc musl-dev
 
 WORKDIR /opt/app
 
@@ -11,7 +11,7 @@ RUN go mod download
 
 COPY . .
 RUN go test ./... \
-    && go build -a -tags "noplugins nossl netgo" -ldflags '-s -w' -o journey
+    && go build -a -tags "noplugins nossl netgo linux" -ldflags '-s -w' -o journey
 
 # final stage
 # FROM debian:buster-slim
