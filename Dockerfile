@@ -1,8 +1,5 @@
 # build stage
-# FROM golang:1.17 AS build
-FROM golang:1.17-alpine AS build
-
-RUN apk add --no-cache --update gcc musl-dev
+FROM golang:1.17 AS build
 
 WORKDIR /opt/app
 
@@ -14,8 +11,8 @@ RUN go test ./... \
     && go build -a -tags "noplugins nossl netgo linux" -ldflags '-s -w' -o journey
 
 # final stage
-# FROM debian:buster-slim
-FROM alpine:latest
+FROM debian:buster-slim
+
 COPY --from=build /opt/app/journey  /usr/local/bin/journey
 USER nobody
 WORKDIR /opt/data
