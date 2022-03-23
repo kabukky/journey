@@ -1,5 +1,5 @@
 # build stage
-FROM golang:1.17 AS build
+FROM golang:1.18 AS build
 
 WORKDIR /opt/app
 
