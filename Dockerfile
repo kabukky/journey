@@ -1,7 +1,7 @@
 # build stage
 FROM golang:1.18 AS build
 
-WORKDIR /opt/app
+WORKDIR /opt/build
 
 COPY ["go.mod", "go.sum", "./"]
 RUN go mod download
@@ -10,12 +10,12 @@ COPY . .
 RUN go test ./... \
     && go build -a -tags "noplugins nossl netgo linux" -ldflags '-s -w' -o journey
 
-# final stage
+# artefact stage
 FROM debian:buster-slim
 
-COPY --from=build /opt/app/journey  /usr/local/bin/journey
+COPY --from=build /opt/build/journey  /usr/local/bin/journey
 USER nobody
 WORKDIR /opt/data
-COPY --from=build --chown=nobody:nobody /opt/app/built-in ./built-in
-COPY --from=build --chown=nobody:nobody /opt/app/content  ./content
+COPY --from=build --chown=nobody:nobody /opt/build/built-in ./built-in
+COPY --from=build --chown=nobody:nobody /opt/build/content  ./content
 CMD ["journey"]
