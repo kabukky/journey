@@ -1,10 +1,11 @@
-all: journey fmt vet
+all: journey
 
-.PHONY: all fmt vet clean
+.PHONY: all fmt clean
 
 PACKAGE = github.com/rkuris/journey
 PKG_DIRS ?= authentication configuration conversion database date filenames flags \
 	    helpers https notifications plugins server slug structure templates watcher
+PKGS := $(foreach dir,$(PKG_DIRS), $(PACKAGE)/$(dir))
 PKG_FILES := $(foreach dir,$(PKG_DIRS), $(wildcard $(dir)/*.go))
 MAIN_FILES = main.go
 
@@ -15,11 +16,10 @@ vet: vendor
 	@[ ! -s $(VET_LOG) ]
 	@rm $(VET_LOG)
 
-GOIMPORTS ?= goimports
-GOFMT ?= gofmt
+GOIMPORTS ?= go imports
+GOFMT ?= go fmt
 fmt:
-	@$(GOFMT) -s -w $(PKG_FILES)
-	@$(GOIMPORTS) -w $(PKG_FILES)
+	@$(GOFMT) $(PKGS)
 
 journey: $(PKG_FILES) vendor
 	go build
