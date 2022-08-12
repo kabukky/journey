@@ -1,6 +1,6 @@
-all: journey fmt vet lint
+all: journey fmt vet
 
-.PHONY: all fmt vet lint clean
+.PHONY: all fmt vet clean
 
 PACKAGE = github.com/rkuris/journey
 PKG_DIRS ?= authentication configuration conversion database date filenames flags \
@@ -14,15 +14,6 @@ vet: vendor
 	@go vet $(VET_RULES) $(MAIN_FILES) | tee -a $(VET_LOG)
 	@[ ! -s $(VET_LOG) ]
 	@rm $(VET_LOG)
-
-GOLINT ?= golint
-LINT_LOG = lint.log
-lint: vendor
-	@rm -f $(LINT_LOG)
-	@$(foreach dir,$(PKG_DIRS),golint $(PACKAGE)/$(dir)|tee -a $(LINT_LOG); )
-	@$(GOLINT) $(MAIN_FILES) | tee -a $(LINT_LOG)
-	@[ ! -s $(LINT_LOG) ]
-	@rm $(LINT_LOG)
 
 GOIMPORTS ?= goimports
 GOFMT ?= gofmt
