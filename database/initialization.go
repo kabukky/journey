@@ -3,13 +3,15 @@ package database
 import (
 	"database/sql"
 
-	"github.com/kabukky/journey/database/migration"
-	"github.com/kabukky/journey/date"
-	"github.com/kabukky/journey/filenames"
-	"github.com/kabukky/journey/helpers"
-	"github.com/kabukky/journey/structure"
+	"github.com/gofrs/uuid"
+	"github.com/rkuris/journey/database/migration"
+	"github.com/rkuris/journey/date"
+	"github.com/rkuris/journey/filenames"
+	"github.com/rkuris/journey/helpers"
+	"github.com/rkuris/journey/structure"
+
+	// import the sqlite driver
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/satori/go.uuid"
 )
 
 // Handler for read access
@@ -126,6 +128,7 @@ var stmtInitialization = `CREATE TABLE IF NOT EXISTS
 	);
 	`
 
+// Initialize initializes the database
 func Initialize() error {
 	// If journey.db does not exist, look for a Ghost database to convert
 	if !helpers.FileExists(filenames.DatabaseFilename) {
@@ -144,7 +147,7 @@ func Initialize() error {
 		return err
 	}
 	currentTime := date.GetCurrentTime()
-	_, err = readDB.Exec(stmtInitialization, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime, uuid.NewV4().String(), currentTime, currentTime)
+	_, err = readDB.Exec(stmtInitialization, uuid.Must(uuid.NewV4()).String(), currentTime, currentTime, uuid.Must(uuid.NewV4()).String(), currentTime, currentTime, uuid.Must(uuid.NewV4()).String(), currentTime, currentTime, uuid.Must(uuid.NewV4()).String(), currentTime, currentTime, uuid.Must(uuid.NewV4()).String(), currentTime, currentTime, uuid.Must(uuid.NewV4()).String(), currentTime, currentTime, uuid.Must(uuid.NewV4()).String(), currentTime, currentTime, uuid.Must(uuid.NewV4()).String(), currentTime, currentTime, uuid.Must(uuid.NewV4()).String(), currentTime, currentTime, uuid.Must(uuid.NewV4()).String(), currentTime, currentTime, uuid.Must(uuid.NewV4()).String(), currentTime, currentTime, uuid.Must(uuid.NewV4()).String(), currentTime, currentTime)
 	// TODO: Is Commit()/Rollback() needed for DB.Exec()?
 	if err != nil {
 		return err

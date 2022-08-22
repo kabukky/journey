@@ -1,17 +1,20 @@
+//go:build !noplugins
 // +build !noplugins
 
 package plugins
 
 import (
 	"errors"
-	"github.com/kabukky/journey/filenames"
-	"github.com/kabukky/journey/structure"
-	"github.com/yuin/gopher-lua"
 	"log"
 	"os"
 	"path/filepath"
+
+	"github.com/rkuris/journey/filenames"
+	"github.com/rkuris/journey/structure"
+	lua "github.com/yuin/gopher-lua"
 )
 
+// Load ...
 func Load() error {
 	// Reset LuaPool for a fresh start
 	LuaPool = nil
@@ -40,7 +43,7 @@ func Load() error {
 		return err
 	}
 	if len(nameMap) == 0 {
-		return errors.New("No plugins were loaded.")
+		return errors.New("No plugins were loaded")
 	}
 	// If plugins were loaded, create LuaPool and assign name map to LuaPool
 	LuaPool = newLuaPool()
@@ -64,7 +67,7 @@ func getHelperNames(fileName string) ([]string, error) {
 		log.Println("Error while determining absolute path to lua file:", err)
 		return helperList, err
 	}
-	setUpVm(vm, helper, values, absDir)
+	setUpVM(vm, helper, values, absDir)
 	// Execute plugin
 	// TODO: Is there a better way to just load the file? We only need to execute the register function (see below)
 	err = vm.DoFile(absDir)
@@ -94,7 +97,7 @@ func getHelperNames(fileName string) ([]string, error) {
 }
 
 // Creates all methods that can be used from Lua.
-func setUpVm(vm *lua.LState, helper *structure.Helper, values *structure.RequestData, absPathToLuaFile string) {
+func setUpVM(vm *lua.LState, helper *structure.Helper, values *structure.RequestData, absPathToLuaFile string) {
 	luaPath := filepath.Dir(absPathToLuaFile)
 	// Function to get the directory of the current file (to add to LUA_PATH in Lua)
 	vm.SetGlobal("getCurrentDir", vm.NewFunction(func(vm *lua.LState) int {

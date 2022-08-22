@@ -10,11 +10,12 @@ import (
 
 var marchMayChecker = regexp.MustCompile("M([^a]|$)")
 
-// Whenever we need time.Now(), we use this function instead so that we always use UTC in journey
+// GetCurrentTime is used here instead so that we always use UTC in journey
 func GetCurrentTime() time.Time {
 	return time.Now().UTC()
 }
 
+// GenerateTimeAgo ...
 func GenerateTimeAgo(date *time.Time) []byte {
 	timeAgo := GetCurrentTime().Sub(*date)
 	if timeAgo.Minutes() < 1 {
@@ -74,6 +75,7 @@ func GenerateTimeAgo(date *time.Time) []byte {
 	return buffer.Bytes()
 }
 
+// FormatDate ...
 func FormatDate(format string, date *time.Time) []byte {
 
 	// Do these first (so they don't accidentally replace something the others insert)

@@ -3,13 +3,14 @@ package migration
 import (
 	"database/sql"
 	"errors"
-	"github.com/kabukky/journey/date"
-	"github.com/kabukky/journey/filenames"
-	"github.com/kabukky/journey/helpers"
 	"log"
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/rkuris/journey/date"
+	"github.com/rkuris/journey/filenames"
+	"github.com/rkuris/journey/helpers"
 )
 
 const stmtRetrieveGhostPosts = "SELECT id, (created_at/1000), (updated_at/1000), (published_at/1000) FROM posts"

@@ -1,11 +1,13 @@
+//go:build noplugins
 // +build noplugins
 
 package plugins
 
 import (
-	"github.com/kabukky/journey/structure"
 	"errors"
 	"sync"
+
+	"github.com/kabukky/journey/structure"
 )
 
 // Global LState pool
@@ -17,22 +19,26 @@ type lStatePool struct {
 	saved []map[string]*string
 }
 
+// Load ...
 func Load() error {
 	LuaPool = nil
 	return errors.New("Plugin system is not compiled")
 }
 
+// Execute ...
 func Execute(helper *structure.Helper, values *structure.RequestData) ([]byte, error) {
 	return []byte{}, nil
 }
 
+// Get ...
 func (pl *lStatePool) Get(helper *structure.Helper, values *structure.RequestData) map[string]*string {
 	return nil
 }
 
-func (pl *lStatePool) Put(L map[string]*string){
+// Put ...
+func (pl *lStatePool) Put(L map[string]*string) {
 }
 
-
+// Shutdown ...
 func (pl *lStatePool) Shutdown() {
 }

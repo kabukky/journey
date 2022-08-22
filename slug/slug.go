@@ -1,13 +1,15 @@
 package slug
 
 import (
-	"github.com/kabukky/journey/database"
 	"regexp"
 	"strconv"
 	"strings"
 	"unicode"
+
+	"github.com/rkuris/journey/database"
 )
 
+// Generate ...
 func Generate(input string, table string) string {
 	hyphensRegex := regexp.MustCompile("-+")
 	output := hyphensRegex.ReplaceAllString(strings.Map(func(r rune) rune {
@@ -50,7 +52,7 @@ func generateUniqueSlug(slug string, table string, suffix int) string {
 	}
 	var err error
 	if table == "tags" { // Not needed at the moment. Tags with the same name should have the same slug.
-		_, err = database.RetrieveTagIdBySlug(slugToCheck)
+		_, err = database.RetrieveTagIDBySlug(slugToCheck)
 	} else if table == "posts" {
 		_, err = database.RetrievePostBySlug(slugToCheck)
 	} else if table == "users" {

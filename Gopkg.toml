@@ -1,0 +1,53 @@
+[[constraint]]
+  name = "github.com/dimfeld/httptreemux"
+  version = "^5.0.0"
+
+[[constraint]]
+  name = "github.com/gorilla/securecookie"
+  version = "^1.1.0"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/kabukky/feeds"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/kabukky/httpscerts"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/kardianos/osext"
+
+[[constraint]]
+  name = "github.com/mattn/go-sqlite3"
+  version = "^2.0.2"
+
+[[constraint]]
+  name = "github.com/russross/blackfriday"
+  version = "^1.5.0"
+
+[[constraint]]
+  name = "github.com/gofrs/uuid"
+  version = "^3.2.0"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/yuin/gopher-lua"
+
+[[constraint]]
+  branch = "master"
+  name = "golang.org/x/crypto"
+
+[[constraint]]
+  source = "https://github.com/fsnotify/fsnotify/archive/v1.4.7.tar.gz"
+  name = "gopkg.in/fsnotify.v1"
+  version = "1.4.7"
+
+
+[[constraint]]
+  name = "github.com/crewjam/saml"
+  version = "0.4.0"
+
+[[constraint]]
+  name="github.com/lestrrat-go/apache-logformat"
+  version = "v2.0.4"
