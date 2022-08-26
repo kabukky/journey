@@ -1,5 +1,5 @@
 # build stage
-FROM golang:1.18 AS build
+FROM golang:1.19.0-bullseye AS build
 
 WORKDIR /opt/build
 
@@ -11,7 +11,7 @@ RUN go test ./... \
     && go build -a -tags "noplugins nossl netgo linux" -ldflags '-s -w' -o journey
 
 # artefact stage
-FROM debian:buster-slim
+FROM debian:bullseye-slim
 
 COPY --from=build /opt/build/journey  /usr/local/bin/journey
 USER nobody
