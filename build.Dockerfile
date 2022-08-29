@@ -3,13 +3,16 @@
 FROM ubuntu:18.04
 
 # hadolint ignore=DL3027
-RUN apt update &&\
-    apt install -y software-properties-common &&\
-    add-apt-repository ppa:longsleep/golang-backports &&\
-    apt install -y golang-go
+RUN apt update \
+    && apt install -y software-properties-common \
+    && add-apt-repository ppa:longsleep/golang-backports \
+    && apt install -y golang-go
 
 WORKDIR /opt/journey
+
+COPY ["go.mod", "go.sum", "./"]
+RUN go mod download
+
 COPY . .
-RUN go mod download \
-    && go test ./... \
+RUN go test ./... \
     && go build -a -tags "noplugins nossl netgo" -ldflags '-s -w' -o journey
