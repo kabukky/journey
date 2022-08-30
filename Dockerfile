@@ -1,5 +1,5 @@
 # build stage
-FROM golang:1.19.0-bullseye AS build
+FROM golang:1.19-bullseye AS build
 
 WORKDIR /opt/build
 
