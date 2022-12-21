@@ -39,5 +39,5 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          tags: ghcr.io/kami-no/journey:latest
           labels: ${{ steps.meta.outputs.labels }}
