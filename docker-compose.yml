@@ -1,0 +1,10 @@
+---
+version: '3.3'
+services:
+  journey:
+    container_name: journey
+    image: ghcr.io/kami-no/journey:latest
+    volumes:
+      - .:/opt/data
+    network_mode: host
+    restart: unless-stopped
