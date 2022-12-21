@@ -104,6 +104,7 @@ var stmtInitialization = `CREATE TABLE IF NOT EXISTS
 	INSERT OR IGNORE INTO settings (id, uuid, key, value, type, created_at, created_by, updated_at, updated_by) VALUES (6, ?, 'postsPerPage', 5, 'blog', ?, 1, ?, 1);
 	INSERT OR IGNORE INTO settings (id, uuid, key, value, type, created_at, created_by, updated_at, updated_by) VALUES (7, ?, 'activeTheme', 'promenade', 'theme', ?, 1, ?, 1);
 	INSERT OR IGNORE INTO settings (id, uuid, key, value, type, created_at, created_by, updated_at, updated_by) VALUES (8, ?, 'navigation', '[{"label":"Home", "url":"/"}]', 'blog', ?, 1, ?, 1);
+	INSERT OR IGNORE INTO settings (id, uuid, key, value, type, created_at, created_by, updated_at, updated_by) VALUES (9, ?, 'ghost_head', '<!-- Custom header -->', 'blog', ?, 1, ?, 1);
 	CREATE TABLE IF NOT EXISTS
 	roles (
 		id			integer NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -145,7 +146,7 @@ func Initialize() error {
 		return err
 	}
 	currentTime := date.GetCurrentTime()
-	_, err = readDB.Exec(stmtInitialization, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime)
+	_, err = readDB.Exec(stmtInitialization, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime, uuid.New().String(), currentTime, currentTime)
 	// TODO: Is Commit()/Rollback() needed for DB.Exec()?
 	if err != nil {
 		return err

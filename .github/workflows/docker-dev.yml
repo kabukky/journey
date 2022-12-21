@@ -1,9 +1,9 @@
-name: Build and publish a Docker image
+---
+name: Build and publish a Docker image dev
 
 on:
   push:
     branches:
-      - master
       - dev
 
 env:
