@@ -3,7 +3,6 @@ package templates
 import (
 	"bytes"
 	"errors"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -178,7 +177,7 @@ func compileTemplate(data []byte, name string) *structure.Helper {
 }
 
 func createTemplateFromFile(filename string) (*structure.Helper, error) {
-	data, err := ioutil.ReadFile(filename)
+	data, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}

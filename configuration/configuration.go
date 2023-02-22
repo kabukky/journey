@@ -2,8 +2,8 @@ package configuration
 
 import (
 	"errors"
-	"io/ioutil"
 	"log"
+	"os"
 	"reflect"
 	"strings"
 
@@ -49,12 +49,12 @@ func (c *Configuration) save() error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(filenames.ConfigFilename, data, 0600)
+	return os.WriteFile(filenames.ConfigFilename, data, 0600)
 }
 
 func (c *Configuration) load() error {
 	configWasChanged := false
-	data, err := ioutil.ReadFile(filenames.ConfigFilename)
+	data, err := os.ReadFile(filenames.ConfigFilename)
 	if err != nil {
 		return err
 	}
