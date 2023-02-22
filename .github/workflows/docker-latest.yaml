@@ -31,6 +31,7 @@ jobs:
 
   build-and-push-image:
     runs-on: ubuntu-latest
+    needs: lint
     permissions:
       contents: read
       packages: write
