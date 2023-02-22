@@ -1,6 +1,5 @@
 # build stage
-ARG GO_VERSION=1.19
-# hadolint ignore=DL3007
+ARG GO_VERSION=1.20
 FROM golang:${GO_VERSION}-bullseye AS build
 
 WORKDIR /opt/build
