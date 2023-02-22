@@ -77,29 +77,19 @@ func GenerateTimeAgo(date *time.Time) []byte {
 func FormatDate(format string, date *time.Time) []byte {
 
 	// Do these first (so they don't accidentally replace something the others insert)
-	if strings.Contains(format, "h") {
-		format = strings.Replace(format, "h", replaceh(date), -1)
-	}
+	format = strings.Replace(format, "h", replaceh(date), -1)
 	format = strings.Replace(format, "s", strconv.Itoa(date.Second()), -1)
 
 	// Year, month, and day
-	if strings.Contains(format, "Do") {
-		format = strings.Replace(format, "Do", replaceDo(date), -1)
-	}
+	format = strings.Replace(format, "Do", replaceDo(date), -1)
 	format = strings.Replace(format, "YYYY", strconv.Itoa(date.Year()), -1)
 	if date.Year() > 99 {
 		format = strings.Replace(format, "YY", strconv.Itoa(date.Year())[2:], -1)
 	}
 	format = strings.Replace(format, "Q", strconv.Itoa(((int(date.Month())-1)/3)+1), -1)
-	if strings.Contains(format, "DDDD") {
-		format = strings.Replace(format, "DDDD", replaceDDDD(date), -1)
-	}
-	if strings.Contains(format, "DDD") {
-		format = strings.Replace(format, "DDD", replaceDDD(date), -1)
-	}
-	if strings.Contains(format, "DD") {
-		format = strings.Replace(format, "DD", replaceDD(date), -1)
-	}
+	format = strings.Replace(format, "DDDD", replaceDDDD(date), -1)
+	format = strings.Replace(format, "DDD", replaceDDD(date), -1)
+	format = strings.Replace(format, "DD", replaceDD(date), -1)
 	format = strings.Replace(format, "X", strconv.FormatInt(date.Unix(), 10), -1)
 	// Unix ms ('x') is not used by ghost. Excluding it for now.
 	// format = strings.Replace(format, "x", strconv.FormatInt((date.UnixNano()/1000000), 10), -1)
@@ -109,12 +99,8 @@ func FormatDate(format string, date *time.Time) []byte {
 	if date.Year() > 99 {
 		format = strings.Replace(format, "gg", strconv.Itoa(date.Year())[2:], -1)
 	}
-	if strings.Contains(format, "ww") {
-		format = strings.Replace(format, "ww", replaceww(date), -1)
-	}
-	if strings.Contains(format, "w") {
-		format = strings.Replace(format, "w", replacew(date), -1)
-	}
+	format = strings.Replace(format, "ww", replaceww(date), -1)
+	format = strings.Replace(format, "w", replacew(date), -1)
 	format = strings.Replace(format, "e", strconv.Itoa(int(date.Weekday())), -1)
 
 	// ISO week date formats. Not supported yet - https://en.wikipedia.org/wiki/ISO_week_date
@@ -122,58 +108,34 @@ func FormatDate(format string, date *time.Time) []byte {
 	if date.Year() > 99 {
 		format = strings.Replace(format, "GG", strconv.Itoa(date.Year())[2:], -1)
 	}
-	if strings.Contains(format, "WW") {
-		format = strings.Replace(format, "WW", replaceww(date), -1)
-	}
-	if strings.Contains(format, "W") {
-		format = strings.Replace(format, "W", replacew(date), -1)
-	}
+	format = strings.Replace(format, "WW", replaceww(date), -1)
+	format = strings.Replace(format, "W", replacew(date), -1)
 	format = strings.Replace(format, "E", strconv.Itoa(int(date.Weekday())), -1)
 
 	// Hour, minute, second, millisecond, and offset
-	if strings.Contains(format, "HH") {
-		format = strings.Replace(format, "HH", replaceHH(date), -1)
-	}
+	format = strings.Replace(format, "HH", replaceHH(date), -1)
 	format = strings.Replace(format, "H", strconv.Itoa(date.Hour()), -1)
-	if strings.Contains(format, "hh") {
-		format = strings.Replace(format, "hh", replacehh(date), -1)
-	}
-	if strings.Contains(format, "a") {
-		format = strings.Replace(format, "a", replacea(date), -1)
-	}
-	if strings.Contains(format, "A") {
-		format = strings.Replace(format, "A", replaceA(date), -1)
-	}
-	if strings.Contains(format, "mm") {
-		format = strings.Replace(format, "mm", replacemm(date), -1)
-	}
+	format = strings.Replace(format, "hh", replacehh(date), -1)
+	format = strings.Replace(format, "a", replacea(date), -1)
+	format = strings.Replace(format, "A", replaceA(date), -1)
+	format = strings.Replace(format, "mm", replacemm(date), -1)
 	format = strings.Replace(format, "m", strconv.Itoa(date.Minute()), -1)
-	if strings.Contains(format, "ss") {
-		format = strings.Replace(format, "ss", replacess(date), -1)
-	}
+	format = strings.Replace(format, "ss", replacess(date), -1)
 	format = strings.Replace(format, "SSS", strconv.Itoa(date.Nanosecond()/1000000), -1)
 	format = strings.Replace(format, "SS", strconv.Itoa(date.Nanosecond()/10000000), -1)
 	format = strings.Replace(format, "S", strconv.Itoa(date.Nanosecond()/100000000), -1)
-	if strings.Contains(format, "ZZ") {
-		format = strings.Replace(format, "ZZ", replaceZZ(date), -1)
-	}
-	if strings.Contains(format, "Z") {
-		format = strings.Replace(format, "Z", replaceZ(date), -1)
-	}
+	format = strings.Replace(format, "ZZ", replaceZZ(date), -1)
+	format = strings.Replace(format, "Z", replaceZ(date), -1)
 
 	// Not documented for moment.js, but seems to be used by ghost themes
-	if strings.Contains(format, "dddd") {
-		format = strings.Replace(format, "dddd", date.Weekday().String(), -1)
-	}
+	format = strings.Replace(format, "dddd", date.Weekday().String(), -1)
 
 	// This needs to be last so that month strings don't interfere with the other replace functions
 	format = strings.Replace(format, "MMMM", date.Month().String(), -1)
 	if len(date.Month().String()) > 2 {
 		format = strings.Replace(format, "MMM", date.Month().String()[:3], -1)
 	}
-	if strings.Contains(format, "MM") {
-		format = strings.Replace(format, "MM", replaceMM(date), -1)
-	}
+	format = strings.Replace(format, "MM", replaceMM(date), -1)
 	// Replace M - make sure the Ms in March and May don't get replaced.
 	// TODO: Regex could be improved, only recognizes 'M's that are not followed by 'a's.
 	format = marchMayChecker.ReplaceAllString(format, strconv.Itoa(int(date.Month())))
