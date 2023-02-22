@@ -1,0 +1,20 @@
+[Unit]
+Description=Journey
+Documentation=https://github.com/Kami-no/journey
+
+After=network.target
+Requires=network.target
+
+[Service]
+# User=www-data
+# Group=www-data
+
+WorkingDirectory=/opt/journey
+ExecStart=/opt/journey/journey
+
+Restart=always
+PrivateTmp=true
+Nice=5
+
+[Install]
+WantedBy=multi-user.target
